@@ -1,0 +1,17 @@
+p, mortal, /api/v1/user/login, POST
+p, mortal, /api/v1/user/code/email, POST
+p, mortal, /api/v1/user/register, POST
+p, user, /api/v1/user/info, GET
+p, user, /api/v1/user/info, PUT
+p, user, /api/v1/user/password, PUT
+p, user, /api/v1/user/email, PUT
+p, user, /api/v1/user/avatar, GET
+p, user, /api/v1/user/avatar, PUT
+p, user, /api/v1/user/avatar, DELETE
+
+
+g, user, mortal
+g, develop, user
+g, auditor, develop
+g, admin, auditor
+g, root, admin

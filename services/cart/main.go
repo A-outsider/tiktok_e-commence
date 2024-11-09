@@ -1,7 +1,7 @@
 package main
 
 import (
-	cart "gomall/services/cart/kitex_gen/cart/cartservice"
+	cart "gomall/kitex_gen/cart/cartservice"
 	"log"
 )
 

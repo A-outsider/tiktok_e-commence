@@ -1,7 +1,7 @@
 package main
 
 import (
-	order "gomall/services/order/kitex_gen/order/orderservice"
+	order "gomall/kitex_gen/order/orderservice"
 	"log"
 )
 

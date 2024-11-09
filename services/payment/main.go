@@ -1,7 +1,7 @@
 package main
 
 import (
-	payment "gomall/services/payment/kitex_gen/payment/paymentservice"
+	payment "gomall/kitex_gen/payment/paymentservice"
 	"log"
 )
 

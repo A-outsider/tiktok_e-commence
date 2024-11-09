@@ -1,7 +1,7 @@
 package main
 
 import (
-	product "gomall/services/product/kitex_gen/product/productcatalogservice"
+	product "gomall/kitex_gen/product/productcatalogservice"
 	"log"
 )
 

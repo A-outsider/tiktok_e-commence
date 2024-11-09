@@ -1,7 +1,7 @@
 package main
 
 import (
-	checkout "gomall/services/checkout/kitex_gen/checkout/checkoutservice"
+	checkout "gomall/kitex_gen/checkout/checkoutservice"
 	"log"
 )
 

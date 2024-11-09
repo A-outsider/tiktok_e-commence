@@ -1,7 +1,7 @@
 package main
 
 import (
-	auth "gomall/services/auth/kitex_gen/auth/authservice"
+	auth "gomall/kitex_gen/auth/authservice"
 	"log"
 )
 

@@ -2,14 +2,14 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"gomall/gateway/types/response"
+	"gomall/gateway/types/resp"
 	"net/http"
 )
 
 // Controller definition
 type Controller[T any] struct {
 	Request  *T
-	Response *response.Response
+	Response *resp.Response
 	c        *gin.Context
 }
 
@@ -17,7 +17,7 @@ type Controller[T any] struct {
 func NewCtrl[T any](c *gin.Context) *Controller[T] {
 	return &Controller[T]{
 		Request:  new(T),
-		Response: new(response.Response),
+		Response: new(resp.Response),
 		c:        c,
 	}
 }

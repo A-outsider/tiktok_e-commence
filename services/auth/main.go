@@ -2,11 +2,12 @@ package main
 
 import (
 	auth "gomall/kitex_gen/auth/authservice"
+	"gomall/services/auth/handler"
 	"log"
 )
 
 func main() {
-	svr := auth.NewServer(new(AuthServiceImpl))
+	svr := auth.NewServer(new(handler.AuthServiceImpl))
 
 	err := svr.Run()
 

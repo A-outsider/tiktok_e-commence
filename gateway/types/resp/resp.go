@@ -1,4 +1,4 @@
-package response
+package resp
 
 type Response struct {
 	StatusCode int64  `json:"code"`
@@ -6,7 +6,7 @@ type Response struct {
 	Data       any    `json:"data,omitempty"`
 }
 
-// Msg returns the message of the response
+// Msg returns the message of the resp
 func (r *Response) Msg() string {
 	if m, ok := Msg[r.StatusCode]; ok {
 		return m
@@ -14,7 +14,7 @@ func (r *Response) Msg() string {
 	return ""
 }
 
-// GetMsg returns the message of the response without Response type
+// GetMsg returns the message of the resp without Response type
 func GetMsg(code int64) string {
 	if msg, ok := Msg[code]; ok {
 		return msg
@@ -22,13 +22,13 @@ func GetMsg(code int64) string {
 	return ""
 }
 
-// SetNoData prepares the response without data
+// SetNoData prepares the resp without data
 func (r *Response) SetNoData(code int64) {
 	r.StatusCode = code
 	r.StatusMsg = r.Msg()
 }
 
-// SetWithData prepares the response with data
+// SetWithData prepares the resp with data
 func (r *Response) SetWithData(code int64, data interface{}) {
 	r.StatusCode = code
 	r.StatusMsg = r.Msg()

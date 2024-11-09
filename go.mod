@@ -3,26 +3,34 @@ module gomall
 go 1.23.1
 
 require (
+	github.com/apache/rocketmq-clients/golang/v5 v5.1.1-rc1
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/cloudwego/fastpb v0.0.5
 	github.com/cloudwego/kitex v0.11.3
 	github.com/dustin/go-humanize v1.0.1
 	github.com/gin-gonic/gin v1.10.0
+	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
 	github.com/jasonlvhit/gocron v0.0.1
+	github.com/juju/ratelimit v1.0.2
 	github.com/kitex-contrib/config-etcd v0.2.0
+	github.com/kitex-contrib/registry-etcd v0.2.5
+	github.com/mojocn/base64Captcha v1.3.6
 	github.com/natefinch/lumberjack v2.0.0+incompatible
+	github.com/redis/go-redis/v9 v9.7.0
 	github.com/spf13/viper v1.19.0
 	github.com/uptrace/opentelemetry-go-extra/otelzap v0.3.2
 	go.opentelemetry.io/otel v1.31.0
 	go.opentelemetry.io/otel/trace v1.31.0
 	go.uber.org/zap v1.27.0
 	google.golang.org/protobuf v1.35.1
+	gopkg.in/yaml.v3 v3.0.1
+	gorm.io/driver/mysql v1.5.7
+	gorm.io/gorm v1.25.7
 )
 
 require (
 	contrib.go.opencensus.io/exporter/ocagent v0.6.0 // indirect
-	github.com/apache/rocketmq-clients/golang/v5 v5.1.1-rc1 // indirect
 	github.com/apache/thrift v0.19.0 // indirect
 	github.com/bytedance/gopkg v0.1.1 // indirect
 	github.com/bytedance/sonic v1.12.2 // indirect
@@ -56,6 +64,7 @@ require (
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
@@ -67,7 +76,6 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/kitex-contrib/registry-etcd v0.2.5 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.7 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
@@ -78,7 +86,6 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/redis/go-redis/v9 v9.7.0 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
@@ -106,6 +113,7 @@ require (
 	golang.org/x/arch v0.8.0 // indirect
 	golang.org/x/crypto v0.28.0 // indirect
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
+	golang.org/x/image v0.13.0 // indirect
 	golang.org/x/net v0.30.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.26.0 // indirect
@@ -116,8 +124,4 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241007155032-5fefd90f89a9 // indirect
 	google.golang.org/grpc v1.67.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
-	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gorm.io/driver/mysql v1.5.7 // indirect
-	gorm.io/gorm v1.25.7 // indirect
 )

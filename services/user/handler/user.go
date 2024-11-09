@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"context"
@@ -18,4 +18,8 @@ func (s *UserServiceImpl) Register(ctx context.Context, req *user.RegisterReq) (
 func (s *UserServiceImpl) Login(ctx context.Context, req *user.LoginReq) (resp *user.LoginResp, err error) {
 	// TODO: Your code here...
 	return
+}
+
+func NewUserServiceImpl() *UserServiceImpl {
+	return &UserServiceImpl{}
 }

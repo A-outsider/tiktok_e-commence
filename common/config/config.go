@@ -10,7 +10,7 @@ var Common = new(Default)
 
 // Default
 type Default struct {
-	Nacos  Nacos  `yaml:"nacos"`
+	Etcd   Etcd   `yaml:"etcd"`
 	Log    Log    `yaml:"log"`
 	Jaeger Jaeger `yaml:"jaeger"`
 }
@@ -22,7 +22,7 @@ type Jaeger struct {
 }
 
 // Nacos
-type Nacos struct {
+type Etcd struct {
 	Host string `yaml:"host"`
 	Port int    `yaml:"port"`
 }
@@ -54,5 +54,4 @@ func init() {
 	if err = vip.Unmarshal(Common); err != nil {
 		log.Println(err)
 	}
-
 }

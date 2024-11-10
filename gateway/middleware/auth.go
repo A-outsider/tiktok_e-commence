@@ -3,7 +3,7 @@ package middleware
 import (
 	"errors"
 	"gomall/gateway/types/resp"
-	"gomall/services/auth/utils/token"
+	"gomall/gateway/utils/token"
 	"net/http"
 	"strings"
 

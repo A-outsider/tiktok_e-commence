@@ -6,7 +6,7 @@ import (
 	"context"
 	client "github.com/cloudwego/kitex/client"
 	callopt "github.com/cloudwego/kitex/client/callopt"
-	cart "gomall/services/cart/kitex_gen/cart"
+	cart "gomall/kitex_gen/cart"
 )
 
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.

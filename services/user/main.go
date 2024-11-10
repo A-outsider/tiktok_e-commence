@@ -1,9 +1,13 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/pkg/transmeta"
 	"github.com/cloudwego/kitex/server"
+	"github.com/kitex-contrib/obs-opentelemetry/provider"
+	"github.com/kitex-contrib/obs-opentelemetry/tracing"
 	etcd "github.com/kitex-contrib/registry-etcd"
 	"github.com/kitex-contrib/registry-etcd/retry"
 	cc "gomall/common/config"
@@ -18,15 +22,34 @@ import (
 func main() {
 
 	// 配置初始化
-	suite := cc.InitConfigClient(config.ServerName, config.ServerName, config.MID, config.EtcdAddr, config.GetConf())
+	etcdSuite := cc.InitConfigClient(config.ServerName, config.ServerName, config.MID, config.EtcdAddr, config.GetConf())
 
 	// 初始化日志
 	logs.LogInit()
 
+	// otel 版链路追踪
+	//shutdown, err := database.InitTracer(config.ServerName)
+	//if err != nil {
+	//	log.Panic(err)
+	//}
+	//defer func() {
+	//	if err = shutdown(context.Background()); err != nil {
+	//		log.Panicf("Error shutting down tracer provider: %v\n", err)
+	//	}
+	//}()
+
+	// kitex 版链路追踪 					TODO 未测试
+	p := provider.NewOpenTelemetryProvider(
+		provider.WithServiceName(config.ServerName),                                                             // 配置服务名称
+		provider.WithExportEndpoint(fmt.Sprintf("%s:%d", config.Common.Jaeger.Host, config.Common.Jaeger.Port)), // Jaeger导出地址
+		provider.WithInsecure(),
+	)
+	defer p.Shutdown(context.Background())
+
 	// 服务注册
 	addr, _ := net.ResolveTCPAddr("tcp", config.ServerAddr)
 
-	retryConfig := retry.NewRetryConfig(
+	retryConfig := retry.NewRetryConfig( // 重试策略
 		retry.WithMaxAttemptTimes(10),
 		retry.WithObserveDelay(20*time.Second),
 		retry.WithRetryDelay(5*time.Second),
@@ -37,17 +60,20 @@ func main() {
 		panic(err)
 	}
 
-	svr := server.NewServer(server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: config.ServerName}), server.WithRegistry(r), server.WithServiceAddr(addr), server.WithSuite(suite), server.WithRefuseTrafficWithoutServiceName(), server.WithMetaHandler(transmeta.ServerTTHeaderHandler))
+	svr := server.NewServer(
+		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: config.ServerName}), // 服务基本信息
+		server.WithServiceAddr(addr),                            // 服务地址
+		server.WithRegistry(r),                                  // 服务注册中心
+		server.WithRefuseTrafficWithoutServiceName(),            // 拒绝没有服务名的请求
+		server.WithMetaHandler(transmeta.ServerTTHeaderHandler), // 元数据处理器
+		server.WithSuite(etcdSuite),                             // etcd套件
+		server.WithSuite(tracing.NewServerSuite()),              // opentelemetry 套件
+	)
 
-	err = userservice.RegisterService(svr, handler.NewUserServiceImpl())
-
-	if err != nil {
+	if err = userservice.RegisterService(svr, handler.NewUserServiceImpl()); err != nil {
 		panic(err)
 	}
-
-	err = svr.Run()
-
-	if err != nil {
+	if err = svr.Run(); err != nil {
 		panic(err)
 	}
 

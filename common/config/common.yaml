@@ -1,0 +1,20 @@
+# 定义伪常量
+host: &host 47.115.160.54
+
+mysql:
+  host: *host
+  port: 3306
+  dbname: mall
+  username: root
+  password: lijialang666
+  charset: utf8mb4
+
+jaeger:
+  host: *host
+  port: 4318
+
+
+redis:
+  host: *host
+  port: 26379
+  password: lijialang666

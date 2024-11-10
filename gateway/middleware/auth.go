@@ -1,42 +1,43 @@
 package middleware
 
 import (
+	"context"
 	"errors"
+	"github.com/cloudwego/hertz/pkg/app"
 	"gomall/gateway/types/resp"
 	"gomall/gateway/utils/token"
 	"net/http"
 	"strings"
 
-	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
 
 // Parse 宽松认证
-func Parse() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		tokenString, _ := getToken(c)
+func Parse() app.HandlerFunc {
+	return func(c context.Context, ctx *app.RequestContext) {
+		tokenString, _ := getToken(ctx)
 
 		// 解析并校验Token
 		claims, _ := token.ParseToken(tokenString)
 		if claims.UserId != 0 {
-			c.Set("userId", claims.UserId)
+			ctx.Set("userId", claims.UserId)
 		}
-		c.Next()
+		ctx.Next(c)
 	}
 }
 
 // 验证用户是否登录的中间件 -- 双token
-func Auth() gin.HandlerFunc {
-	return func(c *gin.Context) {
+func Auth() app.HandlerFunc {
+	return func(c context.Context, ctx *app.RequestContext) {
 		res := new(resp.Response)
 		res.SetNoData(resp.CodeSuccess)
 
 		// 读取验证token
-		tokenString, ok := getToken(c)
+		tokenString, ok := getToken(ctx)
 		if !ok {
 			res.SetNoData(resp.CodeNotLogin)
-			c.JSON(http.StatusOK, res)
-			c.Abort()
+			ctx.JSON(http.StatusOK, res)
+			ctx.Abort()
 			return
 		}
 
@@ -45,37 +46,37 @@ func Auth() gin.HandlerFunc {
 		if err != nil {
 			if errors.Is(err, jwt.ErrTokenMalformed) {
 				res.SetNoData(resp.CodeInvalidTokenForm)
-				c.JSON(http.StatusOK, res)
-				c.Abort()
+				ctx.JSON(http.StatusOK, res)
+				ctx.Abort()
 				return
 			}
 
 			// 提示需要刷新token
 			if errors.Is(err, jwt.ErrTokenExpired) && claims.TokenType == 0 {
 				res.SetNoData(resp.CodeInvalidTokenExpired)
-				c.JSON(http.StatusOK, res)
-				c.Abort()
+				ctx.JSON(http.StatusOK, res)
+				ctx.Abort()
 				return
 			}
 
 			res.SetNoData(resp.CodeInvalidToken)
-			c.JSON(http.StatusOK, res)
-			c.Abort()
+			ctx.JSON(http.StatusOK, res)
+			ctx.Abort()
 			return
 		}
 		// 存储用户信息
-		c.Set("userId", claims.UserId)
-		c.Next()
+		ctx.Set("userId", claims.UserId)
+		ctx.Next(c)
 	}
 }
 
-func getToken(c *gin.Context) (string, bool) {
+func getToken(c *app.RequestContext) (string, bool) {
 	tokenString := c.GetHeader("Authorization")
 
-	if !strings.HasPrefix(tokenString, "Bearer ") {
+	if !strings.HasPrefix(string(tokenString), "Bearer ") {
 		return "", false
 	}
 
-	tokenString = strings.TrimPrefix(tokenString, "Bearer ")
-	return tokenString, true
+	tokenString = []byte(strings.TrimPrefix(string(tokenString), "Bearer "))
+	return string(tokenString), true
 }

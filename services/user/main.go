@@ -23,7 +23,6 @@ func main() {
 
 	// 配置初始化
 	etcdSuite := cc.InitConfigClient(config.ServerName, config.ServerName, config.MID, config.EtcdAddr, config.GetConf())
-
 	// 初始化日志
 	logs.LogInit()
 
@@ -40,14 +39,14 @@ func main() {
 
 	// kitex 版链路追踪 					TODO 未测试
 	p := provider.NewOpenTelemetryProvider(
-		provider.WithServiceName(config.ServerName),                                                             // 配置服务名称
-		provider.WithExportEndpoint(fmt.Sprintf("%s:%d", config.Common.Jaeger.Host, config.Common.Jaeger.Port)), // Jaeger导出地址
+		provider.WithServiceName(config.ServerName), // 配置服务名称
+		provider.WithExportEndpoint(fmt.Sprintf("%s:%d", config.GetConf().Jaeger.Host, config.GetConf().Jaeger.Port)), // Jaeger导出地址
 		provider.WithInsecure(),
 	)
 	defer p.Shutdown(context.Background())
 
 	// 服务注册
-	addr, _ := net.ResolveTCPAddr("tcp", config.ServerAddr)
+	addr, _ := net.ResolveTCPAddr("tcp", config.GetConf().Server.Addr)
 
 	retryConfig := retry.NewRetryConfig( // 重试策略
 		retry.WithMaxAttemptTimes(10),

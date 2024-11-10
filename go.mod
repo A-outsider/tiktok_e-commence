@@ -6,6 +6,7 @@ require (
 	github.com/apache/rocketmq-clients/golang/v5 v5.1.1-rc1
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/cloudwego/fastpb v0.0.5
+	github.com/cloudwego/hertz v0.9.3
 	github.com/cloudwego/kitex v0.11.3
 	github.com/dustin/go-humanize v1.0.1
 	github.com/gin-gonic/gin v1.10.0
@@ -14,14 +15,13 @@ require (
 	github.com/jasonlvhit/gocron v0.0.1
 	github.com/juju/ratelimit v1.0.2
 	github.com/kitex-contrib/config-etcd v0.2.0
+	github.com/kitex-contrib/obs-opentelemetry v0.2.8
 	github.com/kitex-contrib/registry-etcd v0.2.5
 	github.com/mojocn/base64Captcha v1.3.6
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/redis/go-redis/v9 v9.7.0
 	github.com/uptrace/opentelemetry-go-extra/otelzap v0.3.2
 	go.opentelemetry.io/otel v1.32.0
-	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.32.0
-	go.opentelemetry.io/otel/sdk v1.32.0
 	go.opentelemetry.io/otel/trace v1.32.0
 	go.uber.org/zap v1.27.0
 	google.golang.org/protobuf v1.35.1
@@ -33,6 +33,7 @@ require (
 require (
 	contrib.go.opencensus.io/exporter/ocagent v0.6.0 // indirect
 	github.com/apache/thrift v0.19.0 // indirect
+	github.com/bytedance/go-tagexpr/v2 v2.9.2 // indirect
 	github.com/bytedance/gopkg v0.1.1 // indirect
 	github.com/bytedance/sonic v1.12.2 // indirect
 	github.com/bytedance/sonic/loader v0.2.0 // indirect
@@ -55,6 +56,7 @@ require (
 	github.com/dchest/siphash v1.2.3 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fatih/structtag v1.2.0 // indirect
+	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
@@ -71,18 +73,20 @@ require (
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/pprof v0.0.0-20240727154555-813a5fbdbec8 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.23.0 // indirect
+	github.com/henrylee2cn/ameda v1.4.10 // indirect
+	github.com/henrylee2cn/goutil v0.0.0-20210127050712-89660552f6f8 // indirect
 	github.com/iancoleman/strcase v0.2.0 // indirect
 	github.com/jhump/protoreflect v1.8.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/kitex-contrib/obs-opentelemetry v0.2.8 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.7 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/gls v0.0.0-20220109145502-612d0167dce5 // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
+	github.com/nyaruka/phonenumbers v1.0.55 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/stretchr/testify v1.9.0 // indirect
@@ -97,9 +101,17 @@ require (
 	go.etcd.io/etcd/client/pkg/v3 v3.5.12 // indirect
 	go.etcd.io/etcd/client/v3 v3.5.12 // indirect
 	go.opencensus.io v0.24.0 // indirect
+	go.opentelemetry.io/contrib/instrumentation/runtime v0.45.0 // indirect
+	go.opentelemetry.io/contrib/propagators/b3 v1.20.0 // indirect
+	go.opentelemetry.io/contrib/propagators/ot v1.25.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlpmetric v0.42.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc v0.42.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.32.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.25.0 // indirect
 	go.opentelemetry.io/otel/log v0.6.0 // indirect
 	go.opentelemetry.io/otel/metric v1.32.0 // indirect
+	go.opentelemetry.io/otel/sdk v1.32.0 // indirect
+	go.opentelemetry.io/otel/sdk/metric v1.25.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.3.1 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect

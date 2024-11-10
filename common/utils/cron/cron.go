@@ -1,32 +1,38 @@
 package cron
 
 import (
-	"dream_program/config"
+	"go.uber.org/zap"
 	"os"
 	"time"
-
-	"github.com/jasonlvhit/gocron"
-	"go.uber.org/zap"
 )
 
-func init() {
-	c := gocron.NewScheduler()
+//import (
+//	"dream_program/config"
+//	"os"
+//	"time"
+//
+//	"github.com/jasonlvhit/gocron"
+//	"go.uber.org/zap"
+//)
+//
+//func init() {
+//	c := gocron.NewScheduler()
 
-	// 每天凌晨4点扫描上传文件临时文件夹并清理垃圾文件
-	c.Every(1).Days().At("4:00").Do(cleanRedundant)
+// 每天凌晨4点扫描上传文件临时文件夹并清理垃圾文件
+//c.Every(1).Days().At("4:00").Do(cleanRedundant)
 
-	// 每天凌晨4点同步播放量数据
-	// 从缓存同步到数据库
-	// ...
-}
+// 每天凌晨4点同步播放量数据
+// 从缓存同步到数据库
+// ...
+//}
 
 // 移除冗余文件
-func cleanRedundant() {
-	fileConf := config.Get().File
-	// 扫描临时图片和视频文件夹
-	//removeExpired(fileConf.ImageTempPath, 48)
-	removeExpired(fileConf.VideoTempPath, 48)
-}
+//func cleanRedundant() {
+//	fileConf := config.Get().File
+//	// 扫描临时图片和视频文件夹
+//	//removeExpired(fileConf.ImageTempPath, 48)
+//	removeExpired(fileConf.VideoTempPath, 48)
+//}
 
 // 移除过期的文件
 // params: expired 过期时间(小时)

@@ -1,24 +1,24 @@
 package middleware
 
 import (
+	"context"
+	"github.com/cloudwego/hertz/pkg/app"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
-func CORS() gin.HandlerFunc {
+func CORS() app.HandlerFunc {
 
-	return func(ctx *gin.Context) {
-		ctx.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		ctx.Writer.Header().Set("Access-Control-Max-Age", "86400")
-		ctx.Writer.Header().Set("Access-Control-Allow-Methods", "GET,POST,OPTIONS,PUT,DELETE")
-		ctx.Writer.Header().Set("Access-Control-Allow-Headers", "authorization,Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type")
-		ctx.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+	return func(c context.Context, ctx *app.RequestContext) {
+		ctx.Header("Access-Control-Allow-Origin", "*")
+		ctx.Header("Access-Control-Max-Age", "86400")
+		ctx.Header("Access-Control-Allow-Methods", "GET,POST,OPTIONS,PUT,DELETE")
+		ctx.Header("Access-Control-Allow-Headers", "authorization,Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type")
+		ctx.Header("Access-Control-Allow-Credentials", "true")
 
-		if ctx.Request.Method == http.MethodOptions {
+		if string(ctx.Method()) == http.MethodOptions {
 			ctx.AbortWithStatus(http.StatusNoContent)
 		} else {
-			ctx.Next()
+			ctx.Next(c)
 		}
 	}
 }

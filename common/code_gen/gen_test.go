@@ -6,7 +6,7 @@ import (
 
 func TestYamlToStruct(t *testing.T) {
 	n := NewYaml()
-	err := n.GetStruct("../config/common.yaml")
+	err := n.GetStruct("./test.yaml")
 	if err != nil {
 		t.Error(err)
 	}

@@ -1,11 +1,9 @@
 package config
 
-import (
-	"gomall/common/config"
-)
+import "gomall/common/config"
 
 var (
-	ServerName = "user"
+	ServerName = "gateway"
 	MID        = int64(1)
 	EtcdAddr   = config.EtcdAddr
 	conf       Config

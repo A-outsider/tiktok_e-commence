@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/cloudwego/hertz/pkg/app"
 	"gomall/gateway/types/resp"
 	"net/http"
 )
@@ -10,11 +10,11 @@ import (
 type Controller[T any] struct {
 	Request  *T
 	Response *resp.Response
-	c        *gin.Context
+	c        *app.RequestContext
 }
 
 // NewCtrl Generic factory function for creating a controller
-func NewCtrl[T any](c *gin.Context) *Controller[T] {
+func NewCtrl[T any](c *app.RequestContext) *Controller[T] {
 	return &Controller[T]{
 		Request:  new(T),
 		Response: new(resp.Response),

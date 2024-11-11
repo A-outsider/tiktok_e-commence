@@ -1,12 +1,11 @@
 version: '3.8'
 
-
 services:
 
   mysql:
     image: mysql:8.3.0
     ports:
-      - "3306:3306"
+      - "23306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: lijialang666!
       MYSQL_DATABASE: mall
@@ -26,7 +25,7 @@ services:
     container_name: redis
     init: true
     ports:
-      - "6379:6379"
+      - "26379:6379"
     volumes:
       - ../data/redis/data:/data
     environment:
@@ -54,3 +53,21 @@ services:
     volumes:
       - ./data/jaeger/logs:/var/log/jaeger       # 挂载日志目录
       - ./data/jaeger/data:/var/lib/jaeger       # 挂载数据目录
+
+  etcd:
+    image: bitnami/etcd:latest
+    container_name: etcd
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://etcd:2380
+      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+      - ETCD_INITIAL_CLUSTER=etcd=http://etcd:2380
+      - ETCD_INITIAL_CLUSTER_STATE=new
+      - ETCD_INITIAL_CLUSTER_TOKEN=etcd-cluster
+    volumes:
+      - ./data/etcd/data:/bitnami/etcd
+    ports:
+      - "22379:2379"
+      - "22380:2380"

@@ -2,7 +2,6 @@ package logs
 
 import (
 	"context"
-	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
@@ -29,7 +28,7 @@ func ErrorWithSpan(ctx context.Context, err error) {
 	span.RecordError(err)
 	span.SetStatus(codes.Error, "服务器异常")
 
-	otelzap.L().Error("Error occurred",
+	zap.L().Error("Error occurred",
 		zap.String("traceID", traceID),
 		zap.String("spanID", spanID),
 		zap.Error(err),
@@ -39,7 +38,7 @@ func ErrorWithSpan(ctx context.Context, err error) {
 func InfoWithSpan(ctx context.Context, msg string, fields ...zap.Field) {
 	_, _, traceID, spanID := getSpanInfo(ctx)
 
-	otelzap.L().Info(msg,
+	zap.L().Info(msg,
 		append(fields,
 			zap.String("traceID", traceID),
 			zap.String("spanID", spanID),
@@ -50,7 +49,7 @@ func InfoWithSpan(ctx context.Context, msg string, fields ...zap.Field) {
 func DebugWithSpan(ctx context.Context, msg string, fields ...zap.Field) {
 	_, _, traceID, spanID := getSpanInfo(ctx)
 
-	otelzap.L().Debug(msg,
+	zap.L().Debug(msg,
 		append(fields,
 			zap.String("traceID", traceID),
 			zap.String("spanID", spanID),
@@ -60,13 +59,13 @@ func DebugWithSpan(ctx context.Context, msg string, fields ...zap.Field) {
 
 // 非 Span 相关日志函数
 func Error(msg string, fields ...zap.Field) {
-	otelzap.L().Error(msg, fields...)
+	zap.L().Error(msg, fields...)
 }
 
 func Info(msg string, fields ...zap.Field) {
-	otelzap.L().Info(msg, fields...)
+	zap.L().Info(msg, fields...)
 }
 
 func Debug(msg string, fields ...zap.Field) {
-	otelzap.L().Debug(msg, fields...)
+	zap.L().Debug(msg, fields...)
 }

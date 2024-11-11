@@ -24,7 +24,7 @@ func main() {
 	// 配置初始化
 	etcdSuite := cc.InitConfigClient(config.ServerName, config.ServerName, config.MID, config.EtcdAddr, config.GetConf())
 	// 初始化日志
-	logs.LogInit()
+	logs.LogInit(config.ServerName)
 
 	// otel 版链路追踪
 	//shutdown, err := database.InitTracer(config.ServerName)

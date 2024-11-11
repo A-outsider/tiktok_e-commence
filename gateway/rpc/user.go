@@ -4,6 +4,7 @@ import (
 	"github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/pkg/transmeta"
 	"github.com/cloudwego/kitex/transport"
+	"github.com/kitex-contrib/obs-opentelemetry/tracing"
 	etcd "github.com/kitex-contrib/registry-etcd"
 	"gomall/common/config"
 	"gomall/kitex_gen/user/userservice"
@@ -16,7 +17,13 @@ func initUser() {
 	if err != nil {
 		panic(err)
 	}
-	userCli, err = userservice.NewClient("user", client.WithResolver(r), client.WithTransportProtocol(transport.TTHeader), client.WithMetaHandler(transmeta.ClientTTHeaderHandler))
+	userCli, err = userservice.NewClient(
+		"user",
+		client.WithResolver(r),
+		client.WithTransportProtocol(transport.TTHeader),
+		client.WithMetaHandler(transmeta.ClientTTHeaderHandler),
+		client.WithSuite(tracing.NewClientSuite()),
+	)
 	if err != nil {
 		panic(err)
 	}

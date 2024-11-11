@@ -16,7 +16,11 @@ func initAuth() {
 	if err != nil {
 		panic(err)
 	}
-	authCli, err = authservice.NewClient("auth", client.WithResolver(r), client.WithTransportProtocol(transport.TTHeader), client.WithMetaHandler(transmeta.ClientTTHeaderHandler))
+	authCli, err = authservice.NewClient(
+		"auth",
+		client.WithResolver(r),
+		client.WithTransportProtocol(transport.TTHeader),
+		client.WithMetaHandler(transmeta.ClientTTHeaderHandler))
 	if err != nil {
 		panic(err)
 	}

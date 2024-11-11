@@ -29,7 +29,7 @@ func (ctrl *Controller[T]) NoDataJSON(code int64) {
 }
 
 // WithDataJSON parse with data to json and return
-func (ctrl *Controller[T]) WithDataJSON(code int64, data interface{}) {
+func (ctrl *Controller[T]) WithDataJSON(code int64, data any) {
 	ctrl.Response.SetWithData(code, data)
 	ctrl.c.JSON(http.StatusOK, ctrl.Response)
 }

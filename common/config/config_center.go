@@ -20,6 +20,5 @@ func InitConfigClient(serviceName string, key string, uniqueId int64, etcdAddr s
 		}
 
 	})
-
 	return suite
 }

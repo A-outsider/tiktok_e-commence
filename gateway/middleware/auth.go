@@ -1,82 +1,70 @@
 package middleware
 
-import (
-	"context"
-	"errors"
-	"github.com/cloudwego/hertz/pkg/app"
-	"gomall/gateway/types/resp"
-	"gomall/gateway/utils/token"
-	"net/http"
-	"strings"
-
-	"github.com/golang-jwt/jwt/v5"
-)
-
 // Parse 宽松认证
-func Parse() app.HandlerFunc {
-	return func(c context.Context, ctx *app.RequestContext) {
-		tokenString, _ := getToken(ctx)
-
-		// 解析并校验Token
-		claims, _ := token.ParseToken(tokenString)
-		if claims.UserId != 0 {
-			ctx.Set("userId", claims.UserId)
-		}
-		ctx.Next(c)
-	}
-}
-
-// 验证用户是否登录的中间件 -- 双token
-func Auth() app.HandlerFunc {
-	return func(c context.Context, ctx *app.RequestContext) {
-		res := new(resp.Response)
-		res.SetNoData(resp.CodeSuccess)
-
-		// 读取验证token
-		tokenString, ok := getToken(ctx)
-		if !ok {
-			res.SetNoData(resp.CodeNotLogin)
-			ctx.JSON(http.StatusOK, res)
-			ctx.Abort()
-			return
-		}
-
-		// 校验token信息
-		claims, err := token.ParseToken(tokenString)
-		if err != nil {
-			if errors.Is(err, jwt.ErrTokenMalformed) {
-				res.SetNoData(resp.CodeInvalidTokenForm)
-				ctx.JSON(http.StatusOK, res)
-				ctx.Abort()
-				return
-			}
-
-			// 提示需要刷新token
-			if errors.Is(err, jwt.ErrTokenExpired) && claims.TokenType == 0 {
-				res.SetNoData(resp.CodeInvalidTokenExpired)
-				ctx.JSON(http.StatusOK, res)
-				ctx.Abort()
-				return
-			}
-
-			res.SetNoData(resp.CodeInvalidToken)
-			ctx.JSON(http.StatusOK, res)
-			ctx.Abort()
-			return
-		}
-		// 存储用户信息
-		ctx.Set("userId", claims.UserId)
-		ctx.Next(c)
-	}
-}
-
-func getToken(c *app.RequestContext) (string, bool) {
-	tokenString := c.GetHeader("Authorization")
-
-	if !strings.HasPrefix(string(tokenString), "Bearer ") {
-		return "", false
-	}
-
-	tokenString = []byte(strings.TrimPrefix(string(tokenString), "Bearer "))
-	return string(tokenString), true
-}
+//func Parse() app.HandlerFunc {
+//	return func(c context.Context, ctx *app.RequestContext) {
+//		tokenString, _ := getToken(ctx)
+//
+//		// 解析并校验Token
+//		claims, _ := token.ParseToken(tokenString)
+//		if claims.UserId != 0 {
+//			ctx.Set("userId", claims.UserId)
+//		}
+//		ctx.Next(c)
+//	}
+//}
+//
+//// 验证用户是否登录的中间件 -- 双token
+//func Auth() app.HandlerFunc {
+//	return func(c context.Context, ctx *app.RequestContext) {
+//		res := new(resp.Response)
+//		res.SetNoData(resp.CodeSuccess)
+//
+//		// 读取验证token
+//		tokenString, ok := getToken(ctx)
+//		if !ok {
+//			res.SetNoData(resp.CodeNotLogin)
+//			ctx.JSON(http.StatusOK, res)
+//			ctx.Abort()
+//			return
+//		}
+//
+//		// 校验token信息
+//		claims, err := token.ParseToken(tokenString)
+//		if err != nil {
+//			if errors.Is(err, jwt.ErrTokenMalformed) {
+//				res.SetNoData(resp.CodeInvalidTokenForm)
+//				ctx.JSON(http.StatusOK, res)
+//				ctx.Abort()
+//				return
+//			}
+//
+//			// 提示需要刷新token
+//			if errors.Is(err, jwt.ErrTokenExpired) && claims.TokenType == 0 {
+//				res.SetNoData(resp.CodeInvalidTokenExpired)
+//				ctx.JSON(http.StatusOK, res)
+//				ctx.Abort()
+//				return
+//			}
+//
+//			res.SetNoData(resp.CodeInvalidToken)
+//			ctx.JSON(http.StatusOK, res)
+//			ctx.Abort()
+//			return
+//		}
+//		// 存储用户信息
+//		ctx.Set("userId", claims.UserId)
+//		ctx.Next(c)
+//	}
+//}
+//
+//func getToken(c *app.RequestContext) (string, bool) {
+//	tokenString := c.GetHeader("Authorization")
+//
+//	if !strings.HasPrefix(string(tokenString), "Bearer ") {
+//		return "", false
+//	}
+//
+//	tokenString = []byte(strings.TrimPrefix(string(tokenString), "Bearer "))
+//	return string(tokenString), true
+//}

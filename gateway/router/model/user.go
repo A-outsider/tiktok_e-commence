@@ -5,6 +5,5 @@ import (
 )
 
 func RegisterUser(r *route.RouterGroup) {
-	u := r.Group("/user")
-	u.GET("ping")
+
 }

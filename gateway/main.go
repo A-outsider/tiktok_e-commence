@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	// 加载配置 TODO
+	// 加载配置
 	cc.InitConfigClient(config.ServerName, config.ServerName, config.MID, config.EtcdAddr, config.GetConf())
 
 	// 初始化日志
@@ -26,7 +26,7 @@ func main() {
 	)
 	defer p.Shutdown(context.Background())
 
-	// 服务发现 TODO
+	// 服务发现
 	rpc.Init()
 
 	// 启动路由

@@ -1,9 +1,8 @@
 package token
 
 //
-//import (
-//	"dream_program/config"
 //
+//import (
 //	"github.com/golang-jwt/jwt/v5"
 //	"go.uber.org/zap"
 //)

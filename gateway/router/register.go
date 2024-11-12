@@ -2,6 +2,7 @@ package router
 
 import (
 	"context"
+	"fmt"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	hconfig "github.com/cloudwego/hertz/pkg/common/config"
@@ -18,7 +19,7 @@ import (
 func InitRouter() *server.Hertz {
 
 	// 设置配置
-	opts := []hconfig.Option{server.WithHostPorts(config.GetConf().Server.Addr)}
+	opts := []hconfig.Option{server.WithHostPorts(fmt.Sprintf("%s:%d", config.GetConf().Service.Host, config.GetConf().Service.Port))}
 
 	// 初始化链路追踪配置
 	tracer, cfg := hertztracing.NewServerTracer()

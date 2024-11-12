@@ -46,7 +46,7 @@ func main() {
 	defer p.Shutdown(context.Background())
 
 	// 服务注册
-	addr, _ := net.ResolveTCPAddr("tcp", config.GetConf().Server.Addr)
+	addr, _ := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:%d", config.GetConf().Service.Host, config.GetConf().Service.Port))
 
 	retryConfig := retry.NewRetryConfig( // 重试策略
 		retry.WithMaxAttemptTimes(10),

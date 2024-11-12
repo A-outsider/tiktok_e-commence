@@ -15,7 +15,6 @@ import (
 
 // LogInit 初始化日志系统
 
-// TODO 写入配置文件
 const fileMaxAge = 30
 const fileMaxBackups = 60
 const fileMaxSize = 200

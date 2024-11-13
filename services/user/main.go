@@ -28,17 +28,6 @@ func main() {
 	// 初始化日志
 	logs.LogInit(config.ServerName)
 
-	// otel 版链路追踪
-	//shutdown, err := database.InitTracer(config.ServerName)
-	//if err != nil {
-	//	log.Panic(err)
-	//}
-	//defer func() {
-	//	if err = shutdown(context.Background()); err != nil {
-	//		log.Panicf("Error shutting down tracer provider: %v\n", err)
-	//	}
-	//}()
-
 	// kitex 版链路追踪 					TODO 未测试
 	p := provider.NewOpenTelemetryProvider(
 		provider.WithServiceName(config.ServerName), // 配置服务名称

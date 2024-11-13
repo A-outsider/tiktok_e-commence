@@ -126,3 +126,55 @@
 {"level":"info","ts":1731495064.9311068,"caller":"zap@v1.1.0/logger.go:94","msg":"HERTZ: Received signal: interrupt\n"}
 {"level":"info","ts":1731495064.9311068,"caller":"zap@v1.1.0/logger.go:94","msg":"HERTZ: Begin graceful shutdown, wait at most num=5 seconds..."}
 {"level":"error","ts":1731495064.9311068,"caller":"zap@v1.1.0/logger.go:98","msg":"HERTZ: Error=accept tcp 127.0.0.1:8080: use of closed network connection"}
+{"level":"debug","ts":1731496960.9577484,"caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=GET    absolutePath=/api/v1/ping              --> handlerName=gomall/gateway/router.registerRouter.func1 (num=5 handlers)"}
+{"level":"debug","ts":1731496960.9582598,"caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/register     --> handlerName=gomall/gateway/controller/auth.(*Api).Register-fm (num=5 handlers)"}
+{"level":"debug","ts":1731496960.9588108,"caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/login        --> handlerName=gomall/gateway/controller/auth.(*Api).LoginByCode-fm (num=5 handlers)"}
+{"level":"debug","ts":1731496960.9588108,"caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/login/password --> handlerName=gomall/gateway/controller/auth.(*Api).LoginByPwd-fm (num=5 handlers)"}
+{"level":"debug","ts":1731496960.9588108,"caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/phone        --> handlerName=gomall/gateway/controller/auth.(*Api).SendPhoneCode-fm (num=5 handlers)"}
+{"level":"debug","ts":1731496960.9588108,"caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/email        --> handlerName=gomall/gateway/controller/auth.(*Api).SendEmailCode-fm (num=5 handlers)"}
+{"level":"debug","ts":1731496960.9588108,"caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/refresh_token --> handlerName=gomall/gateway/controller/auth.(*Api).RefreshToken-fm (num=5 handlers)"}
+{"level":"debug","ts":1731496960.9588108,"caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/photo_captcha --> handlerName=gomall/gateway/controller/auth.(*Api).ShowPhotoCaptcha-fm (num=5 handlers)"}
+{"level":"info","ts":1731496960.9832988,"caller":"zap@v1.1.0/logger.go:170","msg":"HERTZ: Using network library=standard"}
+{"level":"info","ts":1731496960.983804,"caller":"zap@v1.1.0/logger.go:170","msg":"HERTZ: HTTP server listening on address=127.0.0.1:8080"}
+{"level":"info","ts":1731497268.7520597,"caller":"zap@v1.1.0/logger.go:170","msg":"HERTZ: Received signal: interrupt\n"}
+{"level":"info","ts":1731497268.7520597,"caller":"zap@v1.1.0/logger.go:170","msg":"HERTZ: Begin graceful shutdown, wait at most num=5 seconds..."}
+{"level":"error","ts":1731497268.7520597,"caller":"zap@v1.1.0/logger.go:182","msg":"HERTZ: Error=accept tcp 127.0.0.1:8080: use of closed network connection"}
+{"level":"DEBUG","ts":"2024-11-13T19:31:31.949+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=GET    absolutePath=/api/v1/ping              --> handlerName=gomall/gateway/router.registerRouter.func1 (num=5 handlers)"}
+{"level":"DEBUG","ts":"2024-11-13T19:31:31.976+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/register     --> handlerName=gomall/gateway/controller/auth.(*Api).Register-fm (num=5 handlers)"}
+{"level":"DEBUG","ts":"2024-11-13T19:31:31.976+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/login        --> handlerName=gomall/gateway/controller/auth.(*Api).LoginByCode-fm (num=5 handlers)"}
+{"level":"DEBUG","ts":"2024-11-13T19:31:31.976+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/login/password --> handlerName=gomall/gateway/controller/auth.(*Api).LoginByPwd-fm (num=5 handlers)"}
+{"level":"DEBUG","ts":"2024-11-13T19:31:31.976+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/phone        --> handlerName=gomall/gateway/controller/auth.(*Api).SendPhoneCode-fm (num=5 handlers)"}
+{"level":"DEBUG","ts":"2024-11-13T19:31:31.976+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/email        --> handlerName=gomall/gateway/controller/auth.(*Api).SendEmailCode-fm (num=5 handlers)"}
+{"level":"DEBUG","ts":"2024-11-13T19:31:31.976+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/refresh_token --> handlerName=gomall/gateway/controller/auth.(*Api).RefreshToken-fm (num=5 handlers)"}
+{"level":"DEBUG","ts":"2024-11-13T19:31:31.976+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/photo_captcha --> handlerName=gomall/gateway/controller/auth.(*Api).ShowPhotoCaptcha-fm (num=5 handlers)"}
+{"level":"INFO","ts":"2024-11-13T19:31:31.976+0800","caller":"zap@v1.1.0/logger.go:170","msg":"HERTZ: Using network library=standard"}
+{"level":"INFO","ts":"2024-11-13T19:31:31.976+0800","caller":"zap@v1.1.0/logger.go:170","msg":"HERTZ: HTTP server listening on address=127.0.0.1:8080"}
+{"level":"INFO","ts":"2024-11-13T19:32:17.426+0800","caller":"zap@v1.1.0/logger.go:170","msg":"HERTZ: Received signal: interrupt\n"}
+{"level":"INFO","ts":"2024-11-13T19:32:17.426+0800","caller":"zap@v1.1.0/logger.go:170","msg":"HERTZ: Begin graceful shutdown, wait at most num=5 seconds..."}
+{"level":"ERROR","ts":"2024-11-13T19:32:17.426+0800","caller":"zap@v1.1.0/logger.go:182","msg":"HERTZ: Error=accept tcp 127.0.0.1:8080: use of closed network connection"}
+{"level":"DEBUG","ts":"2024-11-13T19:32:30.530+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=GET    absolutePath=/api/v1/ping              --> handlerName=gomall/gateway/router.registerRouter.func1 (num=5 handlers)"}
+{"level":"DEBUG","ts":"2024-11-13T19:32:30.546+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/register     --> handlerName=gomall/gateway/controller/auth.(*Api).Register-fm (num=5 handlers)"}
+{"level":"DEBUG","ts":"2024-11-13T19:32:30.546+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/login/phone_code --> handlerName=gomall/gateway/controller/auth.(*Api).LoginByCode-fm (num=5 handlers)"}
+{"level":"DEBUG","ts":"2024-11-13T19:32:30.546+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/login/password --> handlerName=gomall/gateway/controller/auth.(*Api).LoginByPwd-fm (num=5 handlers)"}
+{"level":"DEBUG","ts":"2024-11-13T19:32:30.546+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/phone        --> handlerName=gomall/gateway/controller/auth.(*Api).SendPhoneCode-fm (num=5 handlers)"}
+{"level":"DEBUG","ts":"2024-11-13T19:32:30.546+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/email        --> handlerName=gomall/gateway/controller/auth.(*Api).SendEmailCode-fm (num=5 handlers)"}
+{"level":"DEBUG","ts":"2024-11-13T19:32:30.546+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/refresh_token --> handlerName=gomall/gateway/controller/auth.(*Api).RefreshToken-fm (num=5 handlers)"}
+{"level":"DEBUG","ts":"2024-11-13T19:32:30.546+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/photo_captcha --> handlerName=gomall/gateway/controller/auth.(*Api).ShowPhotoCaptcha-fm (num=5 handlers)"}
+{"level":"INFO","ts":"2024-11-13T19:32:30.546+0800","caller":"zap@v1.1.0/logger.go:170","msg":"HERTZ: Using network library=standard"}
+{"level":"INFO","ts":"2024-11-13T19:32:30.546+0800","caller":"zap@v1.1.0/logger.go:170","msg":"HERTZ: HTTP server listening on address=127.0.0.1:8080"}
+{"level":"INFO","ts":"2024-11-13T19:33:27.711+0800","caller":"zap@v1.1.0/logger.go:170","msg":"HERTZ: Received signal: interrupt\n"}
+{"level":"INFO","ts":"2024-11-13T19:33:27.711+0800","caller":"zap@v1.1.0/logger.go:170","msg":"HERTZ: Begin graceful shutdown, wait at most num=5 seconds..."}
+{"level":"ERROR","ts":"2024-11-13T19:33:27.711+0800","caller":"zap@v1.1.0/logger.go:182","msg":"HERTZ: Error=accept tcp 127.0.0.1:8080: use of closed network connection"}
+{"level":"DEBUG","ts":"2024-11-13T19:33:34.312+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=GET    absolutePath=/api/v1/ping              --> handlerName=gomall/gateway/router.registerRouter.func1 (num=5 handlers)"}
+{"level":"DEBUG","ts":"2024-11-13T19:33:34.338+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/register     --> handlerName=gomall/gateway/controller/auth.(*Api).Register-fm (num=5 handlers)"}
+{"level":"DEBUG","ts":"2024-11-13T19:33:34.338+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/login/phone_code --> handlerName=gomall/gateway/controller/auth.(*Api).LoginByCode-fm (num=5 handlers)"}
+{"level":"DEBUG","ts":"2024-11-13T19:33:34.338+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/login/password --> handlerName=gomall/gateway/controller/auth.(*Api).LoginByPwd-fm (num=5 handlers)"}
+{"level":"DEBUG","ts":"2024-11-13T19:33:34.338+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/phone        --> handlerName=gomall/gateway/controller/auth.(*Api).SendPhoneCode-fm (num=5 handlers)"}
+{"level":"DEBUG","ts":"2024-11-13T19:33:34.338+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/email        --> handlerName=gomall/gateway/controller/auth.(*Api).SendEmailCode-fm (num=5 handlers)"}
+{"level":"DEBUG","ts":"2024-11-13T19:33:34.338+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/refresh_token --> handlerName=gomall/gateway/controller/auth.(*Api).RefreshToken-fm (num=5 handlers)"}
+{"level":"DEBUG","ts":"2024-11-13T19:33:34.338+0800","caller":"zap@v1.1.0/logger.go:166","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/photo_captcha --> handlerName=gomall/gateway/controller/auth.(*Api).ShowPhotoCaptcha-fm (num=5 handlers)"}
+{"level":"INFO","ts":"2024-11-13T19:33:34.339+0800","caller":"zap@v1.1.0/logger.go:170","msg":"HERTZ: Using network library=standard"}
+{"level":"INFO","ts":"2024-11-13T19:33:34.339+0800","caller":"zap@v1.1.0/logger.go:170","msg":"HERTZ: HTTP server listening on address=127.0.0.1:8080"}
+{"level":"INFO","ts":"2024-11-13T19:33:46.124+0800","caller":"zap@v1.1.0/logger.go:170","msg":"HERTZ: Received signal: interrupt\n"}
+{"level":"INFO","ts":"2024-11-13T19:33:46.124+0800","caller":"zap@v1.1.0/logger.go:170","msg":"HERTZ: Begin graceful shutdown, wait at most num=5 seconds..."}
+{"level":"ERROR","ts":"2024-11-13T19:33:46.124+0800","caller":"zap@v1.1.0/logger.go:182","msg":"HERTZ: Error=accept tcp 127.0.0.1:8080: use of closed network connection"}

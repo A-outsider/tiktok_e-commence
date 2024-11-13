@@ -9,7 +9,7 @@ func RegisterAuth(r *route.RouterGroup) {
 	authApi := auth.NewApi()
 
 	r.POST("/register", authApi.Register)
-	r.POST("/login", authApi.LoginByCode)
+	r.POST("/login/phone_code", authApi.LoginByCode)
 	r.POST("/login/password", authApi.LoginByPwd)
 
 	r.POST("/phone", authApi.SendPhoneCode)

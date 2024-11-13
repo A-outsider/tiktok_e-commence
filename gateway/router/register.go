@@ -9,8 +9,8 @@ import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/cloudwego/hertz/pkg/common/utils"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
+	"github.com/hertz-contrib/logger/accesslog"
 	hertztracing "github.com/hertz-contrib/obs-opentelemetry/tracing"
-	"gomall/common/logs"
 	"gomall/gateway/config"
 	"gomall/gateway/middleware"
 	"gomall/gateway/router/model"
@@ -30,7 +30,7 @@ func InitRouter() *server.Hertz {
 	hlog.SetLevel(hlog.LevelDebug) // 可根据需求调整
 
 	h := server.Default(opts...)
-	h.Use(hertztracing.ServerMiddleware(cfg), logs.AccessLog()) // 设置链路追踪和日志
+	h.Use(hertztracing.ServerMiddleware(cfg), accesslog.New()) // 设置链路追踪和日志
 
 	registerRouter(h)
 

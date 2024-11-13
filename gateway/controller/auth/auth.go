@@ -27,7 +27,7 @@ func (api *Api) LoginByCode(ctx context.Context, c *app.RequestContext) {
 
 	// 参数绑定
 	ctrl := controller.NewCtrl[req.LoginByCodeReq](c)
-	if err := c.Bind(ctrl.Request); err != nil {
+	if err := c.BindForm(ctrl.Request); err != nil {
 		ctrl.NoDataJSON(resp.CodeInvalidParams)
 		return
 	}
@@ -41,9 +41,14 @@ func (api *Api) LoginByCode(ctx context.Context, c *app.RequestContext) {
 	}
 
 	// 调用 RPC 方法
-	result, err := api.client.LoginByCode(ctx, kitexReq)
-	if err != nil {
+	result, _ := api.client.LoginByCode(ctx, kitexReq)
+	if result == nil || result.GetStatusCode() == 0 {
 		ctrl.NoDataJSON(resp.CodeServerBusy)
+		return
+	}
+
+	if result.GetStatusCode() != resp.CodeSuccess {
+		ctrl.NoDataJSON(result.GetStatusCode())
 		return
 	}
 
@@ -62,7 +67,7 @@ func (api *Api) LoginByCode(ctx context.Context, c *app.RequestContext) {
 func (api *Api) LoginByPwd(ctx context.Context, c *app.RequestContext) {
 	ctrl := controller.NewCtrl[req.LoginByPwdReq](c)
 
-	if err := c.Bind(ctrl.Request); err != nil {
+	if err := c.BindForm(ctrl.Request); err != nil {
 		ctrl.NoDataJSON(resp.CodeInvalidParams)
 		return
 	}
@@ -74,9 +79,14 @@ func (api *Api) LoginByPwd(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	result, err := api.client.LoginByPwd(ctx, kitexReq)
-	if err != nil {
+	result, _ := api.client.LoginByPwd(ctx, kitexReq)
+	if result == nil || result.GetStatusCode() == 0 {
 		ctrl.NoDataJSON(resp.CodeServerBusy)
+		return
+	}
+
+	if result.GetStatusCode() != resp.CodeSuccess {
+		ctrl.NoDataJSON(result.GetStatusCode())
 		return
 	}
 
@@ -94,7 +104,7 @@ func (api *Api) LoginByPwd(ctx context.Context, c *app.RequestContext) {
 func (api *Api) Register(ctx context.Context, c *app.RequestContext) {
 	ctrl := controller.NewCtrl[req.RegisterReq](c)
 
-	if err := c.Bind(ctrl.Request); err != nil {
+	if err := c.BindForm(ctrl.Request); err != nil {
 		ctrl.NoDataJSON(resp.CodeInvalidParams)
 		return
 	}
@@ -106,9 +116,14 @@ func (api *Api) Register(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	_, err := api.client.Register(ctx, kitexReq)
-	if err != nil {
+	result, _ := api.client.Register(ctx, kitexReq)
+	if result == nil || result.GetStatusCode() == 0 {
 		ctrl.NoDataJSON(resp.CodeServerBusy)
+		return
+	}
+
+	if result.GetStatusCode() != resp.CodeSuccess {
+		ctrl.NoDataJSON(result.GetStatusCode())
 		return
 	}
 
@@ -119,7 +134,7 @@ func (api *Api) Register(ctx context.Context, c *app.RequestContext) {
 func (api *Api) SendPhoneCode(ctx context.Context, c *app.RequestContext) {
 	ctrl := controller.NewCtrl[req.SendPhoneCodeReq](c)
 
-	if err := c.Bind(ctrl.Request); err != nil {
+	if err := c.BindForm(ctrl.Request); err != nil {
 		ctrl.NoDataJSON(resp.CodeInvalidParams)
 		return
 	}
@@ -131,9 +146,14 @@ func (api *Api) SendPhoneCode(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	_, err := api.client.SendPhoneCode(ctx, kitexReq)
-	if err != nil {
+	result, _ := api.client.SendPhoneCode(ctx, kitexReq)
+	if result == nil || result.GetStatusCode() == 0 {
 		ctrl.NoDataJSON(resp.CodeServerBusy)
+		return
+	}
+
+	if result.GetStatusCode() != resp.CodeSuccess {
+		ctrl.NoDataJSON(result.GetStatusCode())
 		return
 	}
 
@@ -144,7 +164,7 @@ func (api *Api) SendPhoneCode(ctx context.Context, c *app.RequestContext) {
 func (api *Api) SendEmailCode(ctx context.Context, c *app.RequestContext) {
 	ctrl := controller.NewCtrl[req.SendEmailCodeReq](c)
 
-	if err := c.Bind(ctrl.Request); err != nil {
+	if err := c.BindForm(ctrl.Request); err != nil {
 		ctrl.NoDataJSON(resp.CodeInvalidParams)
 		return
 	}
@@ -156,9 +176,14 @@ func (api *Api) SendEmailCode(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	_, err := api.client.SendEmailCode(ctx, kitexReq)
-	if err != nil {
+	result, _ := api.client.SendEmailCode(ctx, kitexReq)
+	if result == nil || result.GetStatusCode() == 0 {
 		ctrl.NoDataJSON(resp.CodeServerBusy)
+		return
+	}
+
+	if result.GetStatusCode() != resp.CodeSuccess {
+		ctrl.NoDataJSON(result.GetStatusCode())
 		return
 	}
 
@@ -169,7 +194,7 @@ func (api *Api) SendEmailCode(ctx context.Context, c *app.RequestContext) {
 func (api *Api) RefreshToken(ctx context.Context, c *app.RequestContext) {
 	ctrl := controller.NewCtrl[req.RefreshTokenReq](c)
 
-	if err := c.Bind(ctrl.Request); err != nil {
+	if err := c.BindForm(ctrl.Request); err != nil {
 		ctrl.NoDataJSON(resp.CodeInvalidParams)
 		return
 	}
@@ -181,9 +206,14 @@ func (api *Api) RefreshToken(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	result, err := api.client.RefreshToken(ctx, kitexReq)
-	if err != nil {
+	result, _ := api.client.RefreshToken(ctx, kitexReq)
+	if result == nil || result.GetStatusCode() == 0 {
 		ctrl.NoDataJSON(resp.CodeServerBusy)
+		return
+	}
+
+	if result.GetStatusCode() != resp.CodeSuccess {
+		ctrl.NoDataJSON(result.GetStatusCode())
 		return
 	}
 
@@ -201,9 +231,14 @@ func (api *Api) RefreshToken(ctx context.Context, c *app.RequestContext) {
 func (api *Api) ShowPhotoCaptcha(ctx context.Context, c *app.RequestContext) {
 	ctrl := controller.NewCtrl[struct{}](c)
 
-	result, err := api.client.ShowPhotoCaptcha(ctx, nil)
-	if err != nil {
+	result, _ := api.client.ShowPhotoCaptcha(ctx, nil)
+	if result == nil || result.GetStatusCode() == 0 {
 		ctrl.NoDataJSON(resp.CodeServerBusy)
+		return
+	}
+
+	if result.GetStatusCode() != resp.CodeSuccess {
+		ctrl.NoDataJSON(result.GetStatusCode())
 		return
 	}
 

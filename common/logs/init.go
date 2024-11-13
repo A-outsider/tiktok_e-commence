@@ -1,8 +1,6 @@
 package logs
 
 import (
-	"context"
-	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	hertzzap "github.com/hertz-contrib/logger/zap"
 	"github.com/natefinch/lumberjack"
@@ -10,7 +8,6 @@ import (
 	"go.uber.org/zap/zapcore"
 	"os"
 	"path/filepath"
-	"time"
 )
 
 // LogInit 初始化日志系统
@@ -64,24 +61,10 @@ func LogInit(serviceName string) {
 		hertzzap.WithZapOptions(zap.AddCaller(), zap.AddCallerSkip(1)),
 	)
 
-	hertzZapLogger.SetOutput(writeSyncer) // 设置输出到日志中
+	//hertzZapLogger.SetOutput(writeSyncer) // 设置输出到日志中
 
 	hlog.SetLogger(hertzZapLogger) // 替换 hlog 的默认 logger 为 Hertz zap logger
 
 	_ = zapLogger.Sync()
 	return
-}
-
-// AccessLog 是一个记录访问日志的中间件，类似于 gin.Logger
-func AccessLog() app.HandlerFunc {
-	return func(ctx context.Context, c *app.RequestContext) {
-		start := time.Now()
-		c.Next(ctx) // 执行请求
-
-		// 记录访问日志
-		latency := time.Since(start).Microseconds()
-		hlog.CtxInfof(ctx, "status=%d cost=%d method=%s full_path=%s client_ip=%s host=%s",
-			c.Response.StatusCode(), latency,
-			c.Request.Header.Method(), c.Request.URI().PathOriginal(), c.ClientIP(), c.Request.Host())
-	}
 }

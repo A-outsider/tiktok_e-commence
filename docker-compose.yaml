@@ -32,27 +32,18 @@ services:
       REDIS_PASSWORD: lijialang666
     command: ["redis-server", "--requirepass", "lijialang666"]
 
-
-
   jaeger:
-    image: jaegertracing/all-in-one:1.55
+    image: jaegertracing/all-in-one:1.58
     container_name: jaeger
     environment:
       - COLLECTOR_ZIPKIN_HOST_PORT=:9411
     ports:
-      - "6831:6831/udp"
-      - "6832:6832/udp"
-      - "5778:5778"
       - "16686:16686"
-      - "4317:4317"
-      - "4318:4318"
-      - "14250:14250"
-      - "14268:14268"
-      - "14269:14269"
-      - "9411:9411"
+      - "24317:4317"
     volumes:
       - ./data/jaeger/logs:/var/log/jaeger       # 挂载日志目录
       - ./data/jaeger/data:/var/lib/jaeger       # 挂载数据目录
+
 
   etcd:
     image: bitnami/etcd:latest

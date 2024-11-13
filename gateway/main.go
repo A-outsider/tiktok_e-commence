@@ -23,6 +23,7 @@ func main() {
 		provider.WithServiceName(config.ServerName), // 配置服务名称
 		provider.WithExportEndpoint(fmt.Sprintf("%s:%d", config.GetConf().Jaeger.Host, config.GetConf().Jaeger.Port)), // Jaeger导出地址
 		provider.WithInsecure(),
+		provider.WithEnableMetrics(false),
 	)
 	defer p.Shutdown(context.Background())
 

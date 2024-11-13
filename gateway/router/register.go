@@ -14,6 +14,7 @@ import (
 	"gomall/gateway/config"
 	"gomall/gateway/middleware"
 	"gomall/gateway/router/model"
+	"log"
 )
 
 func InitRouter() *server.Hertz {
@@ -33,6 +34,7 @@ func InitRouter() *server.Hertz {
 
 	registerRouter(h)
 
+	log.Printf("server run at %s:%d\n", config.GetConf().Service.Host, config.GetConf().Service.Port)
 	return h
 }
 

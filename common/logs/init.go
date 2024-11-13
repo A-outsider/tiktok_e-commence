@@ -44,26 +44,28 @@ func LogInit(serviceName string) {
 	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 
-	// 创建 zap core
+	// 创建 consoleEncoder 和 JSON Encoder
 	consoleEncoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
+	jsonEncoder := zapcore.NewJSONEncoder(encoderConfig)
+
+	// 将日志同时输出到文件和控制台
 	core := zapcore.NewTee(
-		zapcore.NewCore(zapcore.NewJSONEncoder(encoderConfig), writeSyncer, zapcore.InfoLevel),
-		zapcore.NewCore(consoleEncoder, zapcore.Lock(os.Stdout), zapcore.DebugLevel),
+		zapcore.NewCore(jsonEncoder, writeSyncer, zapcore.InfoLevel),                // 文件输出
+		zapcore.NewCore(consoleEncoder, zapcore.Lock(os.Stdout), zapcore.InfoLevel), // 控制台输出
 	)
 
 	// 创建 zap logger
 	zapLogger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
-	defer zapLogger.Sync()
-
 	zap.ReplaceGlobals(zapLogger)
 
 	// 使用 zapLogger 创建 hertzZapLogger
 	hertzZapLogger := hertzzap.NewLogger(hertzzap.WithZapOptions(zap.AddCaller()))
-	hertzZapLogger.SetOutput(writeSyncer) // 同时设置输出位置
 
-	// 替换 hlog 的默认 logger 为 Hertz zap logger
-	hlog.SetLogger(hertzZapLogger)
+	//hertzZapLogger.SetOutput(writeSyncer)                // 设置输出到日志中
 
+	hlog.SetLogger(hertzZapLogger) // 替换 hlog 的默认 logger 为 Hertz zap logger
+
+	_ = zapLogger.Sync()
 	return
 }
 

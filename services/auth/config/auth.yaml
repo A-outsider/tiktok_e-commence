@@ -1,11 +1,11 @@
 service:
   host : 127.0.0.1
-  #host : 192.168.227.172
+  #host : 124.222.131.109
   port : 9001
 
 
 mysql:
-  host: 192.168.227.172
+  host: 124.222.131.109
   port: 23306
   dbname: mall
   username: root
@@ -14,18 +14,19 @@ mysql:
 
 
 redis:
-  host: 192.168.227.172
+  host: 124.222.131.109
   port: 26379
   password: lijialang666
 
 jaeger:
-  host: 192.168.134.128
+  host: 124.222.131.109
   port: 24318
 
 
 # 业务
 
 phone:
+  sendInterval: 60s   # 发送间隔
 
 
 email:
@@ -35,7 +36,8 @@ email:
   name: tiktok_mall
   password: lijialang666
   port: 465
-  expiration_time : 300s   # 邮箱有效期 300 秒
+  expiration_time: 300s   # 邮箱有效期 300 秒
+  sendInterval: 60s   # 发送间隔
 
 
 photoCaptcha:
@@ -46,3 +48,15 @@ photoCaptcha:
   dotCount: 80        # 图片背景中的混淆点数量
   expire: 180s
 
+
+jwt:
+  accessExpireTime: 60m
+  refreshExpireTime: 168h
+  accessSecret: tiktok_mall_access
+  refreshSecret:  tiktok_mall_refresh
+  issuer: zty
+
+
+password:
+  ErrorLimit: 8   # 密码锁定次数
+  ErrorLockTime: 30m # 锁定时间

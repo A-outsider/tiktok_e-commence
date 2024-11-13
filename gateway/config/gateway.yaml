@@ -1,11 +1,11 @@
 service:
   host : 127.0.0.1
-  #host : 192.168.227.172
+  #host : 124.222.131.109
   port : 28080
 
 
 mysql:
-  host: 192.168.227.172
+  host: 124.222.131.109
   port: 23306
   dbname: mall
   username: root
@@ -14,7 +14,7 @@ mysql:
 
 
 redis:
-  host: 192.168.227.172
+  host: 124.222.131.109
   port: 26379
   password: lijialang666
 
@@ -39,7 +39,5 @@ visitLimit:
   rateLimitInterval: 0.5s # 令牌投放速率
   rateLimitCap: 30  # 限流的最大容量
 
-password:
-  ErrorLimit: 8   # 密码锁定次数
-  ErrorLockTime: 30m # 锁定时间
+
 

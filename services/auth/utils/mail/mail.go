@@ -2,7 +2,7 @@ package mail
 
 import (
 	"crypto/tls"
-	"dream_program/config"
+	"gomall/services/auth/config"
 
 	"encoding/base64"
 	"fmt"
@@ -111,7 +111,7 @@ func SendCaptcha(email string, code string) error {
 	// 定义收件人
 	mailTo := email
 	// 邮件主题
-	subject := "=?UTF-8?B?" + base64.StdEncoding.EncodeToString([]byte("xxx-验证码")) + "?=" // 运用base64解决中文乱码
+	subject := "=?UTF-8?B?" + base64.StdEncoding.EncodeToString([]byte("TiktokMall-验证码")) + "?=" // 运用base64解决中文乱码
 	// 邮件正文
 	body := "<h3>尊敬的用户：</h3><p>您好! 您的验证码是 <span style='color:red'> " + code + "</span>，五分钟内有效，祝您生活愉快！</p>"
 	return Send(mailTo, subject, body)
@@ -125,7 +125,7 @@ func SendCaptcha(email string, code string) error {
  * return: 发送失败时的错误信息
  */
 func Send(email string, subject string, body string) error {
-	emailConf := config.Get().Email
+	emailConf := config.GetConf().Email
 	user, pass, host, port, addresses :=
 		emailConf.Email,
 		emailConf.Password,

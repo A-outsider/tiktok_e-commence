@@ -1,0 +1,2 @@
+{"level":"INFO","ts":"2024-11-11T09:52:06.335+0800","caller":"test/main.go:8","msg":"hello world"}
+{"level":"ERROR","ts":"2024-11-11T10:44:20.099+0800","caller":"test/main.go:8","msg":"hello world"}

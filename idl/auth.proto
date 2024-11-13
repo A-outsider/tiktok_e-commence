@@ -4,22 +4,86 @@ syntax="proto3";
 option go_package="auth;rpcAuth";
 
 service AuthService {
-  rpc DeliverTokenByRPC(DeliverTokenReq) returns (DeliveryResp) {}
-  rpc VerifyTokenByRPC(VerifyTokenReq) returns (VerifyResp) {}
+  rpc LoginByCode(LoginByCodeReq) returns (LoginByCodeResp);
+  rpc LoginByPwd(LoginByPwdReq) returns (LoginByPwdResp);
+  rpc Register(RegisterReq) returns (RegisterResp);
+  rpc SendPhoneCode(SendPhoneCodeReq) returns (SendPhoneCodeResp);
+  rpc SendEmailCode(SendEmailCodeReq) returns (SendEmailCodeResp);
+  rpc ShowPhotoCaptcha(ShowPhotoCaptchaReq) returns (ShowPhotoCaptchaResp);
+  rpc RefreshToken(RefreshTokenReq) returns (RefreshTokenResp);
 }
 
-message DeliverTokenReq {
-  int32  user_id= 1;
+
+message LoginByCodeReq {
+  string Phone = 1;
+  string Code = 2;
 }
 
-message VerifyTokenReq {
-  string token = 1;
+message LoginByCodeResp {
+  string Token = 1;
+  string RefreshToken = 2;
+  int64 StatusCode = 3;
 }
 
-message DeliveryResp {
-  string token = 1;
+
+
+message LoginByPwdReq {
+  string Phone = 1;
+  string Password = 2;
+  string CaptchaId = 3;
+  string CaptchaAnswer= 4;
 }
 
-message VerifyResp {
-  bool res = 1;
+message LoginByPwdResp {
+  string Token = 1;
+  string RefreshToken = 2;
+  int64 StatusCode = 3;
 }
+
+message RegisterReq {
+  string Phone = 1;
+  string Password = 2;
+  string AuthCode = 3;
+}
+
+message RegisterResp {
+  int64 StatusCode = 1;
+}
+
+message SendPhoneCodeReq {
+  string Phone = 1;
+}
+
+message SendPhoneCodeResp {
+  int64 StatusCode = 1;
+}
+
+message SendEmailCodeReq {
+  string Email = 1;
+}
+
+message  SendEmailCodeResp {
+  int64 StatusCode = 1;
+}
+
+
+message  ShowPhotoCaptchaReq {
+}
+
+message  ShowPhotoCaptchaResp {
+  string CaptchaId = 1;
+  string CaptchaImg = 2;
+  int64 StatusCode = 3;
+}
+
+message  RefreshTokenReq {
+  string RefreshToken = 1;
+}
+
+message  RefreshTokenResp {
+  string Token = 1;
+  string RefreshToken = 2;
+  int64 StatusCode = 3;
+}
+
+

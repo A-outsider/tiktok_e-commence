@@ -1,5 +1,5 @@
 package config
 
 var (
-	EtcdAddr = "192.168.40.134:9090"
+	EtcdAddr = "124.222.131.109:22379"
 )

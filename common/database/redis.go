@@ -14,7 +14,7 @@ import (
 
 type Redis struct {
 	Host     string `yaml:"host"`
-	Port     string `yaml:"port"`
+	Port     int    `yaml:"port"`
 	Password string `yaml:"password"`
 }
 
@@ -36,7 +36,7 @@ func InitRedis(val any) {
 		log.Panic(fmt.Errorf("error decoding config to Redis struct: %v", err))
 	}
 
-	addr := fmt.Sprintf(r.Host + ":" + r.Port)
+	addr := fmt.Sprintf("%s:%d", r.Host, r.Port)
 	rdb = redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: r.Password,

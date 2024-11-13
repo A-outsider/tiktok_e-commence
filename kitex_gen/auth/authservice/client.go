@@ -11,8 +11,13 @@ import (
 
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.
 type Client interface {
-	DeliverTokenByRPC(ctx context.Context, Req *auth.DeliverTokenReq, callOptions ...callopt.Option) (r *auth.DeliveryResp, err error)
-	VerifyTokenByRPC(ctx context.Context, Req *auth.VerifyTokenReq, callOptions ...callopt.Option) (r *auth.VerifyResp, err error)
+	LoginByCode(ctx context.Context, Req *auth.LoginByCodeReq, callOptions ...callopt.Option) (r *auth.LoginByCodeResp, err error)
+	LoginByPwd(ctx context.Context, Req *auth.LoginByPwdReq, callOptions ...callopt.Option) (r *auth.LoginByPwdResp, err error)
+	Register(ctx context.Context, Req *auth.RegisterReq, callOptions ...callopt.Option) (r *auth.RegisterResp, err error)
+	SendPhoneCode(ctx context.Context, Req *auth.SendPhoneCodeReq, callOptions ...callopt.Option) (r *auth.SendPhoneCodeResp, err error)
+	SendEmailCode(ctx context.Context, Req *auth.SendEmailCodeReq, callOptions ...callopt.Option) (r *auth.SendEmailCodeResp, err error)
+	ShowPhotoCaptcha(ctx context.Context, Req *auth.ShowPhotoCaptchaReq, callOptions ...callopt.Option) (r *auth.ShowPhotoCaptchaResp, err error)
+	RefreshToken(ctx context.Context, Req *auth.RefreshTokenReq, callOptions ...callopt.Option) (r *auth.RefreshTokenResp, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -44,12 +49,37 @@ type kAuthServiceClient struct {
 	*kClient
 }
 
-func (p *kAuthServiceClient) DeliverTokenByRPC(ctx context.Context, Req *auth.DeliverTokenReq, callOptions ...callopt.Option) (r *auth.DeliveryResp, err error) {
+func (p *kAuthServiceClient) LoginByCode(ctx context.Context, Req *auth.LoginByCodeReq, callOptions ...callopt.Option) (r *auth.LoginByCodeResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.DeliverTokenByRPC(ctx, Req)
+	return p.kClient.LoginByCode(ctx, Req)
 }
 
-func (p *kAuthServiceClient) VerifyTokenByRPC(ctx context.Context, Req *auth.VerifyTokenReq, callOptions ...callopt.Option) (r *auth.VerifyResp, err error) {
+func (p *kAuthServiceClient) LoginByPwd(ctx context.Context, Req *auth.LoginByPwdReq, callOptions ...callopt.Option) (r *auth.LoginByPwdResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.VerifyTokenByRPC(ctx, Req)
+	return p.kClient.LoginByPwd(ctx, Req)
+}
+
+func (p *kAuthServiceClient) Register(ctx context.Context, Req *auth.RegisterReq, callOptions ...callopt.Option) (r *auth.RegisterResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.Register(ctx, Req)
+}
+
+func (p *kAuthServiceClient) SendPhoneCode(ctx context.Context, Req *auth.SendPhoneCodeReq, callOptions ...callopt.Option) (r *auth.SendPhoneCodeResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.SendPhoneCode(ctx, Req)
+}
+
+func (p *kAuthServiceClient) SendEmailCode(ctx context.Context, Req *auth.SendEmailCodeReq, callOptions ...callopt.Option) (r *auth.SendEmailCodeResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.SendEmailCode(ctx, Req)
+}
+
+func (p *kAuthServiceClient) ShowPhotoCaptcha(ctx context.Context, Req *auth.ShowPhotoCaptchaReq, callOptions ...callopt.Option) (r *auth.ShowPhotoCaptchaResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.ShowPhotoCaptcha(ctx, Req)
+}
+
+func (p *kAuthServiceClient) RefreshToken(ctx context.Context, Req *auth.RefreshTokenReq, callOptions ...callopt.Option) (r *auth.RefreshTokenResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.RefreshToken(ctx, Req)
 }

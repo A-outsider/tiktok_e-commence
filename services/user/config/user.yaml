@@ -1,11 +1,11 @@
 service:
   host : 127.0.0.1
-  #host : 192.168.227.172
+  #host : 124.222.131.109
   port : 9000
 
 
 mysql:
-  host: 192.168.227.172
+  host: 124.222.131.109
   port: 23306
   dbname: mall
   username: root
@@ -14,7 +14,7 @@ mysql:
 
 
 redis:
-  host: 192.168.227.172
+  host: 124.222.131.109
   port: 26379
   password: lijialang666
 

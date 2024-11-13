@@ -4,8 +4,8 @@ func Init() {
 	initUser()
 	initProduct()
 	initPayment()
-	initOrder()
+	//initOrder()
 	initCart()
-	initCheckout()
+	//initCheckout()
 	initAuth()
 }

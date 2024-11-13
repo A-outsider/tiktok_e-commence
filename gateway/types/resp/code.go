@@ -28,9 +28,10 @@ const (
 	CodeVisitLimitExceeded
 
 	// 其他错误  TODO 待规划
-	CodeForbidden      int64 = 3001
-	CodeServerBusy     int64 = 4001
-	CodeRecordNotFound int64 = 5001
+	CodeForbidden         int64 = 3001
+	CodeServerBusy        int64 = 4001
+	CodeRecordNotFound    int64 = 5001
+	CodeRateLimitExceeded int64 = 6001
 )
 
 var Msg = map[int64]string{
@@ -58,7 +59,8 @@ var Msg = map[int64]string{
 	CodeUserALREADYLocked:    "用户已被锁定",
 
 	// 其他错误
-	CodeForbidden:      "权限不足",
-	CodeServerBusy:     "服务繁忙",
-	CodeRecordNotFound: "未查询到该记录",
+	CodeForbidden:         "权限不足",
+	CodeServerBusy:        "服务繁忙",
+	CodeRecordNotFound:    "未查询到该记录",
+	CodeRateLimitExceeded: "操作频率过快 ,请稍后再试",
 }

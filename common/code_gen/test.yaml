@@ -1,11 +1,11 @@
 service:
   host : 127.0.0.1
-  #host : 192.168.227.172
-  port : 28080
+  #host : 124.222.131.109
+  port : 9001
 
 
 mysql:
-  host: 192.168.227.172
+  host: 124.222.131.109
   port: 23306
   dbname: mall
   username: root
@@ -14,19 +14,40 @@ mysql:
 
 
 redis:
-  host: 192.168.227.172
+  host: 124.222.131.109
   port: 26379
   password: lijialang666
 
 jaeger:
-  host: 192.168.134.128
+  host: 124.222.131.109
   port: 24318
 
 
 # 业务
-role:
-  model: ./config/casbin/dataModel.conf
-  policy: ./config/casbin/policy.csv
+
+phone:
+  sendInterval: 60s   # 发送间隔
+
+
+email:
+  addresses:
+  email:
+  host :
+  name: tiktok_mall
+  password: lijialang666
+  port: 465
+  expiration_time: 300s   # 邮箱有效期 300 秒
+  sendInterval: 60s   # 发送间隔
+
+
+photoCaptcha:
+  height: 80          # 验证码图片的高度
+  width: 240          # 验证码图片的宽度
+  length: 5           # 验证码字符的长度
+  maxSkew: 0.7        # 数字的最大倾斜角度
+  dotCount: 80        # 图片背景中的混淆点数量
+  expire: 180s
+
 
 jwt:
   accessExpireTime: 60m
@@ -35,11 +56,7 @@ jwt:
   refreshSecret:  tiktok_mall_refresh
   issuer: zty
 
-visitLimit:
-  rateLimitInterval: 0.5s # 令牌投放速率
-  rateLimitCap: 30  # 限流的最大容量
 
 password:
   ErrorLimit: 8   # 密码锁定次数
   ErrorLockTime: 30m # 锁定时间
-

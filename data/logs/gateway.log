@@ -1,0 +1,10 @@
+{"level":"debug","ts":1731461433.5268047,"caller":"zap@v1.1.0/logger.go:92","msg":"HERTZ: Method=GET    absolutePath=/api/v1/ping              --> handlerName=gomall/gateway/router.registerRouter.func1 (num=5 handlers)"}
+{"level":"debug","ts":1731461433.529119,"caller":"zap@v1.1.0/logger.go:92","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/register     --> handlerName=gomall/gateway/controller/auth.(*Api).Register-fm (num=5 handlers)"}
+{"level":"debug","ts":1731461433.5291777,"caller":"zap@v1.1.0/logger.go:92","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/login        --> handlerName=gomall/gateway/controller/auth.(*Api).LoginByCode-fm (num=5 handlers)"}
+{"level":"debug","ts":1731461433.5291777,"caller":"zap@v1.1.0/logger.go:92","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/login/password --> handlerName=gomall/gateway/controller/auth.(*Api).LoginByPwd-fm (num=5 handlers)"}
+{"level":"debug","ts":1731461433.539181,"caller":"zap@v1.1.0/logger.go:92","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/phone        --> handlerName=gomall/gateway/controller/auth.(*Api).SendPhoneCode-fm (num=5 handlers)"}
+{"level":"debug","ts":1731461433.539181,"caller":"zap@v1.1.0/logger.go:92","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/email        --> handlerName=gomall/gateway/controller/auth.(*Api).SendEmailCode-fm (num=5 handlers)"}
+{"level":"debug","ts":1731461433.539181,"caller":"zap@v1.1.0/logger.go:92","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/refresh_token --> handlerName=gomall/gateway/controller/auth.(*Api).RefreshToken-fm (num=5 handlers)"}
+{"level":"debug","ts":1731461433.539181,"caller":"zap@v1.1.0/logger.go:92","msg":"HERTZ: Method=POST   absolutePath=/api/v1/auth/photo_captcha --> handlerName=gomall/gateway/controller/auth.(*Api).ShowPhotoCaptcha-fm (num=5 handlers)"}
+{"level":"info","ts":1731461433.5397289,"caller":"zap@v1.1.0/logger.go:94","msg":"HERTZ: Using network library=standard"}
+{"level":"info","ts":1731461433.5408468,"caller":"zap@v1.1.0/logger.go:94","msg":"HERTZ: HTTP server listening on address=[::]:6331"}

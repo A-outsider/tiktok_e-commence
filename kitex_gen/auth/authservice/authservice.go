@@ -9,24 +9,58 @@ import (
 	kitex "github.com/cloudwego/kitex/pkg/serviceinfo"
 	streaming "github.com/cloudwego/kitex/pkg/streaming"
 	auth "gomall/kitex_gen/auth"
-
 	proto "google.golang.org/protobuf/proto"
 )
 
 var errInvalidMessageType = errors.New("invalid message type for service method handler")
 
 var serviceMethods = map[string]kitex.MethodInfo{
-	"DeliverTokenByRPC": kitex.NewMethodInfo(
-		deliverTokenByRPCHandler,
-		newDeliverTokenByRPCArgs,
-		newDeliverTokenByRPCResult,
+	"LoginByCode": kitex.NewMethodInfo(
+		loginByCodeHandler,
+		newLoginByCodeArgs,
+		newLoginByCodeResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
-	"VerifyTokenByRPC": kitex.NewMethodInfo(
-		verifyTokenByRPCHandler,
-		newVerifyTokenByRPCArgs,
-		newVerifyTokenByRPCResult,
+	"LoginByPwd": kitex.NewMethodInfo(
+		loginByPwdHandler,
+		newLoginByPwdArgs,
+		newLoginByPwdResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
+	"Register": kitex.NewMethodInfo(
+		registerHandler,
+		newRegisterArgs,
+		newRegisterResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
+	"SendPhoneCode": kitex.NewMethodInfo(
+		sendPhoneCodeHandler,
+		newSendPhoneCodeArgs,
+		newSendPhoneCodeResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
+	"SendEmailCode": kitex.NewMethodInfo(
+		sendEmailCodeHandler,
+		newSendEmailCodeArgs,
+		newSendEmailCodeResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
+	"ShowPhotoCaptcha": kitex.NewMethodInfo(
+		showPhotoCaptchaHandler,
+		newShowPhotoCaptchaArgs,
+		newShowPhotoCaptchaResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
+	"RefreshToken": kitex.NewMethodInfo(
+		refreshTokenHandler,
+		newRefreshTokenArgs,
+		newRefreshTokenResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
@@ -96,73 +130,73 @@ func newServiceInfo(hasStreaming bool, keepStreamingMethods bool, keepNonStreami
 	return svcInfo
 }
 
-func deliverTokenByRPCHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+func loginByCodeHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	switch s := arg.(type) {
 	case *streaming.Args:
 		st := s.Stream
-		req := new(auth.DeliverTokenReq)
+		req := new(auth.LoginByCodeReq)
 		if err := st.RecvMsg(req); err != nil {
 			return err
 		}
-		resp, err := handler.(auth.AuthService).DeliverTokenByRPC(ctx, req)
+		resp, err := handler.(auth.AuthService).LoginByCode(ctx, req)
 		if err != nil {
 			return err
 		}
 		return st.SendMsg(resp)
-	case *DeliverTokenByRPCArgs:
-		success, err := handler.(auth.AuthService).DeliverTokenByRPC(ctx, s.Req)
+	case *LoginByCodeArgs:
+		success, err := handler.(auth.AuthService).LoginByCode(ctx, s.Req)
 		if err != nil {
 			return err
 		}
-		realResult := result.(*DeliverTokenByRPCResult)
+		realResult := result.(*LoginByCodeResult)
 		realResult.Success = success
 		return nil
 	default:
 		return errInvalidMessageType
 	}
 }
-func newDeliverTokenByRPCArgs() interface{} {
-	return &DeliverTokenByRPCArgs{}
+func newLoginByCodeArgs() interface{} {
+	return &LoginByCodeArgs{}
 }
 
-func newDeliverTokenByRPCResult() interface{} {
-	return &DeliverTokenByRPCResult{}
+func newLoginByCodeResult() interface{} {
+	return &LoginByCodeResult{}
 }
 
-type DeliverTokenByRPCArgs struct {
-	Req *auth.DeliverTokenReq
+type LoginByCodeArgs struct {
+	Req *auth.LoginByCodeReq
 }
 
-func (p *DeliverTokenByRPCArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+func (p *LoginByCodeArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
 	if !p.IsSetReq() {
-		p.Req = new(auth.DeliverTokenReq)
+		p.Req = new(auth.LoginByCodeReq)
 	}
 	return p.Req.FastRead(buf, _type, number)
 }
 
-func (p *DeliverTokenByRPCArgs) FastWrite(buf []byte) (n int) {
+func (p *LoginByCodeArgs) FastWrite(buf []byte) (n int) {
 	if !p.IsSetReq() {
 		return 0
 	}
 	return p.Req.FastWrite(buf)
 }
 
-func (p *DeliverTokenByRPCArgs) Size() (n int) {
+func (p *LoginByCodeArgs) Size() (n int) {
 	if !p.IsSetReq() {
 		return 0
 	}
 	return p.Req.Size()
 }
 
-func (p *DeliverTokenByRPCArgs) Marshal(out []byte) ([]byte, error) {
+func (p *LoginByCodeArgs) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetReq() {
 		return out, nil
 	}
 	return proto.Marshal(p.Req)
 }
 
-func (p *DeliverTokenByRPCArgs) Unmarshal(in []byte) error {
-	msg := new(auth.DeliverTokenReq)
+func (p *LoginByCodeArgs) Unmarshal(in []byte) error {
+	msg := new(auth.LoginByCodeReq)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -170,59 +204,59 @@ func (p *DeliverTokenByRPCArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var DeliverTokenByRPCArgs_Req_DEFAULT *auth.DeliverTokenReq
+var LoginByCodeArgs_Req_DEFAULT *auth.LoginByCodeReq
 
-func (p *DeliverTokenByRPCArgs) GetReq() *auth.DeliverTokenReq {
+func (p *LoginByCodeArgs) GetReq() *auth.LoginByCodeReq {
 	if !p.IsSetReq() {
-		return DeliverTokenByRPCArgs_Req_DEFAULT
+		return LoginByCodeArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-func (p *DeliverTokenByRPCArgs) IsSetReq() bool {
+func (p *LoginByCodeArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *DeliverTokenByRPCArgs) GetFirstArgument() interface{} {
+func (p *LoginByCodeArgs) GetFirstArgument() interface{} {
 	return p.Req
 }
 
-type DeliverTokenByRPCResult struct {
-	Success *auth.DeliveryResp
+type LoginByCodeResult struct {
+	Success *auth.LoginByCodeResp
 }
 
-var DeliverTokenByRPCResult_Success_DEFAULT *auth.DeliveryResp
+var LoginByCodeResult_Success_DEFAULT *auth.LoginByCodeResp
 
-func (p *DeliverTokenByRPCResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+func (p *LoginByCodeResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
 	if !p.IsSetSuccess() {
-		p.Success = new(auth.DeliveryResp)
+		p.Success = new(auth.LoginByCodeResp)
 	}
 	return p.Success.FastRead(buf, _type, number)
 }
 
-func (p *DeliverTokenByRPCResult) FastWrite(buf []byte) (n int) {
+func (p *LoginByCodeResult) FastWrite(buf []byte) (n int) {
 	if !p.IsSetSuccess() {
 		return 0
 	}
 	return p.Success.FastWrite(buf)
 }
 
-func (p *DeliverTokenByRPCResult) Size() (n int) {
+func (p *LoginByCodeResult) Size() (n int) {
 	if !p.IsSetSuccess() {
 		return 0
 	}
 	return p.Success.Size()
 }
 
-func (p *DeliverTokenByRPCResult) Marshal(out []byte) ([]byte, error) {
+func (p *LoginByCodeResult) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetSuccess() {
 		return out, nil
 	}
 	return proto.Marshal(p.Success)
 }
 
-func (p *DeliverTokenByRPCResult) Unmarshal(in []byte) error {
-	msg := new(auth.DeliveryResp)
+func (p *LoginByCodeResult) Unmarshal(in []byte) error {
+	msg := new(auth.LoginByCodeResp)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -230,92 +264,92 @@ func (p *DeliverTokenByRPCResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *DeliverTokenByRPCResult) GetSuccess() *auth.DeliveryResp {
+func (p *LoginByCodeResult) GetSuccess() *auth.LoginByCodeResp {
 	if !p.IsSetSuccess() {
-		return DeliverTokenByRPCResult_Success_DEFAULT
+		return LoginByCodeResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-func (p *DeliverTokenByRPCResult) SetSuccess(x interface{}) {
-	p.Success = x.(*auth.DeliveryResp)
+func (p *LoginByCodeResult) SetSuccess(x interface{}) {
+	p.Success = x.(*auth.LoginByCodeResp)
 }
 
-func (p *DeliverTokenByRPCResult) IsSetSuccess() bool {
+func (p *LoginByCodeResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *DeliverTokenByRPCResult) GetResult() interface{} {
+func (p *LoginByCodeResult) GetResult() interface{} {
 	return p.Success
 }
 
-func verifyTokenByRPCHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+func loginByPwdHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	switch s := arg.(type) {
 	case *streaming.Args:
 		st := s.Stream
-		req := new(auth.VerifyTokenReq)
+		req := new(auth.LoginByPwdReq)
 		if err := st.RecvMsg(req); err != nil {
 			return err
 		}
-		resp, err := handler.(auth.AuthService).VerifyTokenByRPC(ctx, req)
+		resp, err := handler.(auth.AuthService).LoginByPwd(ctx, req)
 		if err != nil {
 			return err
 		}
 		return st.SendMsg(resp)
-	case *VerifyTokenByRPCArgs:
-		success, err := handler.(auth.AuthService).VerifyTokenByRPC(ctx, s.Req)
+	case *LoginByPwdArgs:
+		success, err := handler.(auth.AuthService).LoginByPwd(ctx, s.Req)
 		if err != nil {
 			return err
 		}
-		realResult := result.(*VerifyTokenByRPCResult)
+		realResult := result.(*LoginByPwdResult)
 		realResult.Success = success
 		return nil
 	default:
 		return errInvalidMessageType
 	}
 }
-func newVerifyTokenByRPCArgs() interface{} {
-	return &VerifyTokenByRPCArgs{}
+func newLoginByPwdArgs() interface{} {
+	return &LoginByPwdArgs{}
 }
 
-func newVerifyTokenByRPCResult() interface{} {
-	return &VerifyTokenByRPCResult{}
+func newLoginByPwdResult() interface{} {
+	return &LoginByPwdResult{}
 }
 
-type VerifyTokenByRPCArgs struct {
-	Req *auth.VerifyTokenReq
+type LoginByPwdArgs struct {
+	Req *auth.LoginByPwdReq
 }
 
-func (p *VerifyTokenByRPCArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+func (p *LoginByPwdArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
 	if !p.IsSetReq() {
-		p.Req = new(auth.VerifyTokenReq)
+		p.Req = new(auth.LoginByPwdReq)
 	}
 	return p.Req.FastRead(buf, _type, number)
 }
 
-func (p *VerifyTokenByRPCArgs) FastWrite(buf []byte) (n int) {
+func (p *LoginByPwdArgs) FastWrite(buf []byte) (n int) {
 	if !p.IsSetReq() {
 		return 0
 	}
 	return p.Req.FastWrite(buf)
 }
 
-func (p *VerifyTokenByRPCArgs) Size() (n int) {
+func (p *LoginByPwdArgs) Size() (n int) {
 	if !p.IsSetReq() {
 		return 0
 	}
 	return p.Req.Size()
 }
 
-func (p *VerifyTokenByRPCArgs) Marshal(out []byte) ([]byte, error) {
+func (p *LoginByPwdArgs) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetReq() {
 		return out, nil
 	}
 	return proto.Marshal(p.Req)
 }
 
-func (p *VerifyTokenByRPCArgs) Unmarshal(in []byte) error {
-	msg := new(auth.VerifyTokenReq)
+func (p *LoginByPwdArgs) Unmarshal(in []byte) error {
+	msg := new(auth.LoginByPwdReq)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -323,59 +357,59 @@ func (p *VerifyTokenByRPCArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var VerifyTokenByRPCArgs_Req_DEFAULT *auth.VerifyTokenReq
+var LoginByPwdArgs_Req_DEFAULT *auth.LoginByPwdReq
 
-func (p *VerifyTokenByRPCArgs) GetReq() *auth.VerifyTokenReq {
+func (p *LoginByPwdArgs) GetReq() *auth.LoginByPwdReq {
 	if !p.IsSetReq() {
-		return VerifyTokenByRPCArgs_Req_DEFAULT
+		return LoginByPwdArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-func (p *VerifyTokenByRPCArgs) IsSetReq() bool {
+func (p *LoginByPwdArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *VerifyTokenByRPCArgs) GetFirstArgument() interface{} {
+func (p *LoginByPwdArgs) GetFirstArgument() interface{} {
 	return p.Req
 }
 
-type VerifyTokenByRPCResult struct {
-	Success *auth.VerifyResp
+type LoginByPwdResult struct {
+	Success *auth.LoginByPwdResp
 }
 
-var VerifyTokenByRPCResult_Success_DEFAULT *auth.VerifyResp
+var LoginByPwdResult_Success_DEFAULT *auth.LoginByPwdResp
 
-func (p *VerifyTokenByRPCResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+func (p *LoginByPwdResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
 	if !p.IsSetSuccess() {
-		p.Success = new(auth.VerifyResp)
+		p.Success = new(auth.LoginByPwdResp)
 	}
 	return p.Success.FastRead(buf, _type, number)
 }
 
-func (p *VerifyTokenByRPCResult) FastWrite(buf []byte) (n int) {
+func (p *LoginByPwdResult) FastWrite(buf []byte) (n int) {
 	if !p.IsSetSuccess() {
 		return 0
 	}
 	return p.Success.FastWrite(buf)
 }
 
-func (p *VerifyTokenByRPCResult) Size() (n int) {
+func (p *LoginByPwdResult) Size() (n int) {
 	if !p.IsSetSuccess() {
 		return 0
 	}
 	return p.Success.Size()
 }
 
-func (p *VerifyTokenByRPCResult) Marshal(out []byte) ([]byte, error) {
+func (p *LoginByPwdResult) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetSuccess() {
 		return out, nil
 	}
 	return proto.Marshal(p.Success)
 }
 
-func (p *VerifyTokenByRPCResult) Unmarshal(in []byte) error {
-	msg := new(auth.VerifyResp)
+func (p *LoginByPwdResult) Unmarshal(in []byte) error {
+	msg := new(auth.LoginByPwdResp)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -383,22 +417,787 @@ func (p *VerifyTokenByRPCResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *VerifyTokenByRPCResult) GetSuccess() *auth.VerifyResp {
+func (p *LoginByPwdResult) GetSuccess() *auth.LoginByPwdResp {
 	if !p.IsSetSuccess() {
-		return VerifyTokenByRPCResult_Success_DEFAULT
+		return LoginByPwdResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-func (p *VerifyTokenByRPCResult) SetSuccess(x interface{}) {
-	p.Success = x.(*auth.VerifyResp)
+func (p *LoginByPwdResult) SetSuccess(x interface{}) {
+	p.Success = x.(*auth.LoginByPwdResp)
 }
 
-func (p *VerifyTokenByRPCResult) IsSetSuccess() bool {
+func (p *LoginByPwdResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *VerifyTokenByRPCResult) GetResult() interface{} {
+func (p *LoginByPwdResult) GetResult() interface{} {
+	return p.Success
+}
+
+func registerHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(auth.RegisterReq)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(auth.AuthService).Register(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *RegisterArgs:
+		success, err := handler.(auth.AuthService).Register(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*RegisterResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newRegisterArgs() interface{} {
+	return &RegisterArgs{}
+}
+
+func newRegisterResult() interface{} {
+	return &RegisterResult{}
+}
+
+type RegisterArgs struct {
+	Req *auth.RegisterReq
+}
+
+func (p *RegisterArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetReq() {
+		p.Req = new(auth.RegisterReq)
+	}
+	return p.Req.FastRead(buf, _type, number)
+}
+
+func (p *RegisterArgs) FastWrite(buf []byte) (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.FastWrite(buf)
+}
+
+func (p *RegisterArgs) Size() (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.Size()
+}
+
+func (p *RegisterArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *RegisterArgs) Unmarshal(in []byte) error {
+	msg := new(auth.RegisterReq)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var RegisterArgs_Req_DEFAULT *auth.RegisterReq
+
+func (p *RegisterArgs) GetReq() *auth.RegisterReq {
+	if !p.IsSetReq() {
+		return RegisterArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *RegisterArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *RegisterArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type RegisterResult struct {
+	Success *auth.RegisterResp
+}
+
+var RegisterResult_Success_DEFAULT *auth.RegisterResp
+
+func (p *RegisterResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetSuccess() {
+		p.Success = new(auth.RegisterResp)
+	}
+	return p.Success.FastRead(buf, _type, number)
+}
+
+func (p *RegisterResult) FastWrite(buf []byte) (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.FastWrite(buf)
+}
+
+func (p *RegisterResult) Size() (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.Size()
+}
+
+func (p *RegisterResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *RegisterResult) Unmarshal(in []byte) error {
+	msg := new(auth.RegisterResp)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *RegisterResult) GetSuccess() *auth.RegisterResp {
+	if !p.IsSetSuccess() {
+		return RegisterResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *RegisterResult) SetSuccess(x interface{}) {
+	p.Success = x.(*auth.RegisterResp)
+}
+
+func (p *RegisterResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *RegisterResult) GetResult() interface{} {
+	return p.Success
+}
+
+func sendPhoneCodeHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(auth.SendPhoneCodeReq)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(auth.AuthService).SendPhoneCode(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *SendPhoneCodeArgs:
+		success, err := handler.(auth.AuthService).SendPhoneCode(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*SendPhoneCodeResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newSendPhoneCodeArgs() interface{} {
+	return &SendPhoneCodeArgs{}
+}
+
+func newSendPhoneCodeResult() interface{} {
+	return &SendPhoneCodeResult{}
+}
+
+type SendPhoneCodeArgs struct {
+	Req *auth.SendPhoneCodeReq
+}
+
+func (p *SendPhoneCodeArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetReq() {
+		p.Req = new(auth.SendPhoneCodeReq)
+	}
+	return p.Req.FastRead(buf, _type, number)
+}
+
+func (p *SendPhoneCodeArgs) FastWrite(buf []byte) (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.FastWrite(buf)
+}
+
+func (p *SendPhoneCodeArgs) Size() (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.Size()
+}
+
+func (p *SendPhoneCodeArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *SendPhoneCodeArgs) Unmarshal(in []byte) error {
+	msg := new(auth.SendPhoneCodeReq)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var SendPhoneCodeArgs_Req_DEFAULT *auth.SendPhoneCodeReq
+
+func (p *SendPhoneCodeArgs) GetReq() *auth.SendPhoneCodeReq {
+	if !p.IsSetReq() {
+		return SendPhoneCodeArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *SendPhoneCodeArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *SendPhoneCodeArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type SendPhoneCodeResult struct {
+	Success *auth.SendPhoneCodeResp
+}
+
+var SendPhoneCodeResult_Success_DEFAULT *auth.SendPhoneCodeResp
+
+func (p *SendPhoneCodeResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetSuccess() {
+		p.Success = new(auth.SendPhoneCodeResp)
+	}
+	return p.Success.FastRead(buf, _type, number)
+}
+
+func (p *SendPhoneCodeResult) FastWrite(buf []byte) (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.FastWrite(buf)
+}
+
+func (p *SendPhoneCodeResult) Size() (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.Size()
+}
+
+func (p *SendPhoneCodeResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *SendPhoneCodeResult) Unmarshal(in []byte) error {
+	msg := new(auth.SendPhoneCodeResp)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *SendPhoneCodeResult) GetSuccess() *auth.SendPhoneCodeResp {
+	if !p.IsSetSuccess() {
+		return SendPhoneCodeResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *SendPhoneCodeResult) SetSuccess(x interface{}) {
+	p.Success = x.(*auth.SendPhoneCodeResp)
+}
+
+func (p *SendPhoneCodeResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *SendPhoneCodeResult) GetResult() interface{} {
+	return p.Success
+}
+
+func sendEmailCodeHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(auth.SendEmailCodeReq)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(auth.AuthService).SendEmailCode(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *SendEmailCodeArgs:
+		success, err := handler.(auth.AuthService).SendEmailCode(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*SendEmailCodeResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newSendEmailCodeArgs() interface{} {
+	return &SendEmailCodeArgs{}
+}
+
+func newSendEmailCodeResult() interface{} {
+	return &SendEmailCodeResult{}
+}
+
+type SendEmailCodeArgs struct {
+	Req *auth.SendEmailCodeReq
+}
+
+func (p *SendEmailCodeArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetReq() {
+		p.Req = new(auth.SendEmailCodeReq)
+	}
+	return p.Req.FastRead(buf, _type, number)
+}
+
+func (p *SendEmailCodeArgs) FastWrite(buf []byte) (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.FastWrite(buf)
+}
+
+func (p *SendEmailCodeArgs) Size() (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.Size()
+}
+
+func (p *SendEmailCodeArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *SendEmailCodeArgs) Unmarshal(in []byte) error {
+	msg := new(auth.SendEmailCodeReq)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var SendEmailCodeArgs_Req_DEFAULT *auth.SendEmailCodeReq
+
+func (p *SendEmailCodeArgs) GetReq() *auth.SendEmailCodeReq {
+	if !p.IsSetReq() {
+		return SendEmailCodeArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *SendEmailCodeArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *SendEmailCodeArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type SendEmailCodeResult struct {
+	Success *auth.SendEmailCodeResp
+}
+
+var SendEmailCodeResult_Success_DEFAULT *auth.SendEmailCodeResp
+
+func (p *SendEmailCodeResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetSuccess() {
+		p.Success = new(auth.SendEmailCodeResp)
+	}
+	return p.Success.FastRead(buf, _type, number)
+}
+
+func (p *SendEmailCodeResult) FastWrite(buf []byte) (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.FastWrite(buf)
+}
+
+func (p *SendEmailCodeResult) Size() (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.Size()
+}
+
+func (p *SendEmailCodeResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *SendEmailCodeResult) Unmarshal(in []byte) error {
+	msg := new(auth.SendEmailCodeResp)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *SendEmailCodeResult) GetSuccess() *auth.SendEmailCodeResp {
+	if !p.IsSetSuccess() {
+		return SendEmailCodeResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *SendEmailCodeResult) SetSuccess(x interface{}) {
+	p.Success = x.(*auth.SendEmailCodeResp)
+}
+
+func (p *SendEmailCodeResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *SendEmailCodeResult) GetResult() interface{} {
+	return p.Success
+}
+
+func showPhotoCaptchaHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(auth.ShowPhotoCaptchaReq)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(auth.AuthService).ShowPhotoCaptcha(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *ShowPhotoCaptchaArgs:
+		success, err := handler.(auth.AuthService).ShowPhotoCaptcha(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*ShowPhotoCaptchaResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newShowPhotoCaptchaArgs() interface{} {
+	return &ShowPhotoCaptchaArgs{}
+}
+
+func newShowPhotoCaptchaResult() interface{} {
+	return &ShowPhotoCaptchaResult{}
+}
+
+type ShowPhotoCaptchaArgs struct {
+	Req *auth.ShowPhotoCaptchaReq
+}
+
+func (p *ShowPhotoCaptchaArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetReq() {
+		p.Req = new(auth.ShowPhotoCaptchaReq)
+	}
+	return p.Req.FastRead(buf, _type, number)
+}
+
+func (p *ShowPhotoCaptchaArgs) FastWrite(buf []byte) (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.FastWrite(buf)
+}
+
+func (p *ShowPhotoCaptchaArgs) Size() (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.Size()
+}
+
+func (p *ShowPhotoCaptchaArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *ShowPhotoCaptchaArgs) Unmarshal(in []byte) error {
+	msg := new(auth.ShowPhotoCaptchaReq)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var ShowPhotoCaptchaArgs_Req_DEFAULT *auth.ShowPhotoCaptchaReq
+
+func (p *ShowPhotoCaptchaArgs) GetReq() *auth.ShowPhotoCaptchaReq {
+	if !p.IsSetReq() {
+		return ShowPhotoCaptchaArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *ShowPhotoCaptchaArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *ShowPhotoCaptchaArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type ShowPhotoCaptchaResult struct {
+	Success *auth.ShowPhotoCaptchaResp
+}
+
+var ShowPhotoCaptchaResult_Success_DEFAULT *auth.ShowPhotoCaptchaResp
+
+func (p *ShowPhotoCaptchaResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetSuccess() {
+		p.Success = new(auth.ShowPhotoCaptchaResp)
+	}
+	return p.Success.FastRead(buf, _type, number)
+}
+
+func (p *ShowPhotoCaptchaResult) FastWrite(buf []byte) (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.FastWrite(buf)
+}
+
+func (p *ShowPhotoCaptchaResult) Size() (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.Size()
+}
+
+func (p *ShowPhotoCaptchaResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *ShowPhotoCaptchaResult) Unmarshal(in []byte) error {
+	msg := new(auth.ShowPhotoCaptchaResp)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *ShowPhotoCaptchaResult) GetSuccess() *auth.ShowPhotoCaptchaResp {
+	if !p.IsSetSuccess() {
+		return ShowPhotoCaptchaResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *ShowPhotoCaptchaResult) SetSuccess(x interface{}) {
+	p.Success = x.(*auth.ShowPhotoCaptchaResp)
+}
+
+func (p *ShowPhotoCaptchaResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *ShowPhotoCaptchaResult) GetResult() interface{} {
+	return p.Success
+}
+
+func refreshTokenHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(auth.RefreshTokenReq)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(auth.AuthService).RefreshToken(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *RefreshTokenArgs:
+		success, err := handler.(auth.AuthService).RefreshToken(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*RefreshTokenResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newRefreshTokenArgs() interface{} {
+	return &RefreshTokenArgs{}
+}
+
+func newRefreshTokenResult() interface{} {
+	return &RefreshTokenResult{}
+}
+
+type RefreshTokenArgs struct {
+	Req *auth.RefreshTokenReq
+}
+
+func (p *RefreshTokenArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetReq() {
+		p.Req = new(auth.RefreshTokenReq)
+	}
+	return p.Req.FastRead(buf, _type, number)
+}
+
+func (p *RefreshTokenArgs) FastWrite(buf []byte) (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.FastWrite(buf)
+}
+
+func (p *RefreshTokenArgs) Size() (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.Size()
+}
+
+func (p *RefreshTokenArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *RefreshTokenArgs) Unmarshal(in []byte) error {
+	msg := new(auth.RefreshTokenReq)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var RefreshTokenArgs_Req_DEFAULT *auth.RefreshTokenReq
+
+func (p *RefreshTokenArgs) GetReq() *auth.RefreshTokenReq {
+	if !p.IsSetReq() {
+		return RefreshTokenArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *RefreshTokenArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *RefreshTokenArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type RefreshTokenResult struct {
+	Success *auth.RefreshTokenResp
+}
+
+var RefreshTokenResult_Success_DEFAULT *auth.RefreshTokenResp
+
+func (p *RefreshTokenResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetSuccess() {
+		p.Success = new(auth.RefreshTokenResp)
+	}
+	return p.Success.FastRead(buf, _type, number)
+}
+
+func (p *RefreshTokenResult) FastWrite(buf []byte) (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.FastWrite(buf)
+}
+
+func (p *RefreshTokenResult) Size() (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.Size()
+}
+
+func (p *RefreshTokenResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *RefreshTokenResult) Unmarshal(in []byte) error {
+	msg := new(auth.RefreshTokenResp)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *RefreshTokenResult) GetSuccess() *auth.RefreshTokenResp {
+	if !p.IsSetSuccess() {
+		return RefreshTokenResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *RefreshTokenResult) SetSuccess(x interface{}) {
+	p.Success = x.(*auth.RefreshTokenResp)
+}
+
+func (p *RefreshTokenResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *RefreshTokenResult) GetResult() interface{} {
 	return p.Success
 }
 
@@ -412,21 +1211,71 @@ func newServiceClient(c client.Client) *kClient {
 	}
 }
 
-func (p *kClient) DeliverTokenByRPC(ctx context.Context, Req *auth.DeliverTokenReq) (r *auth.DeliveryResp, err error) {
-	var _args DeliverTokenByRPCArgs
+func (p *kClient) LoginByCode(ctx context.Context, Req *auth.LoginByCodeReq) (r *auth.LoginByCodeResp, err error) {
+	var _args LoginByCodeArgs
 	_args.Req = Req
-	var _result DeliverTokenByRPCResult
-	if err = p.c.Call(ctx, "DeliverTokenByRPC", &_args, &_result); err != nil {
+	var _result LoginByCodeResult
+	if err = p.c.Call(ctx, "LoginByCode", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) VerifyTokenByRPC(ctx context.Context, Req *auth.VerifyTokenReq) (r *auth.VerifyResp, err error) {
-	var _args VerifyTokenByRPCArgs
+func (p *kClient) LoginByPwd(ctx context.Context, Req *auth.LoginByPwdReq) (r *auth.LoginByPwdResp, err error) {
+	var _args LoginByPwdArgs
 	_args.Req = Req
-	var _result VerifyTokenByRPCResult
-	if err = p.c.Call(ctx, "VerifyTokenByRPC", &_args, &_result); err != nil {
+	var _result LoginByPwdResult
+	if err = p.c.Call(ctx, "LoginByPwd", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) Register(ctx context.Context, Req *auth.RegisterReq) (r *auth.RegisterResp, err error) {
+	var _args RegisterArgs
+	_args.Req = Req
+	var _result RegisterResult
+	if err = p.c.Call(ctx, "Register", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) SendPhoneCode(ctx context.Context, Req *auth.SendPhoneCodeReq) (r *auth.SendPhoneCodeResp, err error) {
+	var _args SendPhoneCodeArgs
+	_args.Req = Req
+	var _result SendPhoneCodeResult
+	if err = p.c.Call(ctx, "SendPhoneCode", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) SendEmailCode(ctx context.Context, Req *auth.SendEmailCodeReq) (r *auth.SendEmailCodeResp, err error) {
+	var _args SendEmailCodeArgs
+	_args.Req = Req
+	var _result SendEmailCodeResult
+	if err = p.c.Call(ctx, "SendEmailCode", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) ShowPhotoCaptcha(ctx context.Context, Req *auth.ShowPhotoCaptchaReq) (r *auth.ShowPhotoCaptchaResp, err error) {
+	var _args ShowPhotoCaptchaArgs
+	_args.Req = Req
+	var _result ShowPhotoCaptchaResult
+	if err = p.c.Call(ctx, "ShowPhotoCaptcha", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) RefreshToken(ctx context.Context, Req *auth.RefreshTokenReq) (r *auth.RefreshTokenResp, err error) {
+	var _args RefreshTokenArgs
+	_args.Req = Req
+	var _result RefreshTokenResult
+	if err = p.c.Call(ctx, "RefreshToken", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.28.1
 // 	protoc        v5.28.0
-// source: auth.proto
+// source: idl/auth.proto
 
 package rpcAuth
 
@@ -21,31 +21,32 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type DeliverTokenReq struct {
+type LoginByCodeReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	UserId int32 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Phone string `protobuf:"bytes,1,opt,name=Phone,proto3" json:"Phone,omitempty"`
+	Code  string `protobuf:"bytes,2,opt,name=Code,proto3" json:"Code,omitempty"`
 }
 
-func (x *DeliverTokenReq) Reset() {
-	*x = DeliverTokenReq{}
+func (x *LoginByCodeReq) Reset() {
+	*x = LoginByCodeReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_auth_proto_msgTypes[0]
+		mi := &file_idl_auth_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
 }
 
-func (x *DeliverTokenReq) String() string {
+func (x *LoginByCodeReq) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*DeliverTokenReq) ProtoMessage() {}
+func (*LoginByCodeReq) ProtoMessage() {}
 
-func (x *DeliverTokenReq) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_proto_msgTypes[0]
+func (x *LoginByCodeReq) ProtoReflect() protoreflect.Message {
+	mi := &file_idl_auth_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -56,43 +57,116 @@ func (x *DeliverTokenReq) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DeliverTokenReq.ProtoReflect.Descriptor instead.
-func (*DeliverTokenReq) Descriptor() ([]byte, []int) {
-	return file_auth_proto_rawDescGZIP(), []int{0}
+// Deprecated: Use LoginByCodeReq.ProtoReflect.Descriptor instead.
+func (*LoginByCodeReq) Descriptor() ([]byte, []int) {
+	return file_idl_auth_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *DeliverTokenReq) GetUserId() int32 {
+func (x *LoginByCodeReq) GetPhone() string {
 	if x != nil {
-		return x.UserId
+		return x.Phone
+	}
+	return ""
+}
+
+func (x *LoginByCodeReq) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+type LoginByCodeResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Token        string `protobuf:"bytes,1,opt,name=Token,proto3" json:"Token,omitempty"`
+	RefreshToken string `protobuf:"bytes,2,opt,name=RefreshToken,proto3" json:"RefreshToken,omitempty"`
+	StatusCode   int64  `protobuf:"varint,3,opt,name=StatusCode,proto3" json:"StatusCode,omitempty"`
+}
+
+func (x *LoginByCodeResp) Reset() {
+	*x = LoginByCodeResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_idl_auth_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *LoginByCodeResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LoginByCodeResp) ProtoMessage() {}
+
+func (x *LoginByCodeResp) ProtoReflect() protoreflect.Message {
+	mi := &file_idl_auth_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LoginByCodeResp.ProtoReflect.Descriptor instead.
+func (*LoginByCodeResp) Descriptor() ([]byte, []int) {
+	return file_idl_auth_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *LoginByCodeResp) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+func (x *LoginByCodeResp) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
+func (x *LoginByCodeResp) GetStatusCode() int64 {
+	if x != nil {
+		return x.StatusCode
 	}
 	return 0
 }
 
-type VerifyTokenReq struct {
+type LoginByPwdReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Token string `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	Phone         string `protobuf:"bytes,1,opt,name=Phone,proto3" json:"Phone,omitempty"`
+	Password      string `protobuf:"bytes,2,opt,name=Password,proto3" json:"Password,omitempty"`
+	CaptchaId     string `protobuf:"bytes,3,opt,name=CaptchaId,proto3" json:"CaptchaId,omitempty"`
+	CaptchaAnswer string `protobuf:"bytes,4,opt,name=CaptchaAnswer,proto3" json:"CaptchaAnswer,omitempty"`
 }
 
-func (x *VerifyTokenReq) Reset() {
-	*x = VerifyTokenReq{}
+func (x *LoginByPwdReq) Reset() {
+	*x = LoginByPwdReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_auth_proto_msgTypes[1]
+		mi := &file_idl_auth_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
 }
 
-func (x *VerifyTokenReq) String() string {
+func (x *LoginByPwdReq) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*VerifyTokenReq) ProtoMessage() {}
+func (*LoginByPwdReq) ProtoMessage() {}
 
-func (x *VerifyTokenReq) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_proto_msgTypes[1]
+func (x *LoginByPwdReq) ProtoReflect() protoreflect.Message {
+	mi := &file_idl_auth_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -103,43 +177,129 @@ func (x *VerifyTokenReq) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use VerifyTokenReq.ProtoReflect.Descriptor instead.
-func (*VerifyTokenReq) Descriptor() ([]byte, []int) {
-	return file_auth_proto_rawDescGZIP(), []int{1}
+// Deprecated: Use LoginByPwdReq.ProtoReflect.Descriptor instead.
+func (*LoginByPwdReq) Descriptor() ([]byte, []int) {
+	return file_idl_auth_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *VerifyTokenReq) GetToken() string {
+func (x *LoginByPwdReq) GetPhone() string {
+	if x != nil {
+		return x.Phone
+	}
+	return ""
+}
+
+func (x *LoginByPwdReq) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+func (x *LoginByPwdReq) GetCaptchaId() string {
+	if x != nil {
+		return x.CaptchaId
+	}
+	return ""
+}
+
+func (x *LoginByPwdReq) GetCaptchaAnswer() string {
+	if x != nil {
+		return x.CaptchaAnswer
+	}
+	return ""
+}
+
+type LoginByPwdResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Token        string `protobuf:"bytes,1,opt,name=Token,proto3" json:"Token,omitempty"`
+	RefreshToken string `protobuf:"bytes,2,opt,name=RefreshToken,proto3" json:"RefreshToken,omitempty"`
+	StatusCode   int64  `protobuf:"varint,3,opt,name=StatusCode,proto3" json:"StatusCode,omitempty"`
+}
+
+func (x *LoginByPwdResp) Reset() {
+	*x = LoginByPwdResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_idl_auth_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *LoginByPwdResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LoginByPwdResp) ProtoMessage() {}
+
+func (x *LoginByPwdResp) ProtoReflect() protoreflect.Message {
+	mi := &file_idl_auth_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LoginByPwdResp.ProtoReflect.Descriptor instead.
+func (*LoginByPwdResp) Descriptor() ([]byte, []int) {
+	return file_idl_auth_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *LoginByPwdResp) GetToken() string {
 	if x != nil {
 		return x.Token
 	}
 	return ""
 }
 
-type DeliveryResp struct {
+func (x *LoginByPwdResp) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
+func (x *LoginByPwdResp) GetStatusCode() int64 {
+	if x != nil {
+		return x.StatusCode
+	}
+	return 0
+}
+
+type RegisterReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Token string `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	Phone    string `protobuf:"bytes,1,opt,name=Phone,proto3" json:"Phone,omitempty"`
+	Password string `protobuf:"bytes,2,opt,name=Password,proto3" json:"Password,omitempty"`
+	AuthCode string `protobuf:"bytes,3,opt,name=AuthCode,proto3" json:"AuthCode,omitempty"`
 }
 
-func (x *DeliveryResp) Reset() {
-	*x = DeliveryResp{}
+func (x *RegisterReq) Reset() {
+	*x = RegisterReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_auth_proto_msgTypes[2]
+		mi := &file_idl_auth_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
 }
 
-func (x *DeliveryResp) String() string {
+func (x *RegisterReq) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*DeliveryResp) ProtoMessage() {}
+func (*RegisterReq) ProtoMessage() {}
 
-func (x *DeliveryResp) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_proto_msgTypes[2]
+func (x *RegisterReq) ProtoReflect() protoreflect.Message {
+	mi := &file_idl_auth_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -150,131 +310,636 @@ func (x *DeliveryResp) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DeliveryResp.ProtoReflect.Descriptor instead.
-func (*DeliveryResp) Descriptor() ([]byte, []int) {
-	return file_auth_proto_rawDescGZIP(), []int{2}
+// Deprecated: Use RegisterReq.ProtoReflect.Descriptor instead.
+func (*RegisterReq) Descriptor() ([]byte, []int) {
+	return file_idl_auth_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *DeliveryResp) GetToken() string {
+func (x *RegisterReq) GetPhone() string {
+	if x != nil {
+		return x.Phone
+	}
+	return ""
+}
+
+func (x *RegisterReq) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+func (x *RegisterReq) GetAuthCode() string {
+	if x != nil {
+		return x.AuthCode
+	}
+	return ""
+}
+
+type RegisterResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	StatusCode int64 `protobuf:"varint,1,opt,name=StatusCode,proto3" json:"StatusCode,omitempty"`
+}
+
+func (x *RegisterResp) Reset() {
+	*x = RegisterResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_idl_auth_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RegisterResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegisterResp) ProtoMessage() {}
+
+func (x *RegisterResp) ProtoReflect() protoreflect.Message {
+	mi := &file_idl_auth_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegisterResp.ProtoReflect.Descriptor instead.
+func (*RegisterResp) Descriptor() ([]byte, []int) {
+	return file_idl_auth_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *RegisterResp) GetStatusCode() int64 {
+	if x != nil {
+		return x.StatusCode
+	}
+	return 0
+}
+
+type SendPhoneCodeReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Phone string `protobuf:"bytes,1,opt,name=Phone,proto3" json:"Phone,omitempty"`
+}
+
+func (x *SendPhoneCodeReq) Reset() {
+	*x = SendPhoneCodeReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_idl_auth_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SendPhoneCodeReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SendPhoneCodeReq) ProtoMessage() {}
+
+func (x *SendPhoneCodeReq) ProtoReflect() protoreflect.Message {
+	mi := &file_idl_auth_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SendPhoneCodeReq.ProtoReflect.Descriptor instead.
+func (*SendPhoneCodeReq) Descriptor() ([]byte, []int) {
+	return file_idl_auth_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *SendPhoneCodeReq) GetPhone() string {
+	if x != nil {
+		return x.Phone
+	}
+	return ""
+}
+
+type SendPhoneCodeResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	StatusCode int64 `protobuf:"varint,1,opt,name=StatusCode,proto3" json:"StatusCode,omitempty"`
+}
+
+func (x *SendPhoneCodeResp) Reset() {
+	*x = SendPhoneCodeResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_idl_auth_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SendPhoneCodeResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SendPhoneCodeResp) ProtoMessage() {}
+
+func (x *SendPhoneCodeResp) ProtoReflect() protoreflect.Message {
+	mi := &file_idl_auth_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SendPhoneCodeResp.ProtoReflect.Descriptor instead.
+func (*SendPhoneCodeResp) Descriptor() ([]byte, []int) {
+	return file_idl_auth_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *SendPhoneCodeResp) GetStatusCode() int64 {
+	if x != nil {
+		return x.StatusCode
+	}
+	return 0
+}
+
+type SendEmailCodeReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Email string `protobuf:"bytes,1,opt,name=Email,proto3" json:"Email,omitempty"`
+}
+
+func (x *SendEmailCodeReq) Reset() {
+	*x = SendEmailCodeReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_idl_auth_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SendEmailCodeReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SendEmailCodeReq) ProtoMessage() {}
+
+func (x *SendEmailCodeReq) ProtoReflect() protoreflect.Message {
+	mi := &file_idl_auth_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SendEmailCodeReq.ProtoReflect.Descriptor instead.
+func (*SendEmailCodeReq) Descriptor() ([]byte, []int) {
+	return file_idl_auth_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *SendEmailCodeReq) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+type SendEmailCodeResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	StatusCode int64 `protobuf:"varint,1,opt,name=StatusCode,proto3" json:"StatusCode,omitempty"`
+}
+
+func (x *SendEmailCodeResp) Reset() {
+	*x = SendEmailCodeResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_idl_auth_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SendEmailCodeResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SendEmailCodeResp) ProtoMessage() {}
+
+func (x *SendEmailCodeResp) ProtoReflect() protoreflect.Message {
+	mi := &file_idl_auth_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SendEmailCodeResp.ProtoReflect.Descriptor instead.
+func (*SendEmailCodeResp) Descriptor() ([]byte, []int) {
+	return file_idl_auth_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *SendEmailCodeResp) GetStatusCode() int64 {
+	if x != nil {
+		return x.StatusCode
+	}
+	return 0
+}
+
+type ShowPhotoCaptchaReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *ShowPhotoCaptchaReq) Reset() {
+	*x = ShowPhotoCaptchaReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_idl_auth_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ShowPhotoCaptchaReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ShowPhotoCaptchaReq) ProtoMessage() {}
+
+func (x *ShowPhotoCaptchaReq) ProtoReflect() protoreflect.Message {
+	mi := &file_idl_auth_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ShowPhotoCaptchaReq.ProtoReflect.Descriptor instead.
+func (*ShowPhotoCaptchaReq) Descriptor() ([]byte, []int) {
+	return file_idl_auth_proto_rawDescGZIP(), []int{10}
+}
+
+type ShowPhotoCaptchaResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	CaptchaId  string `protobuf:"bytes,1,opt,name=CaptchaId,proto3" json:"CaptchaId,omitempty"`
+	CaptchaImg string `protobuf:"bytes,2,opt,name=CaptchaImg,proto3" json:"CaptchaImg,omitempty"`
+	StatusCode int64  `protobuf:"varint,3,opt,name=StatusCode,proto3" json:"StatusCode,omitempty"`
+}
+
+func (x *ShowPhotoCaptchaResp) Reset() {
+	*x = ShowPhotoCaptchaResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_idl_auth_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ShowPhotoCaptchaResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ShowPhotoCaptchaResp) ProtoMessage() {}
+
+func (x *ShowPhotoCaptchaResp) ProtoReflect() protoreflect.Message {
+	mi := &file_idl_auth_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ShowPhotoCaptchaResp.ProtoReflect.Descriptor instead.
+func (*ShowPhotoCaptchaResp) Descriptor() ([]byte, []int) {
+	return file_idl_auth_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *ShowPhotoCaptchaResp) GetCaptchaId() string {
+	if x != nil {
+		return x.CaptchaId
+	}
+	return ""
+}
+
+func (x *ShowPhotoCaptchaResp) GetCaptchaImg() string {
+	if x != nil {
+		return x.CaptchaImg
+	}
+	return ""
+}
+
+func (x *ShowPhotoCaptchaResp) GetStatusCode() int64 {
+	if x != nil {
+		return x.StatusCode
+	}
+	return 0
+}
+
+type RefreshTokenReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	RefreshToken string `protobuf:"bytes,1,opt,name=RefreshToken,proto3" json:"RefreshToken,omitempty"`
+}
+
+func (x *RefreshTokenReq) Reset() {
+	*x = RefreshTokenReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_idl_auth_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RefreshTokenReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RefreshTokenReq) ProtoMessage() {}
+
+func (x *RefreshTokenReq) ProtoReflect() protoreflect.Message {
+	mi := &file_idl_auth_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RefreshTokenReq.ProtoReflect.Descriptor instead.
+func (*RefreshTokenReq) Descriptor() ([]byte, []int) {
+	return file_idl_auth_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *RefreshTokenReq) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
+type RefreshTokenResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Token        string `protobuf:"bytes,1,opt,name=Token,proto3" json:"Token,omitempty"`
+	RefreshToken string `protobuf:"bytes,2,opt,name=RefreshToken,proto3" json:"RefreshToken,omitempty"`
+	StatusCode   int64  `protobuf:"varint,3,opt,name=StatusCode,proto3" json:"StatusCode,omitempty"`
+}
+
+func (x *RefreshTokenResp) Reset() {
+	*x = RefreshTokenResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_idl_auth_proto_msgTypes[13]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RefreshTokenResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RefreshTokenResp) ProtoMessage() {}
+
+func (x *RefreshTokenResp) ProtoReflect() protoreflect.Message {
+	mi := &file_idl_auth_proto_msgTypes[13]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RefreshTokenResp.ProtoReflect.Descriptor instead.
+func (*RefreshTokenResp) Descriptor() ([]byte, []int) {
+	return file_idl_auth_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *RefreshTokenResp) GetToken() string {
 	if x != nil {
 		return x.Token
 	}
 	return ""
 }
 
-type VerifyResp struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Res bool `protobuf:"varint,1,opt,name=res,proto3" json:"res,omitempty"`
-}
-
-func (x *VerifyResp) Reset() {
-	*x = VerifyResp{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_auth_proto_msgTypes[3]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *VerifyResp) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*VerifyResp) ProtoMessage() {}
-
-func (x *VerifyResp) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_proto_msgTypes[3]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use VerifyResp.ProtoReflect.Descriptor instead.
-func (*VerifyResp) Descriptor() ([]byte, []int) {
-	return file_auth_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *VerifyResp) GetRes() bool {
+func (x *RefreshTokenResp) GetRefreshToken() string {
 	if x != nil {
-		return x.Res
+		return x.RefreshToken
 	}
-	return false
+	return ""
 }
 
-var File_auth_proto protoreflect.FileDescriptor
+func (x *RefreshTokenResp) GetStatusCode() int64 {
+	if x != nil {
+		return x.StatusCode
+	}
+	return 0
+}
 
-var file_auth_proto_rawDesc = []byte{
-	0x0a, 0x0a, 0x61, 0x75, 0x74, 0x68, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x2a, 0x0a, 0x0f,
-	0x44, 0x65, 0x6c, 0x69, 0x76, 0x65, 0x72, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x52, 0x65, 0x71, 0x12,
-	0x17, 0x0a, 0x07, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05,
-	0x52, 0x06, 0x75, 0x73, 0x65, 0x72, 0x49, 0x64, 0x22, 0x26, 0x0a, 0x0e, 0x56, 0x65, 0x72, 0x69,
-	0x66, 0x79, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x52, 0x65, 0x71, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f,
-	0x6b, 0x65, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e,
-	0x22, 0x24, 0x0a, 0x0c, 0x44, 0x65, 0x6c, 0x69, 0x76, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70,
-	0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x22, 0x1e, 0x0a, 0x0a, 0x56, 0x65, 0x72, 0x69, 0x66, 0x79,
-	0x52, 0x65, 0x73, 0x70, 0x12, 0x10, 0x0a, 0x03, 0x72, 0x65, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x08, 0x52, 0x03, 0x72, 0x65, 0x73, 0x32, 0x79, 0x0a, 0x0b, 0x41, 0x75, 0x74, 0x68, 0x53, 0x65,
-	0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x36, 0x0a, 0x11, 0x44, 0x65, 0x6c, 0x69, 0x76, 0x65, 0x72,
-	0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x42, 0x79, 0x52, 0x50, 0x43, 0x12, 0x10, 0x2e, 0x44, 0x65, 0x6c,
-	0x69, 0x76, 0x65, 0x72, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x52, 0x65, 0x71, 0x1a, 0x0d, 0x2e, 0x44,
-	0x65, 0x6c, 0x69, 0x76, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x22, 0x00, 0x12, 0x32, 0x0a,
-	0x10, 0x56, 0x65, 0x72, 0x69, 0x66, 0x79, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x42, 0x79, 0x52, 0x50,
-	0x43, 0x12, 0x0f, 0x2e, 0x56, 0x65, 0x72, 0x69, 0x66, 0x79, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x52,
-	0x65, 0x71, 0x1a, 0x0b, 0x2e, 0x56, 0x65, 0x72, 0x69, 0x66, 0x79, 0x52, 0x65, 0x73, 0x70, 0x22,
-	0x00, 0x42, 0x31, 0x5a, 0x2f, 0x67, 0x6f, 0x6d, 0x61, 0x6c, 0x6c, 0x2f, 0x72, 0x70, 0x63, 0x2d,
-	0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f, 0x6b, 0x69,
-	0x74, 0x65, 0x78, 0x5f, 0x67, 0x65, 0x6e, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x3b, 0x72, 0x70, 0x63,
-	0x41, 0x75, 0x74, 0x68, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+var File_idl_auth_proto protoreflect.FileDescriptor
+
+var file_idl_auth_proto_rawDesc = []byte{
+	0x0a, 0x0e, 0x69, 0x64, 0x6c, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x22, 0x3a, 0x0a, 0x0e, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x42, 0x79, 0x43, 0x6f, 0x64, 0x65, 0x52,
+	0x65, 0x71, 0x12, 0x14, 0x0a, 0x05, 0x50, 0x68, 0x6f, 0x6e, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x05, 0x50, 0x68, 0x6f, 0x6e, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x43, 0x6f, 0x64, 0x65,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x43, 0x6f, 0x64, 0x65, 0x22, 0x6b, 0x0a, 0x0f,
+	0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x42, 0x79, 0x43, 0x6f, 0x64, 0x65, 0x52, 0x65, 0x73, 0x70, 0x12,
+	0x14, 0x0a, 0x05, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05,
+	0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x22, 0x0a, 0x0c, 0x52, 0x65, 0x66, 0x72, 0x65, 0x73, 0x68,
+	0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x52, 0x65, 0x66,
+	0x72, 0x65, 0x73, 0x68, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x1e, 0x0a, 0x0a, 0x53, 0x74, 0x61,
+	0x74, 0x75, 0x73, 0x43, 0x6f, 0x64, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0a, 0x53,
+	0x74, 0x61, 0x74, 0x75, 0x73, 0x43, 0x6f, 0x64, 0x65, 0x22, 0x85, 0x01, 0x0a, 0x0d, 0x4c, 0x6f,
+	0x67, 0x69, 0x6e, 0x42, 0x79, 0x50, 0x77, 0x64, 0x52, 0x65, 0x71, 0x12, 0x14, 0x0a, 0x05, 0x50,
+	0x68, 0x6f, 0x6e, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x50, 0x68, 0x6f, 0x6e,
+	0x65, 0x12, 0x1a, 0x0a, 0x08, 0x50, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x08, 0x50, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x12, 0x1c, 0x0a,
+	0x09, 0x43, 0x61, 0x70, 0x74, 0x63, 0x68, 0x61, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x09, 0x43, 0x61, 0x70, 0x74, 0x63, 0x68, 0x61, 0x49, 0x64, 0x12, 0x24, 0x0a, 0x0d, 0x43,
+	0x61, 0x70, 0x74, 0x63, 0x68, 0x61, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x18, 0x04, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x0d, 0x43, 0x61, 0x70, 0x74, 0x63, 0x68, 0x61, 0x41, 0x6e, 0x73, 0x77, 0x65,
+	0x72, 0x22, 0x6a, 0x0a, 0x0e, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x42, 0x79, 0x50, 0x77, 0x64, 0x52,
+	0x65, 0x73, 0x70, 0x12, 0x14, 0x0a, 0x05, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x05, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x22, 0x0a, 0x0c, 0x52, 0x65, 0x66,
+	0x72, 0x65, 0x73, 0x68, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x0c, 0x52, 0x65, 0x66, 0x72, 0x65, 0x73, 0x68, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x1e, 0x0a,
+	0x0a, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x43, 0x6f, 0x64, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x03, 0x52, 0x0a, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x43, 0x6f, 0x64, 0x65, 0x22, 0x5b, 0x0a,
+	0x0b, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x52, 0x65, 0x71, 0x12, 0x14, 0x0a, 0x05,
+	0x50, 0x68, 0x6f, 0x6e, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x50, 0x68, 0x6f,
+	0x6e, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x50, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x50, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x12, 0x1a,
+	0x0a, 0x08, 0x41, 0x75, 0x74, 0x68, 0x43, 0x6f, 0x64, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x08, 0x41, 0x75, 0x74, 0x68, 0x43, 0x6f, 0x64, 0x65, 0x22, 0x2e, 0x0a, 0x0c, 0x52, 0x65,
+	0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x12, 0x1e, 0x0a, 0x0a, 0x53, 0x74,
+	0x61, 0x74, 0x75, 0x73, 0x43, 0x6f, 0x64, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0a,
+	0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x43, 0x6f, 0x64, 0x65, 0x22, 0x28, 0x0a, 0x10, 0x53, 0x65,
+	0x6e, 0x64, 0x50, 0x68, 0x6f, 0x6e, 0x65, 0x43, 0x6f, 0x64, 0x65, 0x52, 0x65, 0x71, 0x12, 0x14,
+	0x0a, 0x05, 0x50, 0x68, 0x6f, 0x6e, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x50,
+	0x68, 0x6f, 0x6e, 0x65, 0x22, 0x33, 0x0a, 0x11, 0x53, 0x65, 0x6e, 0x64, 0x50, 0x68, 0x6f, 0x6e,
+	0x65, 0x43, 0x6f, 0x64, 0x65, 0x52, 0x65, 0x73, 0x70, 0x12, 0x1e, 0x0a, 0x0a, 0x53, 0x74, 0x61,
+	0x74, 0x75, 0x73, 0x43, 0x6f, 0x64, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0a, 0x53,
+	0x74, 0x61, 0x74, 0x75, 0x73, 0x43, 0x6f, 0x64, 0x65, 0x22, 0x28, 0x0a, 0x10, 0x53, 0x65, 0x6e,
+	0x64, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x43, 0x6f, 0x64, 0x65, 0x52, 0x65, 0x71, 0x12, 0x14, 0x0a,
+	0x05, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x45, 0x6d,
+	0x61, 0x69, 0x6c, 0x22, 0x33, 0x0a, 0x11, 0x53, 0x65, 0x6e, 0x64, 0x45, 0x6d, 0x61, 0x69, 0x6c,
+	0x43, 0x6f, 0x64, 0x65, 0x52, 0x65, 0x73, 0x70, 0x12, 0x1e, 0x0a, 0x0a, 0x53, 0x74, 0x61, 0x74,
+	0x75, 0x73, 0x43, 0x6f, 0x64, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0a, 0x53, 0x74,
+	0x61, 0x74, 0x75, 0x73, 0x43, 0x6f, 0x64, 0x65, 0x22, 0x15, 0x0a, 0x13, 0x53, 0x68, 0x6f, 0x77,
+	0x50, 0x68, 0x6f, 0x74, 0x6f, 0x43, 0x61, 0x70, 0x74, 0x63, 0x68, 0x61, 0x52, 0x65, 0x71, 0x22,
+	0x74, 0x0a, 0x14, 0x53, 0x68, 0x6f, 0x77, 0x50, 0x68, 0x6f, 0x74, 0x6f, 0x43, 0x61, 0x70, 0x74,
+	0x63, 0x68, 0x61, 0x52, 0x65, 0x73, 0x70, 0x12, 0x1c, 0x0a, 0x09, 0x43, 0x61, 0x70, 0x74, 0x63,
+	0x68, 0x61, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x43, 0x61, 0x70, 0x74,
+	0x63, 0x68, 0x61, 0x49, 0x64, 0x12, 0x1e, 0x0a, 0x0a, 0x43, 0x61, 0x70, 0x74, 0x63, 0x68, 0x61,
+	0x49, 0x6d, 0x67, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x43, 0x61, 0x70, 0x74, 0x63,
+	0x68, 0x61, 0x49, 0x6d, 0x67, 0x12, 0x1e, 0x0a, 0x0a, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x43,
+	0x6f, 0x64, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0a, 0x53, 0x74, 0x61, 0x74, 0x75,
+	0x73, 0x43, 0x6f, 0x64, 0x65, 0x22, 0x35, 0x0a, 0x0f, 0x52, 0x65, 0x66, 0x72, 0x65, 0x73, 0x68,
+	0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x52, 0x65, 0x71, 0x12, 0x22, 0x0a, 0x0c, 0x52, 0x65, 0x66, 0x72,
+	0x65, 0x73, 0x68, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c,
+	0x52, 0x65, 0x66, 0x72, 0x65, 0x73, 0x68, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x22, 0x6c, 0x0a, 0x10,
+	0x52, 0x65, 0x66, 0x72, 0x65, 0x73, 0x68, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x52, 0x65, 0x73, 0x70,
+	0x12, 0x14, 0x0a, 0x05, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x05, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x22, 0x0a, 0x0c, 0x52, 0x65, 0x66, 0x72, 0x65, 0x73,
+	0x68, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x52, 0x65,
+	0x66, 0x72, 0x65, 0x73, 0x68, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x1e, 0x0a, 0x0a, 0x53, 0x74,
+	0x61, 0x74, 0x75, 0x73, 0x43, 0x6f, 0x64, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0a,
+	0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x43, 0x6f, 0x64, 0x65, 0x32, 0xfd, 0x02, 0x0a, 0x0b, 0x41,
+	0x75, 0x74, 0x68, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x30, 0x0a, 0x0b, 0x4c, 0x6f,
+	0x67, 0x69, 0x6e, 0x42, 0x79, 0x43, 0x6f, 0x64, 0x65, 0x12, 0x0f, 0x2e, 0x4c, 0x6f, 0x67, 0x69,
+	0x6e, 0x42, 0x79, 0x43, 0x6f, 0x64, 0x65, 0x52, 0x65, 0x71, 0x1a, 0x10, 0x2e, 0x4c, 0x6f, 0x67,
+	0x69, 0x6e, 0x42, 0x79, 0x43, 0x6f, 0x64, 0x65, 0x52, 0x65, 0x73, 0x70, 0x12, 0x2d, 0x0a, 0x0a,
+	0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x42, 0x79, 0x50, 0x77, 0x64, 0x12, 0x0e, 0x2e, 0x4c, 0x6f, 0x67,
+	0x69, 0x6e, 0x42, 0x79, 0x50, 0x77, 0x64, 0x52, 0x65, 0x71, 0x1a, 0x0f, 0x2e, 0x4c, 0x6f, 0x67,
+	0x69, 0x6e, 0x42, 0x79, 0x50, 0x77, 0x64, 0x52, 0x65, 0x73, 0x70, 0x12, 0x27, 0x0a, 0x08, 0x52,
+	0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x12, 0x0c, 0x2e, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74,
+	0x65, 0x72, 0x52, 0x65, 0x71, 0x1a, 0x0d, 0x2e, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72,
+	0x52, 0x65, 0x73, 0x70, 0x12, 0x36, 0x0a, 0x0d, 0x53, 0x65, 0x6e, 0x64, 0x50, 0x68, 0x6f, 0x6e,
+	0x65, 0x43, 0x6f, 0x64, 0x65, 0x12, 0x11, 0x2e, 0x53, 0x65, 0x6e, 0x64, 0x50, 0x68, 0x6f, 0x6e,
+	0x65, 0x43, 0x6f, 0x64, 0x65, 0x52, 0x65, 0x71, 0x1a, 0x12, 0x2e, 0x53, 0x65, 0x6e, 0x64, 0x50,
+	0x68, 0x6f, 0x6e, 0x65, 0x43, 0x6f, 0x64, 0x65, 0x52, 0x65, 0x73, 0x70, 0x12, 0x36, 0x0a, 0x0d,
+	0x53, 0x65, 0x6e, 0x64, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x43, 0x6f, 0x64, 0x65, 0x12, 0x11, 0x2e,
+	0x53, 0x65, 0x6e, 0x64, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x43, 0x6f, 0x64, 0x65, 0x52, 0x65, 0x71,
+	0x1a, 0x12, 0x2e, 0x53, 0x65, 0x6e, 0x64, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x43, 0x6f, 0x64, 0x65,
+	0x52, 0x65, 0x73, 0x70, 0x12, 0x3f, 0x0a, 0x10, 0x53, 0x68, 0x6f, 0x77, 0x50, 0x68, 0x6f, 0x74,
+	0x6f, 0x43, 0x61, 0x70, 0x74, 0x63, 0x68, 0x61, 0x12, 0x14, 0x2e, 0x53, 0x68, 0x6f, 0x77, 0x50,
+	0x68, 0x6f, 0x74, 0x6f, 0x43, 0x61, 0x70, 0x74, 0x63, 0x68, 0x61, 0x52, 0x65, 0x71, 0x1a, 0x15,
+	0x2e, 0x53, 0x68, 0x6f, 0x77, 0x50, 0x68, 0x6f, 0x74, 0x6f, 0x43, 0x61, 0x70, 0x74, 0x63, 0x68,
+	0x61, 0x52, 0x65, 0x73, 0x70, 0x12, 0x33, 0x0a, 0x0c, 0x52, 0x65, 0x66, 0x72, 0x65, 0x73, 0x68,
+	0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x10, 0x2e, 0x52, 0x65, 0x66, 0x72, 0x65, 0x73, 0x68, 0x54,
+	0x6f, 0x6b, 0x65, 0x6e, 0x52, 0x65, 0x71, 0x1a, 0x11, 0x2e, 0x52, 0x65, 0x66, 0x72, 0x65, 0x73,
+	0x68, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x42, 0x1f, 0x5a, 0x1d, 0x67, 0x6f,
+	0x6d, 0x61, 0x6c, 0x6c, 0x2f, 0x6b, 0x69, 0x74, 0x65, 0x78, 0x5f, 0x67, 0x65, 0x6e, 0x2f, 0x61,
+	0x75, 0x74, 0x68, 0x3b, 0x72, 0x70, 0x63, 0x41, 0x75, 0x74, 0x68, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 }
 
 var (
-	file_auth_proto_rawDescOnce sync.Once
-	file_auth_proto_rawDescData = file_auth_proto_rawDesc
+	file_idl_auth_proto_rawDescOnce sync.Once
+	file_idl_auth_proto_rawDescData = file_idl_auth_proto_rawDesc
 )
 
-func file_auth_proto_rawDescGZIP() []byte {
-	file_auth_proto_rawDescOnce.Do(func() {
-		file_auth_proto_rawDescData = protoimpl.X.CompressGZIP(file_auth_proto_rawDescData)
+func file_idl_auth_proto_rawDescGZIP() []byte {
+	file_idl_auth_proto_rawDescOnce.Do(func() {
+		file_idl_auth_proto_rawDescData = protoimpl.X.CompressGZIP(file_idl_auth_proto_rawDescData)
 	})
-	return file_auth_proto_rawDescData
+	return file_idl_auth_proto_rawDescData
 }
 
-var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
-var file_auth_proto_goTypes = []interface{}{
-	(*DeliverTokenReq)(nil), // 0: DeliverTokenReq
-	(*VerifyTokenReq)(nil),  // 1: VerifyTokenReq
-	(*DeliveryResp)(nil),    // 2: DeliveryResp
-	(*VerifyResp)(nil),      // 3: VerifyResp
+var file_idl_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_idl_auth_proto_goTypes = []interface{}{
+	(*LoginByCodeReq)(nil),       // 0: LoginByCodeReq
+	(*LoginByCodeResp)(nil),      // 1: LoginByCodeResp
+	(*LoginByPwdReq)(nil),        // 2: LoginByPwdReq
+	(*LoginByPwdResp)(nil),       // 3: LoginByPwdResp
+	(*RegisterReq)(nil),          // 4: RegisterReq
+	(*RegisterResp)(nil),         // 5: RegisterResp
+	(*SendPhoneCodeReq)(nil),     // 6: SendPhoneCodeReq
+	(*SendPhoneCodeResp)(nil),    // 7: SendPhoneCodeResp
+	(*SendEmailCodeReq)(nil),     // 8: SendEmailCodeReq
+	(*SendEmailCodeResp)(nil),    // 9: SendEmailCodeResp
+	(*ShowPhotoCaptchaReq)(nil),  // 10: ShowPhotoCaptchaReq
+	(*ShowPhotoCaptchaResp)(nil), // 11: ShowPhotoCaptchaResp
+	(*RefreshTokenReq)(nil),      // 12: RefreshTokenReq
+	(*RefreshTokenResp)(nil),     // 13: RefreshTokenResp
 }
-var file_auth_proto_depIdxs = []int32{
-	0, // 0: AuthService.DeliverTokenByRPC:input_type -> DeliverTokenReq
-	1, // 1: AuthService.VerifyTokenByRPC:input_type -> VerifyTokenReq
-	2, // 2: AuthService.DeliverTokenByRPC:output_type -> DeliveryResp
-	3, // 3: AuthService.VerifyTokenByRPC:output_type -> VerifyResp
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+var file_idl_auth_proto_depIdxs = []int32{
+	0,  // 0: AuthService.LoginByCode:input_type -> LoginByCodeReq
+	2,  // 1: AuthService.LoginByPwd:input_type -> LoginByPwdReq
+	4,  // 2: AuthService.Register:input_type -> RegisterReq
+	6,  // 3: AuthService.SendPhoneCode:input_type -> SendPhoneCodeReq
+	8,  // 4: AuthService.SendEmailCode:input_type -> SendEmailCodeReq
+	10, // 5: AuthService.ShowPhotoCaptcha:input_type -> ShowPhotoCaptchaReq
+	12, // 6: AuthService.RefreshToken:input_type -> RefreshTokenReq
+	1,  // 7: AuthService.LoginByCode:output_type -> LoginByCodeResp
+	3,  // 8: AuthService.LoginByPwd:output_type -> LoginByPwdResp
+	5,  // 9: AuthService.Register:output_type -> RegisterResp
+	7,  // 10: AuthService.SendPhoneCode:output_type -> SendPhoneCodeResp
+	9,  // 11: AuthService.SendEmailCode:output_type -> SendEmailCodeResp
+	11, // 12: AuthService.ShowPhotoCaptcha:output_type -> ShowPhotoCaptchaResp
+	13, // 13: AuthService.RefreshToken:output_type -> RefreshTokenResp
+	7,  // [7:14] is the sub-list for method output_type
+	0,  // [0:7] is the sub-list for method input_type
+	0,  // [0:0] is the sub-list for extension type_name
+	0,  // [0:0] is the sub-list for extension extendee
+	0,  // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_auth_proto_init() }
-func file_auth_proto_init() {
-	if File_auth_proto != nil {
+func init() { file_idl_auth_proto_init() }
+func file_idl_auth_proto_init() {
+	if File_idl_auth_proto != nil {
 		return
 	}
 	if !protoimpl.UnsafeEnabled {
-		file_auth_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DeliverTokenReq); i {
+		file_idl_auth_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*LoginByCodeReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -285,8 +950,8 @@ func file_auth_proto_init() {
 				return nil
 			}
 		}
-		file_auth_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*VerifyTokenReq); i {
+		file_idl_auth_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*LoginByCodeResp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -297,8 +962,8 @@ func file_auth_proto_init() {
 				return nil
 			}
 		}
-		file_auth_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DeliveryResp); i {
+		file_idl_auth_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*LoginByPwdReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -309,8 +974,128 @@ func file_auth_proto_init() {
 				return nil
 			}
 		}
-		file_auth_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*VerifyResp); i {
+		file_idl_auth_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*LoginByPwdResp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_idl_auth_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RegisterReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_idl_auth_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RegisterResp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_idl_auth_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SendPhoneCodeReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_idl_auth_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SendPhoneCodeResp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_idl_auth_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SendEmailCodeReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_idl_auth_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SendEmailCodeResp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_idl_auth_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ShowPhotoCaptchaReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_idl_auth_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ShowPhotoCaptchaResp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_idl_auth_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RefreshTokenReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_idl_auth_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RefreshTokenResp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -326,20 +1111,20 @@ func file_auth_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_auth_proto_rawDesc,
+			RawDescriptor: file_idl_auth_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_auth_proto_goTypes,
-		DependencyIndexes: file_auth_proto_depIdxs,
-		MessageInfos:      file_auth_proto_msgTypes,
+		GoTypes:           file_idl_auth_proto_goTypes,
+		DependencyIndexes: file_idl_auth_proto_depIdxs,
+		MessageInfos:      file_idl_auth_proto_msgTypes,
 	}.Build()
-	File_auth_proto = out.File
-	file_auth_proto_rawDesc = nil
-	file_auth_proto_goTypes = nil
-	file_auth_proto_depIdxs = nil
+	File_idl_auth_proto = out.File
+	file_idl_auth_proto_rawDesc = nil
+	file_idl_auth_proto_goTypes = nil
+	file_idl_auth_proto_depIdxs = nil
 }
 
 var _ context.Context
@@ -347,6 +1132,11 @@ var _ context.Context
 // Code generated by Kitex v0.11.3. DO NOT EDIT.
 
 type AuthService interface {
-	DeliverTokenByRPC(ctx context.Context, req *DeliverTokenReq) (res *DeliveryResp, err error)
-	VerifyTokenByRPC(ctx context.Context, req *VerifyTokenReq) (res *VerifyResp, err error)
+	LoginByCode(ctx context.Context, req *LoginByCodeReq) (res *LoginByCodeResp, err error)
+	LoginByPwd(ctx context.Context, req *LoginByPwdReq) (res *LoginByPwdResp, err error)
+	Register(ctx context.Context, req *RegisterReq) (res *RegisterResp, err error)
+	SendPhoneCode(ctx context.Context, req *SendPhoneCodeReq) (res *SendPhoneCodeResp, err error)
+	SendEmailCode(ctx context.Context, req *SendEmailCodeReq) (res *SendEmailCodeResp, err error)
+	ShowPhotoCaptcha(ctx context.Context, req *ShowPhotoCaptchaReq) (res *ShowPhotoCaptchaResp, err error)
+	RefreshToken(ctx context.Context, req *RefreshTokenReq) (res *RefreshTokenResp, err error)
 }

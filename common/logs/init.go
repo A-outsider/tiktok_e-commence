@@ -59,9 +59,12 @@ func LogInit(serviceName string) {
 	zap.ReplaceGlobals(zapLogger)
 
 	// 使用 zapLogger 创建 hertzZapLogger
-	hertzZapLogger := hertzzap.NewLogger(hertzzap.WithZapOptions(zap.AddCaller()))
+	hertzZapLogger := hertzzap.NewLogger(
+		hertzzap.WithCoreEnc(jsonEncoder),
+		hertzzap.WithZapOptions(zap.AddCaller(), zap.AddCallerSkip(1)),
+	)
 
-	//hertzZapLogger.SetOutput(writeSyncer)                // 设置输出到日志中
+	hertzZapLogger.SetOutput(writeSyncer) // 设置输出到日志中
 
 	hlog.SetLogger(hertzZapLogger) // 替换 hlog 的默认 logger 为 Hertz zap logger
 

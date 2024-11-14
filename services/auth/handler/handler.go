@@ -69,6 +69,7 @@ func (s *AuthServiceImpl) LoginByCode(ctx context.Context, req *auth.LoginByCode
 		zap.L().Error("验证token生成失败", zap.Error(err))
 		return
 	}
+
 	// 生成刷新token
 	if res.RefreshToken, err = token.GenerateRefreshToken(user.ID); err != nil || len(res.RefreshToken) == 0 {
 		zap.L().Error("刷新token生成失败", zap.Error(err))
@@ -294,6 +295,7 @@ func (s *AuthServiceImpl) RefreshToken(ctx context.Context, req *auth.RefreshTok
 		zap.L().Error("验证token生成失败", zap.Error(err))
 		return
 	}
+
 	// 生成刷新token
 	if res.RefreshToken, err = token.GenerateRefreshToken(claims.ID); err != nil || len(res.RefreshToken) == 0 {
 		zap.L().Error("刷新token生成失败", zap.Error(err))

@@ -40,7 +40,7 @@ func GenerateAccessToken(id string) (string, error) {
 * return: token字符串、错误信息
  */
 func GenerateRefreshToken(id string) (string, error) {
-	refreshSecret := []byte(config.GetConf().Jwt.AccessSecret)
+	refreshSecret := []byte(config.GetConf().Jwt.RefreshSecret)
 	Issuer := config.GetConf().Jwt.Issuer
 	expireTime := config.GetConf().Jwt.RefreshExpireTime
 

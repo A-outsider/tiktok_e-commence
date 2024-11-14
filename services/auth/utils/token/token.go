@@ -1,11 +1,10 @@
 package token
 
 import (
-	"gomall/common/utils/parse"
-	"gomall/gateway/config"
-	"time"
-
 	"github.com/golang-jwt/jwt/v5"
+	"gomall/common/utils/parse"
+	"gomall/services/auth/config"
+	"time"
 )
 
 /**
@@ -40,7 +39,7 @@ func GenerateAccessToken(id string) (string, error) {
 * return: token字符串、错误信息
  */
 func GenerateRefreshToken(id string) (string, error) {
-	refreshSecret := []byte(config.GetConf().Jwt.AccessSecret)
+	refreshSecret := []byte(config.GetConf().Jwt.RefreshSecret)
 	Issuer := config.GetConf().Jwt.Issuer
 	expireTime := config.GetConf().Jwt.RefreshExpireTime
 

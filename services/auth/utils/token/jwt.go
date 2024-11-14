@@ -3,7 +3,7 @@ package token
 import (
 	"github.com/golang-jwt/jwt/v5"
 	"go.uber.org/zap"
-	"gomall/gateway/config"
+	"gomall/services/auth/config"
 )
 
 // -------------------------------------jwt生成token加密------------------------------------------------
@@ -34,7 +34,6 @@ func ParseToken(tokenString string) (*Claims, error) {
 	_, err = jwt.Parse(tokenString, func(token *jwt.Token) (i interface{}, e error) {
 		return secret, nil
 	})
-
 	return claims, err
 }
 

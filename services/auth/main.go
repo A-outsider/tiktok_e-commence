@@ -11,12 +11,11 @@ import (
 	etcd "github.com/kitex-contrib/registry-etcd"
 	"github.com/kitex-contrib/registry-etcd/retry"
 	cc "gomall/common/config"
-	"gomall/common/database"
 	"gomall/common/logs"
 	auth "gomall/kitex_gen/auth/authservice"
 	"gomall/services/auth/config"
-	"gomall/services/auth/dal/db"
 	"gomall/services/auth/handler"
+	"gomall/services/auth/initialize"
 	"net"
 	"time"
 )
@@ -37,13 +36,8 @@ func main() {
 	)
 	defer p.Shutdown(context.Background())
 
-	// 连MySQL
-	if err := db.InitDb(config.GetConf().Mysql); err != nil {
-		panic(err)
-	}
-
-	// 连 Redis
-	database.InitRedis(config.GetConf().Redis)
+	// 初始化一系列主件
+	initialize.Init()
 
 	// 服务注册
 	addr, _ := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:%d", config.GetConf().Service.Host, config.GetConf().Service.Port))

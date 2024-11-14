@@ -3,10 +3,10 @@ package captcha
 
 import (
 	"github.com/mojocn/base64Captcha"
-	"gomall/common/database"
 	"gomall/common/utils/parse"
 	"gomall/services/auth/config"
 	"gomall/services/auth/dal/cache"
+	"gomall/services/auth/initialize"
 )
 
 type PhCaptcha struct {
@@ -51,18 +51,18 @@ func (c *PhCaptcha) VerifyCaptcha(id string, answer string) (match bool) {
 }
 
 func (c *PhCaptcha) Set(id string, value string) error {
-	_, err := database.SetWithTime(cache.GetPhotoCaptchaKey(id), value, parse.Duration(config.GetConf().PhotoCaptcha.Expire))
+	_, err := initialize.GetRedis().SetWithTime(cache.GetPhotoCaptchaKey(id), value, parse.Duration(config.GetConf().PhotoCaptcha.Expire))
 	return err
 }
 
 func (c *PhCaptcha) Get(id string, clear bool) string {
-	val, err := database.Get(cache.GetPhotoCaptchaKey(id))
+	val, err := initialize.GetRedis().Get(cache.GetPhotoCaptchaKey(id))
 	if err != nil {
 		return ""
 	}
 
 	if clear {
-		database.Del(cache.GetPhotoCaptchaKey(id))
+		initialize.GetRedis().Del(cache.GetPhotoCaptchaKey(id))
 	}
 
 	return val

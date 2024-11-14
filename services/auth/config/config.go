@@ -22,6 +22,20 @@ type Email struct {
 	SendInterval   string `yaml:"sendInterval"`
 }
 
+type PhotoCaptcha struct {
+	Height   int     `yaml:"height"`
+	Width    int     `yaml:"width"`
+	Length   int     `yaml:"length"`
+	MaxSkew  float64 `yaml:"maxSkew"`
+	DotCount int     `yaml:"dotCount"`
+	Expire   string  `yaml:"expire"`
+}
+
+type Service struct {
+	Host string `yaml:"host"`
+	Port int    `yaml:"port"`
+}
+
 type Mysql struct {
 	Host     string `yaml:"host"`
 	Port     int    `yaml:"port"`
@@ -31,32 +45,31 @@ type Mysql struct {
 	Charset  string `yaml:"charset"`
 }
 
-type Redis struct {
-	Host     string `yaml:"host"`
-	Port     int    `yaml:"port"`
-	Password string `yaml:"password"`
-}
-
 type Jaeger struct {
 	Host string `yaml:"host"`
 	Port int    `yaml:"port"`
 }
 
-type PhotoCaptcha struct {
-	Width    int     `yaml:"width"`
-	Length   int     `yaml:"length"`
-	MaxSkew  float64 `yaml:"maxSkew"`
-	DotCount int     `yaml:"dotCount"`
-	Expire   string  `yaml:"expire"`
-	Height   int     `yaml:"height"`
+type Phone struct {
+	AccessKeyId     string `yaml:"accessKeyId"`
+	AccessKeySecret string `yaml:"accessKeySecret"`
+	RegionId        string `yaml:"regionId"`
+	ExpirationTime  string `yaml:"expiration_time"`
+	SendInterval    string `yaml:"sendInterval"`
+}
+
+type Redis struct {
+	Port     int    `yaml:"port"`
+	Password string `yaml:"password"`
+	Host     string `yaml:"host"`
 }
 
 type Jwt struct {
+	Issuer            string `yaml:"issuer"`
 	AccessExpireTime  string `yaml:"accessExpireTime"`
 	RefreshExpireTime string `yaml:"refreshExpireTime"`
 	AccessSecret      string `yaml:"accessSecret"`
 	RefreshSecret     string `yaml:"refreshSecret"`
-	Issuer            string `yaml:"issuer"`
 }
 
 type Password struct {
@@ -64,21 +77,16 @@ type Password struct {
 	ErrorLockTime string `yaml:"ErrorLockTime"`
 }
 
-type Service struct {
-	Host string `yaml:"host"`
-	Port int    `yaml:"port"`
-}
-
 type Config struct {
 	Email        Email        `yaml:"email"`
-	Phone        interface{}  `yaml:"phone"`
-	Mysql        Mysql        `yaml:"mysql"`
-	Redis        Redis        `yaml:"redis"`
-	Jaeger       Jaeger       `yaml:"jaeger"`
 	PhotoCaptcha PhotoCaptcha `yaml:"photoCaptcha"`
+	Service      Service      `yaml:"service"`
+	Mysql        Mysql        `yaml:"mysql"`
+	Jaeger       Jaeger       `yaml:"jaeger"`
+	Phone        Phone        `yaml:"phone"`
+	Redis        Redis        `yaml:"redis"`
 	Jwt          Jwt          `yaml:"jwt"`
 	Password     Password     `yaml:"password"`
-	Service      Service      `yaml:"service"`
 }
 
 func GetConf() *Config {

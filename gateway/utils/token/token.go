@@ -13,7 +13,7 @@ import (
 * param: id 用户id
 * return: token字符串、错误信息
  */
-func GenerateAccessToken(id int64) (string, error) {
+func GenerateAccessToken(id string) (string, error) {
 	accessSecret := []byte(config.GetConf().Jwt.AccessSecret)
 	Issuer := config.GetConf().Jwt.Issuer
 	expireTime := config.GetConf().Jwt.AccessExpireTime
@@ -39,7 +39,7 @@ func GenerateAccessToken(id int64) (string, error) {
 * param: id 用户id
 * return: token字符串、错误信息
  */
-func GenerateRefreshToken(id int64) (string, error) {
+func GenerateRefreshToken(id string) (string, error) {
 	refreshSecret := []byte(config.GetConf().Jwt.AccessSecret)
 	Issuer := config.GetConf().Jwt.Issuer
 	expireTime := config.GetConf().Jwt.RefreshExpireTime

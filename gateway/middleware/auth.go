@@ -6,6 +6,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/golang-jwt/jwt/v4"
 	"gomall/gateway/types/resp"
+	"gomall/gateway/utils/role"
 	"gomall/gateway/utils/token"
 	"net/http"
 	"strings"
@@ -18,7 +19,7 @@ func Parse() app.HandlerFunc {
 
 		// 解析并校验Token
 		claims, _ := token.ParseToken(tokenString)
-		if claims.UserId != 0 {
+		if len(claims.UserId) != 0 {
 			ctx.Set("userId", claims.UserId)
 		}
 		ctx.Next(c)
@@ -63,6 +64,16 @@ func Auth() app.HandlerFunc {
 			ctx.Abort()
 			return
 		}
+
+		// 认证用户角色权限
+		StatusCode := role.CheckAdmin(c, ctx, claims.UserId)
+		if StatusCode != resp.CodeSuccess {
+			res.SetNoData(StatusCode)
+			ctx.JSON(http.StatusUnauthorized, res)
+			ctx.Abort()
+			return
+		}
+
 		// 存储用户信息
 		ctx.Set("userId", claims.UserId)
 		ctx.Next(c)

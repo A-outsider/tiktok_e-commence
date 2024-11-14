@@ -18,6 +18,7 @@ type Client interface {
 	SendEmailCode(ctx context.Context, Req *auth.SendEmailCodeReq, callOptions ...callopt.Option) (r *auth.SendEmailCodeResp, err error)
 	ShowPhotoCaptcha(ctx context.Context, Req *auth.ShowPhotoCaptchaReq, callOptions ...callopt.Option) (r *auth.ShowPhotoCaptchaResp, err error)
 	RefreshToken(ctx context.Context, Req *auth.RefreshTokenReq, callOptions ...callopt.Option) (r *auth.RefreshTokenResp, err error)
+	GetUserAdmin(ctx context.Context, Req *auth.CheckAdminReq, callOptions ...callopt.Option) (r *auth.CheckAdminResp, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -82,4 +83,9 @@ func (p *kAuthServiceClient) ShowPhotoCaptcha(ctx context.Context, Req *auth.Sho
 func (p *kAuthServiceClient) RefreshToken(ctx context.Context, Req *auth.RefreshTokenReq, callOptions ...callopt.Option) (r *auth.RefreshTokenResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.RefreshToken(ctx, Req)
+}
+
+func (p *kAuthServiceClient) GetUserAdmin(ctx context.Context, Req *auth.CheckAdminReq, callOptions ...callopt.Option) (r *auth.CheckAdminResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.GetUserAdmin(ctx, Req)
 }

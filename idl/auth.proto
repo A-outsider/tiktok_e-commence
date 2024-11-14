@@ -11,6 +11,7 @@ service AuthService {
   rpc SendEmailCode(SendEmailCodeReq) returns (SendEmailCodeResp);
   rpc ShowPhotoCaptcha(ShowPhotoCaptchaReq) returns (ShowPhotoCaptchaResp);
   rpc RefreshToken(RefreshTokenReq) returns (RefreshTokenResp);
+  rpc GetUserAdmin(CheckAdminReq) returns (CheckAdminResp);
 }
 
 
@@ -86,4 +87,11 @@ message  RefreshTokenResp {
   int64 StatusCode = 3;
 }
 
+message  CheckAdminReq {
+  string UserId = 1;
+}
 
+message  CheckAdminResp {
+  int64  StatusCode = 1;
+  int64 Role = 2;
+}

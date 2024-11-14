@@ -9,7 +9,7 @@ import (
 // -------------------------------------jwt生成token加密------------------------------------------------
 
 type Claims struct {
-	UserId    int64
+	UserId    string
 	TokenType uint // 0:accessToken,1:refreshToken
 	jwt.RegisteredClaims
 }

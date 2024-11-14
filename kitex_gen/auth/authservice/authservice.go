@@ -64,6 +64,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
+	"GetUserAdmin": kitex.NewMethodInfo(
+		getUserAdminHandler,
+		newGetUserAdminArgs,
+		newGetUserAdminResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
 }
 
 var (
@@ -1201,6 +1208,159 @@ func (p *RefreshTokenResult) GetResult() interface{} {
 	return p.Success
 }
 
+func getUserAdminHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(auth.CheckAdminReq)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(auth.AuthService).GetUserAdmin(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *GetUserAdminArgs:
+		success, err := handler.(auth.AuthService).GetUserAdmin(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*GetUserAdminResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newGetUserAdminArgs() interface{} {
+	return &GetUserAdminArgs{}
+}
+
+func newGetUserAdminResult() interface{} {
+	return &GetUserAdminResult{}
+}
+
+type GetUserAdminArgs struct {
+	Req *auth.CheckAdminReq
+}
+
+func (p *GetUserAdminArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetReq() {
+		p.Req = new(auth.CheckAdminReq)
+	}
+	return p.Req.FastRead(buf, _type, number)
+}
+
+func (p *GetUserAdminArgs) FastWrite(buf []byte) (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.FastWrite(buf)
+}
+
+func (p *GetUserAdminArgs) Size() (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.Size()
+}
+
+func (p *GetUserAdminArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *GetUserAdminArgs) Unmarshal(in []byte) error {
+	msg := new(auth.CheckAdminReq)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var GetUserAdminArgs_Req_DEFAULT *auth.CheckAdminReq
+
+func (p *GetUserAdminArgs) GetReq() *auth.CheckAdminReq {
+	if !p.IsSetReq() {
+		return GetUserAdminArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *GetUserAdminArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *GetUserAdminArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type GetUserAdminResult struct {
+	Success *auth.CheckAdminResp
+}
+
+var GetUserAdminResult_Success_DEFAULT *auth.CheckAdminResp
+
+func (p *GetUserAdminResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetSuccess() {
+		p.Success = new(auth.CheckAdminResp)
+	}
+	return p.Success.FastRead(buf, _type, number)
+}
+
+func (p *GetUserAdminResult) FastWrite(buf []byte) (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.FastWrite(buf)
+}
+
+func (p *GetUserAdminResult) Size() (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.Size()
+}
+
+func (p *GetUserAdminResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *GetUserAdminResult) Unmarshal(in []byte) error {
+	msg := new(auth.CheckAdminResp)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *GetUserAdminResult) GetSuccess() *auth.CheckAdminResp {
+	if !p.IsSetSuccess() {
+		return GetUserAdminResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *GetUserAdminResult) SetSuccess(x interface{}) {
+	p.Success = x.(*auth.CheckAdminResp)
+}
+
+func (p *GetUserAdminResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *GetUserAdminResult) GetResult() interface{} {
+	return p.Success
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -1276,6 +1436,16 @@ func (p *kClient) RefreshToken(ctx context.Context, Req *auth.RefreshTokenReq) (
 	_args.Req = Req
 	var _result RefreshTokenResult
 	if err = p.c.Call(ctx, "RefreshToken", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) GetUserAdmin(ctx context.Context, Req *auth.CheckAdminReq) (r *auth.CheckAdminResp, err error) {
+	var _args GetUserAdminArgs
+	_args.Req = Req
+	var _result GetUserAdminResult
+	if err = p.c.Call(ctx, "GetUserAdmin", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

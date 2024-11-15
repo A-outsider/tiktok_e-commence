@@ -18,17 +18,12 @@ type Redis struct {
 	Password string `yaml:"password"`
 }
 
-var (
-	rdb = new(redis.Client)
-	ctx = context.Background()
-)
-
-func GetRdbCli() *redis.Client {
-	return rdb
+type RedisClient struct {
+	client *redis.Client
+	ctx    context.Context
 }
 
-// 注册redis
-func InitRedis(val any) {
+func NewRedisClient(val any) *RedisClient {
 	r := new(Redis)
 
 	err := mapstructure.Decode(val, r)
@@ -37,77 +32,75 @@ func InitRedis(val any) {
 	}
 
 	addr := fmt.Sprintf("%s:%d", r.Host, r.Port)
-	rdb = redis.NewClient(&redis.Options{
+	rdb := redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: r.Password,
 		DB:       0, // use default DB
 	})
 
+	ctx := context.Background()
 	// Background返回一个非空的Context。它永远不会被取消，没有值，也没有截止日期。
 	// 它通常由main函数、初始化和测试使用，并作为传入请求的顶级上下文
 	// 设置一个5秒的超时
-
 	_, err = rdb.Ping(ctx).Result()
 	if err != nil {
 		log.Panic("redis connect ping failed, errs", zap.Error(err))
 	}
 
-	// TODO : 为redis启动链路追踪
+	return &RedisClient{
+		client: rdb,
+		ctx:    ctx,
+	}
 }
 
-func SetWithTime(key string, value interface{}, dur time.Duration) (string, error) {
-	return rdb.Set(ctx, key, value, dur).Result()
+func (r *RedisClient) SetWithTime(key string, value interface{}, dur time.Duration) (string, error) {
+	return r.client.Set(r.ctx, key, value, dur).Result()
 }
 
-func Set(key string, value interface{}) (string, error) {
-	return rdb.Set(ctx, key, value, -1).Result()
+func (r *RedisClient) Set(key string, value interface{}) (string, error) {
+	return r.client.Set(r.ctx, key, value, -1).Result()
 }
 
-func Get(key string) (string, error) {
+func (r *RedisClient) Get(key string) (string, error) {
 	if len(key) == 0 {
 		return "", errors.New("key cannot be empty")
 	}
-	return rdb.Get(ctx, key).Result()
+	return r.client.Get(r.ctx, key).Result()
 }
 
-func Del(key string) {
-	rdb.Del(ctx, key)
+func (r *RedisClient) Del(key string) {
+	r.client.Del(r.ctx, key)
 }
 
-func IncrWithTime(key string, times time.Duration) {
-	rdb.Incr(ctx, key)
-	rdb.Expire(ctx, key, times)
+func (r *RedisClient) IncrWithTime(key string, times time.Duration) {
+	r.client.Incr(r.ctx, key)
+	r.client.Expire(r.ctx, key, times)
 }
 
-func Keys(key string) []string {
-	return rdb.Keys(ctx, key).Val()
+func (r *RedisClient) Keys(key string) []string {
+	return r.client.Keys(r.ctx, key).Val()
 }
 
-func TTL(key string) time.Duration {
-	return rdb.TTL(ctx, key).Val()
+func (r *RedisClient) TTL(key string) time.Duration {
+	return r.client.TTL(r.ctx, key).Val()
 }
 
-// 移除有序集中指定排名区间内的所有成员
-func ZRemRangeByRank(key string, start, stop int64) {
-	rdb.ZRemRangeByRank(ctx, key, start, stop)
+func (r *RedisClient) ZRemRangeByRank(key string, start, stop int64) {
+	r.client.ZRemRangeByRank(r.ctx, key, start, stop)
 }
 
-// 向有序集合插入数据
-func ZAdd(key string, score float64, member interface{}) {
-	rdb.ZAdd(ctx, key, redis.Z{Score: score, Member: member})
+func (r *RedisClient) ZAdd(key string, score float64, member interface{}) {
+	r.client.ZAdd(r.ctx, key, redis.Z{Score: score, Member: member})
 }
 
-// 有序集合中的数量
-func ZCard(key string) int64 {
-	return rdb.ZCard(ctx, key).Val()
+func (r *RedisClient) ZCard(key string) int64 {
+	return r.client.ZCard(r.ctx, key).Val()
 }
 
-// 有序集中成员的分数值
-func ZScore(key string, member string) float64 {
-	return rdb.ZScore(ctx, key, member).Val()
+func (r *RedisClient) ZScore(key string, member string) float64 {
+	return r.client.ZScore(r.ctx, key, member).Val()
 }
 
-// 向有序集合插入数据
-func ZRem(key string, member ...interface{}) {
-	rdb.ZRem(ctx, key, member...)
+func (r *RedisClient) ZRem(key string, member ...interface{}) {
+	r.client.ZRem(r.ctx, key, member...)
 }

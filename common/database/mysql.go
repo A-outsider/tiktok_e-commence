@@ -19,14 +19,9 @@ type Mysql struct {
 	Timezone string `yaml:"timeZone"`
 }
 
-var db = new(gorm.DB)
-
-func GetDB() *gorm.DB {
-	return db
-}
-
-func InitMySQL(val any) error {
+func NewMySQL(val any) *gorm.DB {
 	var err error
+	var db *gorm.DB
 
 	sql := new(Mysql)
 
@@ -54,12 +49,12 @@ func InitMySQL(val any) error {
 	}))
 
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	sqlDB, err := db.DB()
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	// TODO : 连接池配置 , 暂时写死
@@ -68,5 +63,5 @@ func InitMySQL(val any) error {
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
 	// TODO : 为Mysql 启动链路追踪
-	return nil
+	return db
 }

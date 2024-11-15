@@ -1,4 +1,14 @@
 {
+  "email": {
+    "addresses": null,
+    "email": null,
+    "expiration_time": "300s",
+    "host": null,
+    "name": "tiktok_mall",
+    "password": "lijialang666",
+    "port": 465,
+    "sendInterval": "60s"
+  },
   "jaeger": {
     "host": "124.222.131.109",
     "port": 24317
@@ -10,16 +20,39 @@
     "refreshExpireTime": "168h",
     "refreshSecret": "tiktok_mall_refresh"
   },
-  "role": {
-    "model": "./config/casbin/dataModel.conf",
-    "policy": "./config/casbin/policy.csv"
+  "mysql": {
+    "charset": "utf8mb4",
+    "dbname": "mall",
+    "host": "124.222.131.109",
+    "password": "lijialang666",
+    "port": 23306,
+    "username": "root"
+  },
+  "password": {
+    "ErrorLimit": 8,
+    "ErrorLockTime": "30m"
+  },
+  "phone": {
+    "accessKeyId": "",
+    "accessKeySecret": "",
+    "regionId": "",
+    "sendInterval": "60s"
+  },
+  "photoCaptcha": {
+    "dotCount": 80,
+    "expire": "180s",
+    "height": 80,
+    "length": 5,
+    "maxSkew": 0.7,
+    "width": 240
+  },
+  "redis": {
+    "host": "124.222.131.109",
+    "password": "lijialang666",
+    "port": 26379
   },
   "service": {
     "host": "127.0.0.1",
-    "port": 8080
-  },
-  "visitLimit": {
-    "rateLimitCap": 30,
-    "rateLimitInterval": "0.5s"
+    "port": 9001
   }
 }

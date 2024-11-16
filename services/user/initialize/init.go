@@ -15,7 +15,6 @@ var svcContext *ServiceContext = new(ServiceContext)
 
 func Init() {
 	initMysql()
-	initSms()
 	InitRedis()
 }
 
@@ -29,8 +28,4 @@ func GetMysql() *gorm.DB {
 
 func GetRedis() *RedisClient {
 	return GetServiceContext().RDB
-}
-
-func GetSms() *dysmsapi20170525.Client {
-	return GetServiceContext().SMS
 }

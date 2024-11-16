@@ -11,28 +11,17 @@ import (
 // 定义角色关系
 type Role int
 
+// 用户角色
 const (
-	// 未认证
-	MORTAL Role = 0
-	// 普通买家
-	USER Role = 1
-	// 普通卖家
-	Seller Role = 2
-	// 审核
-	DEVELOP Role = 6
-	// 管理员
-	ADMIN Role = 9
-	// 超级管理员
-	ROOT Role = 10
+	User = iota
+	Seller
+	Admin
 )
 
 var roleMap = map[Role]string{
-	MORTAL:  "mortal",
-	USER:    "user",
-	Seller:  "seller",
-	DEVELOP: "develop",
-	ADMIN:   "admin",
-	ROOT:    "root",
+	User:   "user",
+	Seller: "seller",
+	Admin:  "admin",
 }
 
 var enforcer *casbin.Enforcer

@@ -6,7 +6,6 @@ import (
 	"gomall/common/utils/parse"
 	"gomall/services/auth/config"
 	"gomall/services/auth/dal/cache"
-	"gomall/services/auth/initialize"
 )
 
 type PhCaptcha struct {
@@ -51,18 +50,18 @@ func (c *PhCaptcha) VerifyCaptcha(id string, answer string) (match bool) {
 }
 
 func (c *PhCaptcha) Set(id string, value string) error {
-	_, err := initialize.GetRedis().SetWithTime(cache.GetPhotoCaptchaKey(id), value, parse.Duration(config.GetConf().PhotoCaptcha.Expire))
+	_, err := cache.SetWithTime(cache.GetPhotoCaptchaKey(id), value, parse.Duration(config.GetConf().PhotoCaptcha.Expire))
 	return err
 }
 
 func (c *PhCaptcha) Get(id string, clear bool) string {
-	val, err := initialize.GetRedis().Get(cache.GetPhotoCaptchaKey(id))
+	val, err := cache.Get(cache.GetPhotoCaptchaKey(id))
 	if err != nil {
 		return ""
 	}
 
 	if clear {
-		initialize.GetRedis().Del(cache.GetPhotoCaptchaKey(id))
+		cache.Del(cache.GetPhotoCaptchaKey(id))
 	}
 
 	return val

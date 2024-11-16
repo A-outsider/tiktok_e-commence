@@ -29,6 +29,7 @@ func CheckAdmin(c context.Context, ctx *app.RequestContext, userId string) (Stat
 	return check(userId, AdminRole, ctx.FullPath(), string(ctx.Request.Method()))
 }
 
+// 目前策略模型 , 管理员 继承 卖家接口 , 卖家 继承 普通用户接口
 func check(userId string, sub, obj, act string) (StatusCode int64) {
 	checkLock.Lock()
 	defer checkLock.Unlock()

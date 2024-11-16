@@ -14,7 +14,6 @@ import (
 	"gomall/services/auth/dal/cache"
 	"gomall/services/auth/dal/db"
 	"gomall/services/auth/dal/model"
-	"gomall/services/auth/initialize"
 	"gomall/services/auth/utils/captcha"
 	"gomall/services/auth/utils/mail"
 	"gomall/services/auth/utils/password"
@@ -52,7 +51,7 @@ func (s *AuthServiceImpl) LoginByCode(ctx context.Context, req *auth.LoginByCode
 	}
 
 	// 校验验证码
-	code, err := initialize.GetRedis().Get(cache.GetPhoneCodeKey(req.GetPhone()))
+	code, err := cache.Get(cache.GetPhoneCodeKey(req.GetPhone()))
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +62,7 @@ func (s *AuthServiceImpl) LoginByCode(ctx context.Context, req *auth.LoginByCode
 	}
 
 	// 删缓存
-	go initialize.GetRedis().Del(cache.GetRefreshTokenKey(user.ID))
+	go cache.Del(cache.GetRefreshTokenKey(user.ID))
 
 	// 生成验证token
 	if res.Token, err = token.GenerateAccessToken(user.ID); err != nil || len(res.Token) == 0 {
@@ -78,7 +77,7 @@ func (s *AuthServiceImpl) LoginByCode(ctx context.Context, req *auth.LoginByCode
 	}
 
 	// 存入缓存
-	_, err = initialize.GetRedis().SetWithTime(cache.GetRefreshTokenKey(user.ID), res.RefreshToken, parse.Duration(config.GetConf().Jwt.RefreshExpireTime))
+	_, err = cache.SetWithTime(cache.GetRefreshTokenKey(user.ID), res.RefreshToken, parse.Duration(config.GetConf().Jwt.RefreshExpireTime))
 	if err != nil {
 		zap.L().Error("redis.Set fail", zap.Error(err))
 		return
@@ -116,7 +115,7 @@ func (s *AuthServiceImpl) LoginByPwd(ctx context.Context, req *auth.LoginByPwdRe
 	}
 
 	// 密码错误次数限制
-	failures, _ := initialize.GetRedis().Get(cache.GetErrorPsdLimitKey(user.ID))
+	failures, _ := cache.Get(cache.GetErrorPsdLimitKey(user.ID))
 
 	var f int
 	if f, err = strconv.Atoi(failures); err == nil && f >= config.GetConf().Password.ErrorLimit {
@@ -126,14 +125,14 @@ func (s *AuthServiceImpl) LoginByPwd(ctx context.Context, req *auth.LoginByPwdRe
 
 	// 密码校验
 	if password.Encrypt(req.GetPassword()) != user.Password {
-		initialize.GetRedis().IncrWithTime(cache.GetErrorPsdLimitKey(user.ID), parse.Duration(config.GetConf().Password.ErrorLockTime))
+		cache.IncrWithTime(cache.GetErrorPsdLimitKey(user.ID), parse.Duration(config.GetConf().Password.ErrorLockTime))
 		res.StatusCode = resp.CodeInvalidPassword
 		return
 	}
 
 	// 登录成功 , 删除缓存
-	initialize.GetRedis().Del(cache.GetErrorPsdLimitKey(user.ID))
-	initialize.GetRedis().Del(cache.GetRefreshTokenKey(user.ID))
+	cache.Del(cache.GetErrorPsdLimitKey(user.ID))
+	cache.Del(cache.GetRefreshTokenKey(user.ID))
 
 	// 生成验证token
 	if res.Token, err = token.GenerateAccessToken(user.ID); err != nil || len(res.Token) == 0 {
@@ -147,7 +146,7 @@ func (s *AuthServiceImpl) LoginByPwd(ctx context.Context, req *auth.LoginByPwdRe
 	}
 
 	// 存入缓存
-	_, err = initialize.GetRedis().SetWithTime(cache.GetRefreshTokenKey(user.ID), res.RefreshToken, parse.Duration(config.GetConf().Jwt.RefreshExpireTime))
+	_, err = cache.SetWithTime(cache.GetRefreshTokenKey(user.ID), res.RefreshToken, parse.Duration(config.GetConf().Jwt.RefreshExpireTime))
 	if err != nil {
 		zap.L().Error("redis.Set fail", zap.Error(err))
 		return
@@ -165,7 +164,7 @@ func (s *AuthServiceImpl) Register(ctx context.Context, req *auth.RegisterReq) (
 
 	// 校验手机验证码	TODO
 	var code string
-	if code, err = initialize.GetRedis().Get(cache.GetPhoneCodeKey(req.GetPhone())); err != nil || code != req.GetAuthCode() {
+	if code, _ = cache.Get(cache.GetPhoneCodeKey(req.GetPhone())); code != req.GetAuthCode() {
 		res.StatusCode = resp.CodeInvalidCaptcha
 		return
 	}
@@ -204,9 +203,10 @@ func (s *AuthServiceImpl) Register(ctx context.Context, req *auth.RegisterReq) (
 func (s *AuthServiceImpl) SendPhoneCode(ctx context.Context, req *auth.SendPhoneCodeReq) (res *auth.SendPhoneCodeResp, err error) {
 	res = new(auth.SendPhoneCodeResp)
 	res.StatusCode = resp.CodeServerBusy
+
 	// 校验发送间隔
 	var result string
-	if result, err = initialize.GetRedis().Get(cache.GetSendCaptchaIntervalKey(req.GetPhone())); len(result) != 0 || err == nil {
+	if result, err = cache.Get(cache.GetSendCaptchaIntervalKey(req.GetPhone())); len(result) != 0 || err == nil {
 		res.StatusCode = resp.CodeRateLimitExceeded
 		return
 	}
@@ -223,11 +223,11 @@ func (s *AuthServiceImpl) SendPhoneCode(ctx context.Context, req *auth.SendPhone
 	}
 
 	// 删除原来的验证码
-	initialize.GetRedis().Del(cache.GetPhoneCodeKey(req.GetPhone()))
+	cache.Del(cache.GetPhoneCodeKey(req.GetPhone()))
 
 	// 放入缓存
-	initialize.GetRedis().SetWithTime(cache.GetSendCaptchaIntervalKey(req.GetPhone()), "1", parse.Duration(phoneConf.SendInterval)) // 刷新间隔
-	_, err = initialize.GetRedis().SetWithTime(cache.GetPhoneCodeKey(req.GetPhone()), Captcha, parse.Duration(phoneConf.ExpirationTime))
+	cache.SetWithTime(cache.GetSendCaptchaIntervalKey(req.GetPhone()), "1", parse.Duration(phoneConf.SendInterval)) // 刷新间隔
+	_, err = cache.SetWithTime(cache.GetPhoneCodeKey(req.GetPhone()), Captcha, parse.Duration(phoneConf.ExpirationTime))
 	if err != nil {
 		zap.L().Error("redis.Set fail", zap.Error(err))
 		return
@@ -245,7 +245,7 @@ func (s *AuthServiceImpl) SendEmailCode(ctx context.Context, req *auth.SendEmail
 
 	// 校验发送间隔
 	var result string
-	if result, err = initialize.GetRedis().Get(cache.GetSendCaptchaIntervalKey(req.GetEmail())); len(result) != 0 || err == nil {
+	if result, err = cache.Get(cache.GetSendCaptchaIntervalKey(req.GetEmail())); len(result) != 0 || err == nil {
 		res.StatusCode = resp.CodeRateLimitExceeded
 		return
 	}
@@ -262,11 +262,11 @@ func (s *AuthServiceImpl) SendEmailCode(ctx context.Context, req *auth.SendEmail
 	}
 
 	// 删除原来的验证码
-	initialize.GetRedis().Del(cache.GetEmailKey(req.GetEmail()))
+	cache.Del(cache.GetEmailKey(req.GetEmail()))
 
 	// 放入缓存
-	initialize.GetRedis().SetWithTime(cache.GetSendCaptchaIntervalKey(req.GetEmail()), "1", parse.Duration(config.GetConf().Email.SendInterval)) // 刷新间隔
-	_, err = initialize.GetRedis().SetWithTime(cache.GetEmailKey(req.GetEmail()), Captcha, parse.Duration(emailConf.ExpirationTime))
+	cache.SetWithTime(cache.GetSendCaptchaIntervalKey(req.GetEmail()), "1", parse.Duration(config.GetConf().Email.SendInterval)) // 刷新间隔
+	_, err = cache.SetWithTime(cache.GetEmailKey(req.GetEmail()), Captcha, parse.Duration(emailConf.ExpirationTime))
 	if err != nil {
 		zap.L().Error("redis.Set fail", zap.Error(err))
 		return
@@ -314,14 +314,14 @@ func (s *AuthServiceImpl) RefreshToken(ctx context.Context, req *auth.RefreshTok
 	}
 
 	// 读取缓存
-	t, err := initialize.GetRedis().Get(cache.GetRefreshTokenKey(claims.UserId))
+	t, err := cache.Get(cache.GetRefreshTokenKey(claims.UserId))
 	if t != req.GetRefreshToken() || err != nil {
 		res.StatusCode = resp.CodeInvalidTokenExpired
 		return
 	}
 
 	// 删缓存
-	go initialize.GetRedis().Del(cache.GetRefreshTokenKey(claims.ID))
+	go cache.Del(cache.GetRefreshTokenKey(claims.ID))
 
 	// 生成验证token
 	if res.Token, err = token.GenerateAccessToken(claims.ID); err != nil || len(res.Token) == 0 {
@@ -336,7 +336,7 @@ func (s *AuthServiceImpl) RefreshToken(ctx context.Context, req *auth.RefreshTok
 	}
 
 	// 存入缓存
-	_, err = initialize.GetRedis().SetWithTime(cache.GetRefreshTokenKey(claims.ID), res.RefreshToken, parse.Duration(config.GetConf().Jwt.RefreshExpireTime))
+	_, err = cache.SetWithTime(cache.GetRefreshTokenKey(claims.ID), res.RefreshToken, parse.Duration(config.GetConf().Jwt.RefreshExpireTime))
 	if err != nil {
 		zap.L().Error("redis.Set fail", zap.Error(err))
 		return
@@ -349,12 +349,13 @@ func (s *AuthServiceImpl) RefreshToken(ctx context.Context, req *auth.RefreshTok
 }
 
 // GetUserAdmin implements the AuthService interface.
+const expireTime = "7d" // TODO 写入配置文件
 func (s *AuthServiceImpl) GetUserAdmin(ctx context.Context, req *auth.CheckAdminReq) (res *auth.CheckAdminResp, err error) {
 	res = new(auth.CheckAdminResp)
 	res.StatusCode = resp.CodeServerBusy
 
 	// 尝试命中缓存
-	AdminRole, err := initialize.GetRedis().Get(cache.GetUserRoleKey(req.GetUserId()))
+	AdminRole, err := cache.Get(cache.GetUserRoleKey(req.GetUserId()))
 	res.Role, err = strconv.ParseInt(AdminRole, 10, 64)
 	if err == nil && len(AdminRole) != 0 {
 		res.StatusCode = resp.CodeSuccess
@@ -374,9 +375,8 @@ func (s *AuthServiceImpl) GetUserAdmin(ctx context.Context, req *auth.CheckAdmin
 
 	// 重新存入缓存
 	//expireTime := config.GetConf().RoleCacheExpireTime
-	expireTime := "7d" // TODO 写入配置文件
 
-	go initialize.GetRedis().SetWithTime(cache.GetUserRoleKey(req.GetUserId()), User.Role, parse.Duration(expireTime))
+	go cache.SetWithTime(cache.GetUserRoleKey(req.GetUserId()), User.Role, parse.Duration(expireTime))
 
 	res.Role = User.Role
 	res.StatusCode = resp.CodeSuccess

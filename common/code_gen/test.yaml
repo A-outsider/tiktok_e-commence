@@ -29,7 +29,7 @@ phone:
   accessKeyId: "LTAI5t8LkfrqgiBhXrLECUXV"
   accessKeySecret: "RGvYAmyeXMy88HuT4gqj4YVyl5bsNI"
   regionId: ""
-  expiration_time: 300s   # 邮箱有效期 300 秒
+  expirationTime: 300s
   sendInterval: 60s   # 发送间隔
 
 

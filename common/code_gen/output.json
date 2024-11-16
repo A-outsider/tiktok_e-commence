@@ -33,8 +33,9 @@
     "ErrorLockTime": "30m"
   },
   "phone": {
-    "accessKeyId": "",
-    "accessKeySecret": "",
+    "accessKeyId": "LTAI5t8LkfrqgiBhXrLECUXV",
+    "accessKeySecret": "RGvYAmyeXMy88HuT4gqj4YVyl5bsNI",
+    "expirationTime": "300s",
     "regionId": "",
     "sendInterval": "60s"
   },

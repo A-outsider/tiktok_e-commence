@@ -2,13 +2,12 @@ package initialize
 
 import (
 	dysmsapi20170525 "github.com/alibabacloud-go/dysmsapi-20170525/v4/client"
-	"gomall/common/database"
 	"gorm.io/gorm"
 )
 
 type ServiceContext struct {
 	DB  *gorm.DB
-	RDB *database.RedisClient
+	RDB *RedisClient
 	SMS *dysmsapi20170525.Client
 }
 
@@ -28,7 +27,7 @@ func GetMysql() *gorm.DB {
 	return GetServiceContext().DB
 }
 
-func GetRedis() *database.RedisClient {
+func GetRedis() *RedisClient {
 	return GetServiceContext().RDB
 }
 

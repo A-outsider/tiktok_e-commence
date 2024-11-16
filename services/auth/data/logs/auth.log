@@ -1,0 +1,15 @@
+{"level":"ERROR","ts":"2024-11-13T19:44:55.857+0800","caller":"token/token.go:22","msg":"Error parsing duration:","error":"strconv.ParseInt: parsing \"\": invalid syntax"}
+{"level":"ERROR","ts":"2024-11-13T19:44:55.864+0800","caller":"token/token.go:48","msg":"Error parsing duration:","error":"strconv.ParseInt: parsing \"\": invalid syntax"}
+{"level":"ERROR","ts":"2024-11-13T19:58:26.500+0800","caller":"token/token.go:22","msg":"Error parsing duration:","error":"strconv.ParseInt: parsing \"\": invalid syntax"}
+{"level":"ERROR","ts":"2024-11-13T19:58:26.500+0800","caller":"token/token.go:48","msg":"Error parsing duration:","error":"strconv.ParseInt: parsing \"\": invalid syntax"}
+{"level":"ERROR","ts":"2024-11-13T20:04:01.920+0800","caller":"token/token.go:22","msg":"Error parsing duration:","error":"strconv.ParseInt: parsing \"\": invalid syntax"}
+{"level":"ERROR","ts":"2024-11-13T20:04:01.931+0800","caller":"token/token.go:48","msg":"Error parsing duration:","error":"strconv.ParseInt: parsing \"\": invalid syntax"}
+{"level":"ERROR","ts":"2024-11-13T20:32:13.924+0800","caller":"authservice/authservice.go:759","msg":"邮箱验证码发送失败dial tcp :465: connectex: No connection could be made because the target machine actively refused it."}
+{"level":"ERROR","ts":"2024-11-13T21:11:15.603+0800","caller":"token/token.go:22","msg":"Error parsing duration:","error":"strconv.ParseInt: parsing \"\": invalid syntax"}
+{"level":"ERROR","ts":"2024-11-13T21:11:15.615+0800","caller":"token/token.go:48","msg":"Error parsing duration:","error":"strconv.ParseInt: parsing \"\": invalid syntax"}
+{"level":"ERROR","ts":"2024-11-13T21:22:12.301+0800","caller":"token/token.go:23","msg":"Error parsing duration:","error":"strconv.ParseInt: parsing \"\": invalid syntax"}
+{"level":"ERROR","ts":"2024-11-13T21:22:12.302+0800","caller":"token/token.go:51","msg":"Error parsing duration:","error":"strconv.ParseInt: parsing \"\": invalid syntax"}
+{"level":"ERROR","ts":"2024-11-14T21:57:02.772+0800","caller":"authservice/authservice.go:613","msg":"邮箱验证码发送失败dial tcp :465: connectex: No connection could be made because the target machine actively refused it."}
+{"level":"ERROR","ts":"2024-11-14T21:59:33.672+0800","caller":"authservice/authservice.go:613","msg":"邮箱验证码发送失败dial tcp :465: connectex: No connection could be made because the target machine actively refused it."}
+{"level":"ERROR","ts":"2024-11-14T22:02:12.005+0800","caller":"handler/handler.go:230","msg":"Error parsing duration:","error":"strconv.ParseInt: parsing \"\": invalid syntax"}
+{"level":"ERROR","ts":"2024-11-14T22:03:58.193+0800","caller":"handler/handler.go:230","msg":"Error parsing duration:","error":"strconv.ParseInt: parsing \"\": invalid syntax"}

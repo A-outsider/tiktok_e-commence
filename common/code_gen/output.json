@@ -1,24 +1,7 @@
 {
-  "email": {
-    "addresses": null,
-    "email": null,
-    "expiration_time": "300s",
-    "host": null,
-    "name": "tiktok_mall",
-    "password": "lijialang666",
-    "port": 465,
-    "sendInterval": "60s"
-  },
   "jaeger": {
-    "host": "124.222.131.109",
-    "port": 24317
-  },
-  "jwt": {
-    "accessExpireTime": "60m",
-    "accessSecret": "tiktok_mall_access",
-    "issuer": "zty",
-    "refreshExpireTime": "168h",
-    "refreshSecret": "tiktok_mall_refresh"
+    "host": "192.168.134.128",
+    "port": 24318
   },
   "mysql": {
     "charset": "utf8mb4",
@@ -28,24 +11,6 @@
     "port": 23306,
     "username": "root"
   },
-  "password": {
-    "ErrorLimit": 8,
-    "ErrorLockTime": "30m"
-  },
-  "phone": {
-    "accessKeyId": "",
-    "accessKeySecret": "",
-    "regionId": "",
-    "sendInterval": "60s"
-  },
-  "photoCaptcha": {
-    "dotCount": 80,
-    "expire": "180s",
-    "height": 80,
-    "length": 5,
-    "maxSkew": 0.7,
-    "width": 240
-  },
   "redis": {
     "host": "124.222.131.109",
     "password": "lijialang666",
@@ -53,6 +18,9 @@
   },
   "service": {
     "host": "127.0.0.1",
-    "port": 9001
+    "port": 9000
+  },
+  "static": {
+    "avatar_path": "./data/static/avatar"
   }
 }

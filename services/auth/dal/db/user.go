@@ -5,7 +5,7 @@ import (
 	"gomall/services/auth/initialize"
 )
 
-func GetUser(id int64) (*model.User, error) {
+func GetUser(id string) (*model.User, error) {
 	user := new(model.User)
 	err := initialize.GetMysql().Where("id = ?", id).First(user).Error
 	return user, err

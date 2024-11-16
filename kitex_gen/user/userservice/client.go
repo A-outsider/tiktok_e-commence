@@ -11,8 +11,15 @@ import (
 
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.
 type Client interface {
-	Register(ctx context.Context, Req *user.RegisterReq, callOptions ...callopt.Option) (r *user.RegisterResp, err error)
-	Login(ctx context.Context, Req *user.LoginReq, callOptions ...callopt.Option) (r *user.LoginResp, err error)
+	GetUserInfo(ctx context.Context, Req *user.GetUserInfoReq, callOptions ...callopt.Option) (r *user.GetUserInfoResp, err error)
+	ModifyUserInfo(ctx context.Context, Req *user.ModifyUserInfoReq, callOptions ...callopt.Option) (r *user.ModifyUserInfoResp, err error)
+	DeleteUser(ctx context.Context, Req *user.DeleteUserReq, callOptions ...callopt.Option) (r *user.DeleteUserResp, err error)
+	UploadAvatar(ctx context.Context, Req *user.UploadAvatarReq, callOptions ...callopt.Option) (r *user.UploadAvatarResp, err error)
+	GetAddressList(ctx context.Context, Req *user.GetAddressListReq, callOptions ...callopt.Option) (r *user.GetAddressListResp, err error)
+	AddAddress(ctx context.Context, Req *user.AddAddressReq, callOptions ...callopt.Option) (r *user.AddAddressResp, err error)
+	ModifyAddress(ctx context.Context, Req *user.ModifyAddressReq, callOptions ...callopt.Option) (r *user.ModifyAddressResp, err error)
+	DeleteAddress(ctx context.Context, Req *user.DeleteAddressReq, callOptions ...callopt.Option) (r *user.DeleteAddressResp, err error)
+	SetDefaultAddress(ctx context.Context, Req *user.SetDefaultAddressReq, callOptions ...callopt.Option) (r *user.SetDefaultAddressResp, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -44,12 +51,47 @@ type kUserServiceClient struct {
 	*kClient
 }
 
-func (p *kUserServiceClient) Register(ctx context.Context, Req *user.RegisterReq, callOptions ...callopt.Option) (r *user.RegisterResp, err error) {
+func (p *kUserServiceClient) GetUserInfo(ctx context.Context, Req *user.GetUserInfoReq, callOptions ...callopt.Option) (r *user.GetUserInfoResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.Register(ctx, Req)
+	return p.kClient.GetUserInfo(ctx, Req)
 }
 
-func (p *kUserServiceClient) Login(ctx context.Context, Req *user.LoginReq, callOptions ...callopt.Option) (r *user.LoginResp, err error) {
+func (p *kUserServiceClient) ModifyUserInfo(ctx context.Context, Req *user.ModifyUserInfoReq, callOptions ...callopt.Option) (r *user.ModifyUserInfoResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.Login(ctx, Req)
+	return p.kClient.ModifyUserInfo(ctx, Req)
+}
+
+func (p *kUserServiceClient) DeleteUser(ctx context.Context, Req *user.DeleteUserReq, callOptions ...callopt.Option) (r *user.DeleteUserResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.DeleteUser(ctx, Req)
+}
+
+func (p *kUserServiceClient) UploadAvatar(ctx context.Context, Req *user.UploadAvatarReq, callOptions ...callopt.Option) (r *user.UploadAvatarResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.UploadAvatar(ctx, Req)
+}
+
+func (p *kUserServiceClient) GetAddressList(ctx context.Context, Req *user.GetAddressListReq, callOptions ...callopt.Option) (r *user.GetAddressListResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.GetAddressList(ctx, Req)
+}
+
+func (p *kUserServiceClient) AddAddress(ctx context.Context, Req *user.AddAddressReq, callOptions ...callopt.Option) (r *user.AddAddressResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.AddAddress(ctx, Req)
+}
+
+func (p *kUserServiceClient) ModifyAddress(ctx context.Context, Req *user.ModifyAddressReq, callOptions ...callopt.Option) (r *user.ModifyAddressResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.ModifyAddress(ctx, Req)
+}
+
+func (p *kUserServiceClient) DeleteAddress(ctx context.Context, Req *user.DeleteAddressReq, callOptions ...callopt.Option) (r *user.DeleteAddressResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.DeleteAddress(ctx, Req)
+}
+
+func (p *kUserServiceClient) SetDefaultAddress(ctx context.Context, Req *user.SetDefaultAddressReq, callOptions ...callopt.Option) (r *user.SetDefaultAddressResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.SetDefaultAddress(ctx, Req)
 }

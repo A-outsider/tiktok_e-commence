@@ -2,14 +2,14 @@ package controller
 
 import (
 	"github.com/cloudwego/hertz/pkg/app"
-	"gomall/gateway/types/resp"
+	"gomall/gateway/types/resp/common"
 	"net/http"
 )
 
 // Controller definition
 type Controller[T any] struct {
 	Request  *T
-	Response *resp.Response
+	Response *common.Response
 	c        *app.RequestContext
 }
 
@@ -17,7 +17,7 @@ type Controller[T any] struct {
 func NewCtrl[T any](c *app.RequestContext) *Controller[T] {
 	return &Controller[T]{
 		Request:  new(T),
-		Response: new(resp.Response),
+		Response: new(common.Response),
 		c:        c,
 	}
 }

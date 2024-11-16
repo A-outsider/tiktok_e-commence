@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/redis/go-redis/v9"
 	"gomall/common/database"
-	"gomall/services/auth/config"
+	"gomall/services/user/config"
 )
 
 type RedisClient struct {

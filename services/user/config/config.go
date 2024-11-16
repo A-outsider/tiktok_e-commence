@@ -17,18 +17,18 @@ type Service struct {
 }
 
 type Mysql struct {
-	Host     string `yaml:"host"`
-	Port     int    `yaml:"port"`
-	Dbname   string `yaml:"dbname"`
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
 	Charset  string `yaml:"charset"`
+	Host     string `yaml:"host"`
+	Port     int    `yaml:"port"`
+	Dbname   string `yaml:"dbname"`
 }
 
 type Redis struct {
-	Password string `yaml:"password"`
 	Host     string `yaml:"host"`
 	Port     int    `yaml:"port"`
+	Password string `yaml:"password"`
 }
 
 type Jaeger struct {
@@ -36,11 +36,16 @@ type Jaeger struct {
 	Host string `yaml:"host"`
 }
 
+type Static struct {
+	AvatarPath string `yaml:"avatar_path"`
+}
+
 type Config struct {
 	Service Service `yaml:"service"`
 	Mysql   Mysql   `yaml:"mysql"`
 	Redis   Redis   `yaml:"redis"`
 	Jaeger  Jaeger  `yaml:"jaeger"`
+	Static  Static  `yaml:"static"`
 }
 
 func GetConf() *Config {

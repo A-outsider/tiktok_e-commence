@@ -13,9 +13,9 @@ import (
 	cc "gomall/common/config"
 	"gomall/common/logs"
 	"gomall/kitex_gen/user/userservice"
-	"gomall/services/auth/initialize"
 	"gomall/services/user/config"
 	"gomall/services/user/handler"
+	"gomall/services/user/initialize"
 	"net"
 	"time"
 )

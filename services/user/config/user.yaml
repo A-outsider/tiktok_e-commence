@@ -24,3 +24,5 @@ jaeger:
 
 
 
+static:
+  avatar_path: ./data/static/avatar

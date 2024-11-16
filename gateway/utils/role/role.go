@@ -6,7 +6,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"go.uber.org/zap"
 	"gomall/gateway/rpc"
-	"gomall/gateway/types/resp"
+	"gomall/gateway/types/resp/common"
 	auth "gomall/kitex_gen/auth"
 	"sync"
 )
@@ -18,9 +18,9 @@ func CheckAdmin(c context.Context, ctx *app.RequestContext, userId string) (Stat
 
 	result, _ := rpc.GetAuthClient().GetUserAdmin(c, &auth.CheckAdminReq{UserId: userId})
 	if result == nil || result.StatusCode == 0 {
-		return resp.CodeServerBusy
+		return common.CodeServerBusy
 	}
-	if result.StatusCode != resp.CodeSuccess {
+	if result.StatusCode != common.CodeSuccess {
 		return result.StatusCode
 	}
 
@@ -36,8 +36,8 @@ func check(userId string, sub, obj, act string) (StatusCode int64) {
 
 	ok, _ := enforcer.Enforce(sub, obj, act) // sub主体 , obj对象 , act动作
 	if ok {
-		return resp.CodeSuccess
+		return common.CodeSuccess
 	}
 	zap.L().Error(fmt.Sprintf("权限不足,用户ID：%d，角色：%s，路径：%s，请求方法：%s", userId, sub, obj, act))
-	return resp.CodeInvalidRoleAdmin
+	return common.CodeInvalidRoleAdmin
 }

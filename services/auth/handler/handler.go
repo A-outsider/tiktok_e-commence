@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 	"gomall/common/utils/parse"
 	"gomall/common/utils/random"
-	"gomall/gateway/types/resp"
+	"gomall/gateway/types/resp/common"
 	auth "gomall/kitex_gen/auth"
 	"gomall/services/auth/config"
 	"gomall/services/auth/dal/cache"
@@ -34,7 +34,7 @@ func NewAuthServiceImpl() *AuthServiceImpl {
 // LoginByCode implements the AuthService interface.
 func (s *AuthServiceImpl) LoginByCode(ctx context.Context, req *auth.LoginByCodeReq) (res *auth.LoginByCodeResp, err error) {
 	res = new(auth.LoginByCodeResp)
-	res.StatusCode = resp.CodeServerBusy
+	res.StatusCode = common.CodeServerBusy
 
 	// 校验用户是否存在
 	user := new(model.User)
@@ -42,7 +42,7 @@ func (s *AuthServiceImpl) LoginByCode(ctx context.Context, req *auth.LoginByCode
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) || len(user.ID) == 0 {
-			res.StatusCode = resp.CodeUserNotExist
+			res.StatusCode = common.CodeUserNotExist
 			return
 		} else {
 			zap.L().Error("CheckPassword fail", zap.Error(err))
@@ -57,7 +57,7 @@ func (s *AuthServiceImpl) LoginByCode(ctx context.Context, req *auth.LoginByCode
 	}
 
 	if code != req.GetCode() {
-		res.StatusCode = resp.CodeInvalidCaptcha
+		res.StatusCode = common.CodeInvalidCaptcha
 		return
 	}
 
@@ -84,7 +84,7 @@ func (s *AuthServiceImpl) LoginByCode(ctx context.Context, req *auth.LoginByCode
 	}
 
 	// success
-	res.StatusCode = resp.CodeSuccess
+	res.StatusCode = common.CodeSuccess
 
 	return
 }
@@ -92,7 +92,7 @@ func (s *AuthServiceImpl) LoginByCode(ctx context.Context, req *auth.LoginByCode
 // LoginByPwd implements the AuthService interface.
 func (s *AuthServiceImpl) LoginByPwd(ctx context.Context, req *auth.LoginByPwdReq) (res *auth.LoginByPwdResp, err error) {
 	res = new(auth.LoginByPwdResp)
-	res.StatusCode = resp.CodeServerBusy
+	res.StatusCode = common.CodeServerBusy
 
 	// 校验用户是否存在
 	user := new(model.User)
@@ -100,7 +100,7 @@ func (s *AuthServiceImpl) LoginByPwd(ctx context.Context, req *auth.LoginByPwdRe
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) || len(user.ID) == 0 {
-			res.StatusCode = resp.CodeUserNotExist
+			res.StatusCode = common.CodeUserNotExist
 			return
 		} else {
 			zap.L().Error("CheckPassword fail", zap.Error(err))
@@ -110,7 +110,7 @@ func (s *AuthServiceImpl) LoginByPwd(ctx context.Context, req *auth.LoginByPwdRe
 
 	// 校验图片验证码
 	if ok := captcha.NewCapt().VerifyCaptcha(req.GetCaptchaId(), req.GetCaptchaAnswer()); !ok {
-		res.StatusCode = resp.CodeInvalidCaptcha
+		res.StatusCode = common.CodeInvalidCaptcha
 		return
 	}
 
@@ -119,14 +119,14 @@ func (s *AuthServiceImpl) LoginByPwd(ctx context.Context, req *auth.LoginByPwdRe
 
 	var f int
 	if f, err = strconv.Atoi(failures); err == nil && f >= config.GetConf().Password.ErrorLimit {
-		res.StatusCode = resp.CodeUserALREADYLocked
+		res.StatusCode = common.CodeUserALREADYLocked
 		return
 	}
 
 	// 密码校验
 	if password.Encrypt(req.GetPassword()) != user.Password {
 		cache.IncrWithTime(cache.GetErrorPsdLimitKey(user.ID), parse.Duration(config.GetConf().Password.ErrorLockTime))
-		res.StatusCode = resp.CodeInvalidPassword
+		res.StatusCode = common.CodeInvalidPassword
 		return
 	}
 
@@ -152,7 +152,7 @@ func (s *AuthServiceImpl) LoginByPwd(ctx context.Context, req *auth.LoginByPwdRe
 		return
 	}
 
-	res.StatusCode = resp.CodeSuccess
+	res.StatusCode = common.CodeSuccess
 	return
 }
 
@@ -160,34 +160,34 @@ func (s *AuthServiceImpl) LoginByPwd(ctx context.Context, req *auth.LoginByPwdRe
 const defaultAvatar = "./data/" // TODO : 写入配置文件
 func (s *AuthServiceImpl) Register(ctx context.Context, req *auth.RegisterReq) (res *auth.RegisterResp, err error) {
 	res = new(auth.RegisterResp)
-	res.StatusCode = resp.CodeServerBusy
+	res.StatusCode = common.CodeServerBusy
 
 	// 校验手机验证码	TODO
 	var code string
 	if code, _ = cache.Get(cache.GetPhoneCodeKey(req.GetPhone())); code != req.GetAuthCode() {
-		res.StatusCode = resp.CodeInvalidCaptcha
+		res.StatusCode = common.CodeInvalidCaptcha
 		return
 	}
 
 	// 校验密码复杂度
 	if !password.CheckPassword(req.GetPassword()) {
-		res.StatusCode = resp.CodeInvalidPassword
+		res.StatusCode = common.CodeInvalidPassword
 		return
 	}
 
 	// 插入数据库
 	user := &model.User{
-		ID:       random.GetSnowIDbyStr(),
-		Phone:    req.GetPhone(),
-		Avatar:   defaultAvatar,
-		Password: password.Encrypt(req.GetPassword()),
-		Role:     model.ConstRoleOfUser,
+		ID:         random.GetSnowIDbyStr(),
+		Phone:      req.GetPhone(),
+		AvatarPath: defaultAvatar,
+		Password:   password.Encrypt(req.GetPassword()),
+		Role:       model.ConstRoleOfUser,
 	}
 
 	var e *mysql.MySQLError
 	err = db.InsertUser(user)
 	if errors.As(err, &e) && e.Number == 1062 {
-		res.StatusCode = resp.CodeUserExist
+		res.StatusCode = common.CodeUserExist
 		return
 	} // 校验唯一用户
 	if err != nil {
@@ -195,19 +195,19 @@ func (s *AuthServiceImpl) Register(ctx context.Context, req *auth.RegisterReq) (
 		return
 	}
 
-	res.StatusCode = resp.CodeSuccess
+	res.StatusCode = common.CodeSuccess
 	return
 }
 
 // SendPhoneCode implements the AuthService interface.
 func (s *AuthServiceImpl) SendPhoneCode(ctx context.Context, req *auth.SendPhoneCodeReq) (res *auth.SendPhoneCodeResp, err error) {
 	res = new(auth.SendPhoneCodeResp)
-	res.StatusCode = resp.CodeServerBusy
+	res.StatusCode = common.CodeServerBusy
 
 	// 校验发送间隔
 	var result string
 	if result, err = cache.Get(cache.GetSendCaptchaIntervalKey(req.GetPhone())); len(result) != 0 || err == nil {
-		res.StatusCode = resp.CodeRateLimitExceeded
+		res.StatusCode = common.CodeRateLimitExceeded
 		return
 	}
 
@@ -233,7 +233,7 @@ func (s *AuthServiceImpl) SendPhoneCode(ctx context.Context, req *auth.SendPhone
 		return
 	}
 
-	res.StatusCode = resp.CodeSuccess
+	res.StatusCode = common.CodeSuccess
 	return
 }
 
@@ -241,12 +241,12 @@ func (s *AuthServiceImpl) SendPhoneCode(ctx context.Context, req *auth.SendPhone
 const defaultCaptchaLength = 6 // TODO : 写入配置文件
 func (s *AuthServiceImpl) SendEmailCode(ctx context.Context, req *auth.SendEmailCodeReq) (res *auth.SendEmailCodeResp, err error) {
 	res = new(auth.SendEmailCodeResp)
-	res.StatusCode = resp.CodeServerBusy
+	res.StatusCode = common.CodeServerBusy
 
 	// 校验发送间隔
 	var result string
 	if result, err = cache.Get(cache.GetSendCaptchaIntervalKey(req.GetEmail())); len(result) != 0 || err == nil {
-		res.StatusCode = resp.CodeRateLimitExceeded
+		res.StatusCode = common.CodeRateLimitExceeded
 		return
 	}
 
@@ -272,14 +272,14 @@ func (s *AuthServiceImpl) SendEmailCode(ctx context.Context, req *auth.SendEmail
 		return
 	}
 
-	res.StatusCode = resp.CodeSuccess
+	res.StatusCode = common.CodeSuccess
 	return
 }
 
 // ShowPhotoCaptcha implements the AuthService interface.
 func (s *AuthServiceImpl) ShowPhotoCaptcha(ctx context.Context, req *auth.ShowPhotoCaptchaReq) (res *auth.ShowPhotoCaptchaResp, err error) {
 	res = new(auth.ShowPhotoCaptchaResp)
-	res.StatusCode = resp.CodeServerBusy
+	res.StatusCode = common.CodeServerBusy
 
 	res.CaptchaId, res.CaptchaImg, _, err = captcha.NewCapt().GenerateCaptcha()
 	if err != nil {
@@ -287,36 +287,36 @@ func (s *AuthServiceImpl) ShowPhotoCaptcha(ctx context.Context, req *auth.ShowPh
 		return
 	}
 
-	res.StatusCode = resp.CodeSuccess
+	res.StatusCode = common.CodeSuccess
 	return
 }
 
 // RefreshToken implements the AuthService interface.
 func (s *AuthServiceImpl) RefreshToken(ctx context.Context, req *auth.RefreshTokenReq) (res *auth.RefreshTokenResp, err error) {
 	res = new(auth.RefreshTokenResp)
-	res.StatusCode = resp.CodeServerBusy
+	res.StatusCode = common.CodeServerBusy
 
 	// 验证并解析token
 	claims, err := token.ParseToken(req.GetRefreshToken())
 	if err != nil {
 		if errors.Is(err, jwt.ErrTokenMalformed) {
-			res.StatusCode = resp.CodeInvalidTokenForm
+			res.StatusCode = common.CodeInvalidTokenForm
 			return
 		}
 
 		if errors.Is(err, jwt.ErrTokenExpired) && claims.TokenType == 1 {
-			res.StatusCode = resp.CodeInvalidTokenExpired
+			res.StatusCode = common.CodeInvalidTokenExpired
 			return
 		}
 
-		res.StatusCode = resp.CodeInvalidToken
+		res.StatusCode = common.CodeInvalidToken
 		return
 	}
 
 	// 读取缓存
 	t, err := cache.Get(cache.GetRefreshTokenKey(claims.UserId))
 	if t != req.GetRefreshToken() || err != nil {
-		res.StatusCode = resp.CodeInvalidTokenExpired
+		res.StatusCode = common.CodeInvalidTokenExpired
 		return
 	}
 
@@ -343,7 +343,7 @@ func (s *AuthServiceImpl) RefreshToken(ctx context.Context, req *auth.RefreshTok
 	}
 
 	// success
-	res.StatusCode = resp.CodeSuccess
+	res.StatusCode = common.CodeSuccess
 
 	return
 }
@@ -352,13 +352,13 @@ func (s *AuthServiceImpl) RefreshToken(ctx context.Context, req *auth.RefreshTok
 const expireTime = "7d" // TODO 写入配置文件
 func (s *AuthServiceImpl) GetUserAdmin(ctx context.Context, req *auth.CheckAdminReq) (res *auth.CheckAdminResp, err error) {
 	res = new(auth.CheckAdminResp)
-	res.StatusCode = resp.CodeServerBusy
+	res.StatusCode = common.CodeServerBusy
 
 	// 尝试命中缓存
 	AdminRole, err := cache.Get(cache.GetUserRoleKey(req.GetUserId()))
 	res.Role, err = strconv.ParseInt(AdminRole, 10, 64)
 	if err == nil && len(AdminRole) != 0 {
-		res.StatusCode = resp.CodeSuccess
+		res.StatusCode = common.CodeSuccess
 		return
 	}
 
@@ -366,7 +366,7 @@ func (s *AuthServiceImpl) GetUserAdmin(ctx context.Context, req *auth.CheckAdmin
 	User, err := db.GetUserByID(req.GetUserId())
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			res.StatusCode = resp.CodeRecordNotFound
+			res.StatusCode = common.CodeRecordNotFound
 			return
 		}
 		zap.L().Error("GetUserByID failed", zap.Error(err))
@@ -379,6 +379,6 @@ func (s *AuthServiceImpl) GetUserAdmin(ctx context.Context, req *auth.CheckAdmin
 	go cache.SetWithTime(cache.GetUserRoleKey(req.GetUserId()), User.Role, parse.Duration(expireTime))
 
 	res.Role = User.Role
-	res.StatusCode = resp.CodeSuccess
+	res.StatusCode = common.CodeSuccess
 	return
 }

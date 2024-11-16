@@ -1,4 +1,4 @@
-package resp
+package common
 
 type Response struct {
 	StatusCode int64  `json:"code"`

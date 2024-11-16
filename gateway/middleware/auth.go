@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/golang-jwt/jwt/v4"
-	"gomall/gateway/types/resp"
+	"gomall/gateway/types/resp/common"
 	"gomall/gateway/utils/role"
 	"gomall/gateway/utils/token"
 	"net/http"
@@ -28,16 +28,16 @@ func Parse() app.HandlerFunc {
 
 // 验证用户是否登录的中间件 -- 双token
 func Auth() app.HandlerFunc {
-	return func(c context.Context, ctx *app.RequestContext) {
-		res := new(resp.Response)
-		res.SetNoData(resp.CodeSuccess)
+	return func(ctx context.Context, c *app.RequestContext) {
+		res := new(common.Response)
+		res.SetNoData(common.CodeSuccess)
 
 		// 读取验证token
-		tokenString, ok := getToken(ctx)
+		tokenString, ok := getToken(c)
 		if !ok {
-			res.SetNoData(resp.CodeNotLogin)
-			ctx.JSON(http.StatusOK, res)
-			ctx.Abort()
+			res.SetNoData(common.CodeNotLogin)
+			c.JSON(http.StatusOK, res)
+			c.Abort()
 			return
 		}
 
@@ -45,38 +45,38 @@ func Auth() app.HandlerFunc {
 		claims, err := token.ParseToken(tokenString)
 		if err != nil {
 			if errors.Is(err, jwt.ErrTokenMalformed) {
-				res.SetNoData(resp.CodeInvalidTokenForm)
-				ctx.JSON(http.StatusOK, res)
-				ctx.Abort()
+				res.SetNoData(common.CodeInvalidTokenForm)
+				c.JSON(http.StatusOK, res)
+				c.Abort()
 				return
 			}
 
 			// 提示需要刷新token
 			if errors.Is(err, jwt.ErrTokenExpired) && claims.TokenType == 0 {
-				res.SetNoData(resp.CodeInvalidTokenExpired)
-				ctx.JSON(http.StatusOK, res)
-				ctx.Abort()
+				res.SetNoData(common.CodeInvalidTokenExpired)
+				c.JSON(http.StatusOK, res)
+				c.Abort()
 				return
 			}
 
-			res.SetNoData(resp.CodeInvalidToken)
-			ctx.JSON(http.StatusOK, res)
-			ctx.Abort()
+			res.SetNoData(common.CodeInvalidToken)
+			c.JSON(http.StatusOK, res)
+			c.Abort()
 			return
 		}
 
 		// 认证用户角色权限
-		StatusCode := role.CheckAdmin(c, ctx, claims.UserId)
-		if StatusCode != resp.CodeSuccess {
+		StatusCode := role.CheckAdmin(ctx, c, claims.UserId)
+		if StatusCode != common.CodeSuccess {
 			res.SetNoData(StatusCode)
-			ctx.JSON(http.StatusUnauthorized, res)
-			ctx.Abort()
+			c.JSON(http.StatusUnauthorized, res)
+			c.Abort()
 			return
 		}
 
 		// 存储用户信息
-		ctx.Set("userId", claims.UserId)
-		ctx.Next(c)
+		c.Set("userId", claims.UserId)
+		c.Next(ctx)
 	}
 }
 

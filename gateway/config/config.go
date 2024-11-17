@@ -9,6 +9,15 @@ var (
 	conf       Config
 )
 
+type Jaeger struct {
+	Host string `yaml:"host"`
+	Port int    `yaml:"port"`
+}
+
+type Static struct {
+	AvatarPath string `yaml:"avatarPath"`
+}
+
 type Role struct {
 	Model  string `yaml:"model"`
 	Policy string `yaml:"policy"`
@@ -32,17 +41,13 @@ type Service struct {
 	Port int    `yaml:"port"`
 }
 
-type Jaeger struct {
-	Port int    `yaml:"port"`
-	Host string `yaml:"host"`
-}
-
 type Config struct {
+	Jaeger     Jaeger     `yaml:"jaeger"`
+	Static     Static     `yaml:"static"`
 	Role       Role       `yaml:"role"`
 	Jwt        Jwt        `yaml:"jwt"`
 	VisitLimit VisitLimit `yaml:"visitLimit"`
 	Service    Service    `yaml:"service"`
-	Jaeger     Jaeger     `yaml:"jaeger"`
 }
 
 func GetConf() *Config {

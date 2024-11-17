@@ -1,28 +1,32 @@
 service:
   host : 127.0.0.1
   #host : 124.222.131.109
-  port : 9000
-
-
-mysql:
-  host: 124.222.131.109
-  port: 23306
-  dbname: mall
-  username: root
-  password: lijialang666
-  charset: utf8mb4
-
-
-redis:
-  host: 124.222.131.109
-  port: 26379
-  password: lijialang666
+  port : 8080
 
 jaeger:
-  host: 192.168.134.128
-  port: 24318
+  host: 124.222.131.109
+  port: 24317
 
 
 
+# 业务
 static:
-  avatar_path: ./data/static/avatar
+  avatarPath: ./data/static
+
+role:
+  model: ./data/casbin/model.conf
+  policy: ./data/casbin/policy.csv
+
+jwt:
+  accessExpireTime: 60m
+  refreshExpireTime: 168h
+  accessSecret: tiktok_mall_access
+  refreshSecret:  tiktok_mall_refresh
+  issuer: zty
+
+visitLimit:
+  rateLimitInterval: 0.5s # 令牌投放速率
+  rateLimitCap: 30  # 限流的最大容量
+
+
+

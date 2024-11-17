@@ -143,7 +143,7 @@ func (x *GetUserInfoResp) fastReadField8(buf []byte, _type int8) (offset int, er
 }
 
 func (x *GetUserInfoResp) fastReadField9(buf []byte, _type int8) (offset int, err error) {
-	x.DefaultAddress, offset, err = fastpb.ReadString(buf, _type)
+	x.DefaultAddrId, offset, err = fastpb.ReadString(buf, _type)
 	return offset, err
 }
 
@@ -171,6 +171,11 @@ func (x *ModifyUserInfoReq) FastRead(buf []byte, _type int8, number int32) (offs
 		}
 	case 4:
 		offset, err = x.fastReadField4(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	case 5:
+		offset, err = x.fastReadField5(buf, _type)
 		if err != nil {
 			goto ReadFieldError
 		}
@@ -204,6 +209,11 @@ func (x *ModifyUserInfoReq) fastReadField3(buf []byte, _type int8) (offset int, 
 
 func (x *ModifyUserInfoReq) fastReadField4(buf []byte, _type int8) (offset int, err error) {
 	x.Birthday, offset, err = fastpb.ReadString(buf, _type)
+	return offset, err
+}
+
+func (x *ModifyUserInfoReq) fastReadField5(buf []byte, _type int8) (offset int, err error) {
+	x.Signature, offset, err = fastpb.ReadString(buf, _type)
 	return offset, err
 }
 
@@ -763,7 +773,7 @@ ReadFieldError:
 }
 
 func (x *Address) fastReadField1(buf []byte, _type int8) (offset int, err error) {
-	x.Id, offset, err = fastpb.ReadString(buf, _type)
+	x.Aid, offset, err = fastpb.ReadString(buf, _type)
 	return offset, err
 }
 
@@ -880,10 +890,10 @@ func (x *GetUserInfoResp) fastWriteField8(buf []byte) (offset int) {
 }
 
 func (x *GetUserInfoResp) fastWriteField9(buf []byte) (offset int) {
-	if x.DefaultAddress == "" {
+	if x.DefaultAddrId == "" {
 		return offset
 	}
-	offset += fastpb.WriteString(buf[offset:], 9, x.GetDefaultAddress())
+	offset += fastpb.WriteString(buf[offset:], 9, x.GetDefaultAddrId())
 	return offset
 }
 
@@ -903,6 +913,7 @@ func (x *ModifyUserInfoReq) FastWrite(buf []byte) (offset int) {
 	offset += x.fastWriteField2(buf[offset:])
 	offset += x.fastWriteField3(buf[offset:])
 	offset += x.fastWriteField4(buf[offset:])
+	offset += x.fastWriteField5(buf[offset:])
 	return offset
 }
 
@@ -935,6 +946,14 @@ func (x *ModifyUserInfoReq) fastWriteField4(buf []byte) (offset int) {
 		return offset
 	}
 	offset += fastpb.WriteString(buf[offset:], 4, x.GetBirthday())
+	return offset
+}
+
+func (x *ModifyUserInfoReq) fastWriteField5(buf []byte) (offset int) {
+	if x.Signature == "" {
+		return offset
+	}
+	offset += fastpb.WriteString(buf[offset:], 5, x.GetSignature())
 	return offset
 }
 
@@ -1318,10 +1337,10 @@ func (x *Address) FastWrite(buf []byte) (offset int) {
 }
 
 func (x *Address) fastWriteField1(buf []byte) (offset int) {
-	if x.Id == "" {
+	if x.Aid == "" {
 		return offset
 	}
-	offset += fastpb.WriteString(buf[offset:], 1, x.GetId())
+	offset += fastpb.WriteString(buf[offset:], 1, x.GetAid())
 	return offset
 }
 
@@ -1447,10 +1466,10 @@ func (x *GetUserInfoResp) sizeField8() (n int) {
 }
 
 func (x *GetUserInfoResp) sizeField9() (n int) {
-	if x.DefaultAddress == "" {
+	if x.DefaultAddrId == "" {
 		return n
 	}
-	n += fastpb.SizeString(9, x.GetDefaultAddress())
+	n += fastpb.SizeString(9, x.GetDefaultAddrId())
 	return n
 }
 
@@ -1470,6 +1489,7 @@ func (x *ModifyUserInfoReq) Size() (n int) {
 	n += x.sizeField2()
 	n += x.sizeField3()
 	n += x.sizeField4()
+	n += x.sizeField5()
 	return n
 }
 
@@ -1502,6 +1522,14 @@ func (x *ModifyUserInfoReq) sizeField4() (n int) {
 		return n
 	}
 	n += fastpb.SizeString(4, x.GetBirthday())
+	return n
+}
+
+func (x *ModifyUserInfoReq) sizeField5() (n int) {
+	if x.Signature == "" {
+		return n
+	}
+	n += fastpb.SizeString(5, x.GetSignature())
 	return n
 }
 
@@ -1885,10 +1913,10 @@ func (x *Address) Size() (n int) {
 }
 
 func (x *Address) sizeField1() (n int) {
-	if x.Id == "" {
+	if x.Aid == "" {
 		return n
 	}
-	n += fastpb.SizeString(1, x.GetId())
+	n += fastpb.SizeString(1, x.GetAid())
 	return n
 }
 
@@ -1929,7 +1957,7 @@ var fieldIDToName_GetUserInfoResp = map[int32]string{
 	6:  "Signature",
 	7:  "Birthday",
 	8:  "Gender",
-	9:  "DefaultAddress",
+	9:  "DefaultAddrId",
 	10: "StatusCode",
 }
 
@@ -1938,6 +1966,7 @@ var fieldIDToName_ModifyUserInfoReq = map[int32]string{
 	2: "Name",
 	3: "Gender",
 	4: "Birthday",
+	5: "Signature",
 }
 
 var fieldIDToName_ModifyUserInfoResp = map[int32]string{
@@ -2015,7 +2044,7 @@ var fieldIDToName_SetDefaultAddressResp = map[int32]string{
 }
 
 var fieldIDToName_Address = map[int32]string{
-	1: "Id",
+	1: "Aid",
 	2: "Name",
 	3: "Address",
 	4: "Phone",

@@ -2,13 +2,13 @@ package initialize
 
 import (
 	"gomall/common/database"
-	"gomall/services/user/config"
-	"gomall/services/user/dal/model"
+	"gomall/services/auth/config"
+	"gomall/services/auth/dal/model"
 )
 
 func initMysql() {
 	svcContext.DB = database.NewMySQL(config.GetConf().Mysql) // 关联表
-	err := svcContext.DB.AutoMigrate(&model.User{}, &model.Address{})
+	err := svcContext.DB.AutoMigrate(&model.User{})
 
 	if err != nil {
 		panic(err)

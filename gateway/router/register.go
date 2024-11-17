@@ -40,6 +40,10 @@ func InitRouter() *server.Hertz {
 
 func registerRouter(r *server.Hertz) {
 	r.Use(middleware.CORS())
+
+	// 获取静态文件
+	r.Static("", config.GetConf().Static.AvatarPath) // 用户头像文件夹	TODO : 这个框架的映射好像有bug ?
+
 	v1 := r.Group("/api/v1")
 
 	// 测试

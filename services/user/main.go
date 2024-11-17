@@ -24,10 +24,11 @@ func main() {
 
 	// 配置初始化
 	etcdSuite := cc.InitConfigClient(config.ServerName, config.ServerName, config.MID, config.EtcdAddr, config.GetConf())
+
 	// 初始化日志
 	logs.LogInit(config.ServerName)
 
-	// kitex 版链路追踪 					TODO 未测试
+	// kitex 版链路追踪
 	p := provider.NewOpenTelemetryProvider(
 		provider.WithServiceName(config.ServerName), // 配置服务名称
 		provider.WithExportEndpoint(fmt.Sprintf("%s:%d", config.GetConf().Jaeger.Host, config.GetConf().Jaeger.Port)), // Jaeger导出地址

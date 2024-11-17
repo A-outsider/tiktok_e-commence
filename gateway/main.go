@@ -9,6 +9,7 @@ import (
 	"gomall/gateway/config"
 	"gomall/gateway/router"
 	"gomall/gateway/rpc"
+	"gomall/gateway/utils/role"
 )
 
 func main() {
@@ -17,6 +18,9 @@ func main() {
 
 	// 初始化日志
 	logs.LogInit(config.ServerName)
+
+	// 初始化策略模型
+	role.InitCasbin()
 
 	// kitex 版链路追踪 					TODO 未测试
 	p := provider.NewOpenTelemetryProvider(

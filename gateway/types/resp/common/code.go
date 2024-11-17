@@ -43,7 +43,7 @@ var Msg = map[int64]string{
 	CodeUserNotExist:         "用户不存在",
 	CodeInvalidPassword:      "用户名或密码错误",
 	CodeNotLogin:             "用户未登录",
-	CodeInvalidCaptcha:       "验证码错误",
+	CodeInvalidCaptcha:       "手机号或验证码错误",
 	CodeInvalidCaptchaForm:   "验证码格式错误",
 	CodeInvalidEmailForm:     "用户邮箱格式错误",
 	CodeInvalidPasswordForm:  "用户密码格式错误",

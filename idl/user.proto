@@ -29,7 +29,7 @@ message GetUserInfoResp {
   string signature = 6;
   string birthday = 7;
   int64 gender = 8;
-  string default_address = 9;
+  string default_addr_id = 9;
   int64 status_code = 10;
 
 }
@@ -39,6 +39,7 @@ message ModifyUserInfoReq {
   string name = 2;
   int64 gender = 3;
   string birthday = 4;
+  string signature = 5;
 }
 
 message ModifyUserInfoResp {
@@ -117,7 +118,7 @@ message SetDefaultAddressResp {
 
 // 基础类型
 message Address {
-  string id = 1;
+  string aid = 1;
   string name = 2;
   string address = 3;
   string phone = 4;

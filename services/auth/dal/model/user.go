@@ -6,15 +6,15 @@ import (
 )
 
 type User struct {
-	ID         string `gorm:"primarykey;NOT NULL;comment:用户ID" json:"id"`
-	Email      string `gorm:"type:varchar(25)" json:"email"`
-	Phone      string `gorm:"unique;NOT NULL" json:"phone"`
-	Name       string `json:"name"`
-	Password   string `json:"-"`           // 用户密码
-	AvatarPath string `json:"avatar_path"` // 用户头像的Url
-	DefaultId  string `json:"default_id"`  // 默认地址id
-	Gender     int64  `json:"gender"`
-	Signature  string `json:"signature"`
+	ID            string `gorm:"primarykey;NOT NULL;comment:用户ID" json:"id"`
+	Email         string `gorm:"type:varchar(25)" json:"email"`
+	Phone         string `gorm:"unique;NOT NULL" json:"phone"`
+	Name          string `json:"name"`
+	Password      string `json:"-"`               // 用户密码
+	AvatarPath    string `json:"avatar_path"`     // 用户头像的Url
+	DefaultAddrId string `json:"default_addr_id"` // 默认地址id
+	Gender        int64  `json:"gender"`
+	Signature     string `json:"signature"`
 
 	Role int64 `json:"role"`
 

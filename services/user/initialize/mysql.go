@@ -8,7 +8,7 @@ import (
 
 func initMysql() {
 	svcContext.DB = database.NewMySQL(config.GetConf().Mysql) // 关联表
-	err := svcContext.DB.AutoMigrate(&model.User{})
+	err := svcContext.DB.AutoMigrate(&model.User{}, &model.Address{})
 	if err != nil {
 		panic(err)
 	}

@@ -16,7 +16,7 @@ func GetUserByID(userId string) (user *model.User, err error) {
 	return user, initialize.GetMysql().Where("id = ?", userId).First(user).Error
 }
 
-func ModifyUserInfo(Id string, user *model.User) error {
+func ModifyUserInfo(Id string, user *model.User) error { // TODO: 考虑细化更新响应的参数
 	return initialize.GetMysql().Model(&model.User{}).Where("id = ?", Id).Updates(user).Error
 }
 
@@ -24,23 +24,28 @@ func DeleteUserById(Id string) error {
 	return initialize.GetMysql().Where("id = ?", Id).Delete(&model.User{}).Error
 }
 
+// address
 func GetAddressList(Id string) ([]*model.Address, error) {
 	var addressList []*model.Address
-	err := initialize.GetMysql().Where("id = ?", Id).Find(&addressList).Error
+	err := initialize.GetMysql().Where("uid = ?", Id).Find(&addressList).Error
 	return addressList, err
 }
 
-// address
+func GetAddressById(id, aid string) (*model.Address, error) {
+	address := new(model.Address)
+	return address, initialize.GetMysql().Where("uid = ? and aid = ?", id, aid).First(address).Error
+}
+
 func CreateAddress(address *model.Address) error {
 	return initialize.GetMysql().Create(address).Error
 }
 
-func ModifyAddress(aid string, address *model.Address) error {
-	return initialize.GetMysql().Model(&model.Address{}).Where("aid = ?", aid).Updates(address).Error
+func ModifyAddress(id, aid string, address *model.Address) error { // TODO: 考虑细化更新响应的参数
+	return initialize.GetMysql().Model(&model.Address{}).Where("uid = ? and aid = ?", id, aid).Updates(address).Error
 }
 
 func DeleteAddress(id, aid string) bool {
-	result := initialize.GetMysql().Where("id = ? and aid = ?", id, aid).Delete(&model.Address{})
+	result := initialize.GetMysql().Where("uid = ? and aid = ?", id, aid).Delete(&model.Address{})
 	if result.RowsAffected == 0 {
 		return false
 	}

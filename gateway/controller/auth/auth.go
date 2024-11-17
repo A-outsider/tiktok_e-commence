@@ -208,6 +208,7 @@ func (api *Api) RefreshToken(ctx context.Context, c *app.RequestContext) {
 	}
 
 	result, _ := api.client.RefreshToken(ctx, kitexReq)
+
 	if result == nil || result.GetStatusCode() == 0 {
 		ctrl.NoDataJSON(common.CodeServerBusy)
 		return

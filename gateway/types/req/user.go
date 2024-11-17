@@ -3,7 +3,7 @@ package req
 type ModifyUserInfoReq struct {
 	Name      string `form:"name"`
 	Signature string `form:"signature"`
-	Gender    int    `form:"gender"`
+	Gender    int64  `form:"gender"`
 	Birthday  string `form:"birthday"`
 }
 

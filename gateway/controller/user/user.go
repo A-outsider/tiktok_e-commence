@@ -64,7 +64,7 @@ func (api *Api) ModifyUserInfo(ctx context.Context, c *app.RequestContext) {
 	}
 
 	kitexReq := &rpcUser.ModifyUserInfoReq{Id: c.GetString("userId")}
-	if err := copier.Copy(kitexReq, ctrl.Request); err != nil { // TODO 测试id是否拷贝
+	if err := copier.Copy(kitexReq, ctrl.Request); err != nil {
 		ctrl.NoDataJSON(common.CodeInvalidParams)
 		return
 	}

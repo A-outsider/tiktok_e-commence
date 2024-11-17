@@ -9,17 +9,17 @@ import (
 func RegisterUser(r *route.RouterGroup) {
 	userApi := user.NewApi()
 
-	u := r.Group("/user", middleware.Auth())
+	r.Use(middleware.Auth())
 
-	u.GET("/info", userApi.GetUserInfo)
-	u.PUT("/info", userApi.ModifyUserInfo)
-	u.DELETE("", userApi.DeleteUser)
-	u.POST("/avatar", userApi.UploadAvatar)
+	r.GET("/info", userApi.GetUserInfo)
+	r.PUT("/info", userApi.ModifyUserInfo)
+	r.DELETE("", userApi.DeleteUser)
+	r.POST("/avatar", userApi.UploadAvatar)
 
-	addr := u.Group("/address")
+	addr := r.Group("/address")
 	addr.GET("", userApi.GetAddressList)
 	addr.POST("", userApi.AddAddress)
 	addr.PUT("", userApi.ModifyAddress)
-	addr.DELETE("/", userApi.DeleteAddress)
+	addr.DELETE("", userApi.DeleteAddress)
 	addr.POST("/default", userApi.SetDefaultAddress)
 }

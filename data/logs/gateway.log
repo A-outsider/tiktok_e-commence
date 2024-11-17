@@ -178,3 +178,7 @@
 {"level":"INFO","ts":"2024-11-13T19:33:46.124+0800","caller":"zap@v1.1.0/logger.go:170","msg":"HERTZ: Received signal: interrupt\n"}
 {"level":"INFO","ts":"2024-11-13T19:33:46.124+0800","caller":"zap@v1.1.0/logger.go:170","msg":"HERTZ: Begin graceful shutdown, wait at most num=5 seconds..."}
 {"level":"ERROR","ts":"2024-11-13T19:33:46.124+0800","caller":"zap@v1.1.0/logger.go:182","msg":"HERTZ: Error=accept tcp 127.0.0.1:8080: use of closed network connection"}
+{"level":"ERROR","ts":"2024-11-17T08:53:15.536+0800","caller":"role/role.go:29","msg":"权限不足,用户ID：%!d(string=1)，角色：admin，路径：/api/v1/user/info，请求方法：GET"}
+{"level":"ERROR","ts":"2024-11-17T08:54:53.671+0800","caller":"role/role.go:29","msg":"权限不足,用户ID：%!d(string=1)，角色：admin，路径：/api/v1/user/info，请求方法：GET"}
+{"level":"ERROR","ts":"2024-11-17T08:59:30.448+0800","caller":"role/role.go:29","msg":"权限不足,用户ID：1, 角色：admin, 路径：/api/v1/user/info, 请求方法：GET"}
+{"level":"ERROR","ts":"2024-11-17T10:47:46.321+0800","caller":"role/role.go:29","msg":"权限不足,用户ID：1, 角色：admin, 路径：/api/v1/user/address/, 请求方法：DELETE"}

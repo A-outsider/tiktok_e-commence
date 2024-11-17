@@ -38,6 +38,6 @@ func check(userId string, sub, obj, act string) (StatusCode int64) {
 	if ok {
 		return common.CodeSuccess
 	}
-	zap.L().Error(fmt.Sprintf("权限不足,用户ID：%d，角色：%s，路径：%s，请求方法：%s", userId, sub, obj, act))
+	zap.L().Error(fmt.Sprintf("权限不足,用户ID：%s, 角色：%s, 路径：%s, 请求方法：%s", userId, sub, obj, act))
 	return common.CodeInvalidRoleAdmin
 }

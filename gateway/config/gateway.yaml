@@ -8,10 +8,14 @@ jaeger:
   port: 24317
 
 
+
 # 业务
+static:
+  avatarPath: ./data/static
+
 role:
-  model: ./config/casbin/dataModel.conf
-  policy: ./config/casbin/policy.csv
+  model: ./data/casbin/model.conf
+  policy: ./data/casbin/policy.csv
 
 jwt:
   accessExpireTime: 60m

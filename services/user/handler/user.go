@@ -75,6 +75,17 @@ func (s *UserServiceImpl) DeleteUser(ctx context.Context, req *user.DeleteUserRe
 	res = new(user.DeleteUserResp)
 	res.StatusCode = common.CodeServerBusy
 
+	//判断用户手机号是否对应
+	u, err := db.GetUserByID(req.GetId())
+	if err != nil {
+		return nil, err
+	}
+
+	if u.Phone != req.GetPhone() {
+		res.StatusCode = common.CodeInvalidCaptcha
+		return
+	}
+
 	// 校验手机验证码
 	code, err := cache.Get(cache.GetPhoneCodeKey(req.GetPhone()))
 	if err != nil {
@@ -118,6 +129,7 @@ func (s *UserServiceImpl) UploadAvatar(ctx context.Context, req *user.UploadAvat
 
 	// 保存新的头像
 	fileName := uuid.New().String() + req.GetExt()
+
 	os.MkdirAll(config.GetConf().Static.AvatarPath, 0755)
 	if err = os.WriteFile(filepath.Join(config.GetConf().Static.AvatarPath, fileName), req.GetBody(), 0644); err != nil {
 		zap.L().Error("Failed to save avatar", zap.Error(err))
@@ -126,105 +138,6 @@ func (s *UserServiceImpl) UploadAvatar(ctx context.Context, req *user.UploadAvat
 
 	// 更新数据库
 	if err = db.ModifyUserInfo(req.GetId(), &model.User{AvatarPath: fileName}); err != nil {
-		zap.L().Error("Failed to update user info", zap.Error(err))
-		return
-	}
-
-	res.StatusCode = common.CodeSuccess
-	return
-}
-
-// GetAddressList implements the UserService interface.
-func (s *UserServiceImpl) GetAddressList(ctx context.Context, req *user.GetAddressListReq) (res *user.GetAddressListResp, err error) {
-	res = new(user.GetAddressListResp)
-	res.StatusCode = common.CodeServerBusy
-
-	var list []*model.Address
-	list, err = db.GetAddressList(req.GetId())
-	if err != nil {
-		zap.L().Error("Failed to get address list", zap.Error(err))
-		return
-	}
-
-	// 模型转化
-	for _, v := range list {
-		address := new(user.Address)
-		if err = copier.Copy(&address, v); err != nil {
-			zap.L().Error("Failed to copy address", zap.Error(err))
-			return
-		}
-		res.Addresses = append(res.Addresses, address)
-	}
-
-	res.StatusCode = common.CodeSuccess
-	return
-}
-
-// AddAddress implements the UserService interface.
-func (s *UserServiceImpl) AddAddress(ctx context.Context, req *user.AddAddressReq) (res *user.AddAddressResp, err error) {
-	res = new(user.AddAddressResp)
-	res.StatusCode = common.CodeServerBusy
-
-	address := &model.Address{ // TODO : 后面统一库表参数后 ,用copy包
-		Uid:     req.GetId(),
-		Name:    req.GetName(),
-		Phone:   req.GetPhone(),
-		Address: req.GetAddress(),
-	}
-
-	err = db.CreateAddress(address)
-	if err != nil {
-		zap.L().Error("Failed to create address", zap.Error(err))
-		return
-	}
-
-	res.StatusCode = common.CodeSuccess
-	return
-}
-
-// ModifyAddress implements the UserService interface.
-func (s *UserServiceImpl) ModifyAddress(ctx context.Context, req *user.ModifyAddressReq) (res *user.ModifyAddressResp, err error) {
-	res = new(user.ModifyAddressResp)
-	res.StatusCode = common.CodeServerBusy
-
-	address := &model.Address{
-		Name:    req.GetName(),
-		Phone:   req.GetPhone(),
-		Address: req.GetAddress(),
-	}
-
-	err = db.ModifyAddress(req.GetId(), address)
-	if err != nil {
-		zap.L().Error("Failed to update address", zap.Error(err))
-		return
-	}
-
-	res.StatusCode = common.CodeSuccess
-	return
-}
-
-// DeleteAddress implements the UserService interface.
-func (s *UserServiceImpl) DeleteAddress(ctx context.Context, req *user.DeleteAddressReq) (res *user.DeleteAddressResp, err error) {
-	res = new(user.DeleteAddressResp)
-	res.StatusCode = common.CodeServerBusy
-
-	ok := db.DeleteAddress(req.GetId(), req.GetAid())
-	if !ok {
-		res.StatusCode = common.CodeRecordNotFound
-		return
-	}
-
-	res.StatusCode = common.CodeSuccess
-	return
-}
-
-// SetDefaultAddress implements the UserService interface.
-func (s *UserServiceImpl) SetDefaultAddress(ctx context.Context, req *user.SetDefaultAddressReq) (res *user.SetDefaultAddressResp, err error) {
-	res = new(user.SetDefaultAddressResp)
-	res.StatusCode = common.CodeServerBusy
-
-	err = db.ModifyUserInfo(req.GetId(), &model.User{DefaultId: req.GetAid()})
-	if err != nil {
 		zap.L().Error("Failed to update user info", zap.Error(err))
 		return
 	}

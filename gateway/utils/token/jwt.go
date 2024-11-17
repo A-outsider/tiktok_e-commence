@@ -1,7 +1,6 @@
 package token
 
 import (
-	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"go.uber.org/zap"
 	"gomall/gateway/config"
@@ -37,7 +36,7 @@ func ParseToken(tokenString string) (*Claims, error) {
 	_, err = jwt.Parse(tokenString, func(token *jwt.Token) (i interface{}, e error) {
 		return secret, nil
 	})
-	fmt.Println("claims:", err)
+
 	return claims, err
 }
 

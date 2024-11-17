@@ -299,6 +299,7 @@ func (s *AuthServiceImpl) RefreshToken(ctx context.Context, req *auth.RefreshTok
 	// 验证并解析token
 	claims, err := token.ParseToken(req.GetRefreshToken())
 	if err != nil {
+
 		if errors.Is(err, jwt.ErrTokenMalformed) {
 			res.StatusCode = common.CodeInvalidTokenForm
 			return
@@ -310,7 +311,7 @@ func (s *AuthServiceImpl) RefreshToken(ctx context.Context, req *auth.RefreshTok
 		}
 
 		res.StatusCode = common.CodeInvalidToken
-		return
+		return res, err
 	}
 
 	// 读取缓存

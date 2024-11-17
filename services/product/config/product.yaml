@@ -14,8 +14,4 @@ mysql:
 
 elasticSearch:
   host: 192.168.40.134
-  port: 9200
-
-jaeger:
-  host: 124.222.131.109
-  port: 24317
+  port: 8080

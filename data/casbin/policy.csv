@@ -10,6 +10,8 @@ p, user, /api/v1/user/address, PUT
 p, user, /api/v1/user/address, DELETE
 p, user, /api/v1/user/address/default, POST
 
+p, user, /api/v1/product, POST
+p, user, /api/v1/product/category, GET
 
 g, seller, user
 g, admin, seller

@@ -1,0 +1,13 @@
+{"level":"ERROR","ts":"2024-11-17T22:40:45.604+0800","caller":"gateway/main.go:20","msg":"初始化casbin错误，errs：open ./data/casbin/model.conf: The system cannot find the path specified."}
+{"level":"ERROR","ts":"2024-11-17T22:49:34.692+0800","caller":"gateway/main.go:20","msg":"初始化casbin错误，errs：open ./data/casbin/model.conf: The system cannot find the path specified."}
+{"level":"ERROR","ts":"2024-11-17T22:56:23.185+0800","caller":"role/role.go:29","msg":"权限不足,用户ID：78138335716970496, 角色：user, 路径：/api/v1/product, 请求方法：POST"}
+{"level":"ERROR","ts":"2024-11-17T22:58:46.256+0800","caller":"gateway/main.go:20","msg":"初始化casbin错误，errs：open ./data/casbin/model.conf: The system cannot find the path specified."}
+{"level":"ERROR","ts":"2024-11-17T22:59:08.862+0800","caller":"role/role.go:29","msg":"权限不足,用户ID：78138335716970496, 角色：user, 路径：/api/v1/product, 请求方法：POST"}
+{"level":"ERROR","ts":"2024-11-17T22:59:49.413+0800","caller":"gateway/main.go:20","msg":"初始化casbin错误，errs：open ./data/casbin/model.conf: The system cannot find the path specified."}
+{"level":"ERROR","ts":"2024-11-17T23:00:06.670+0800","caller":"role/role.go:29","msg":"权限不足,用户ID：78138335716970496, 角色：user, 路径：/api/v1/product, 请求方法：POST"}
+{"level":"ERROR","ts":"2024-11-17T23:01:18.982+0800","caller":"role/role.go:29","msg":"权限不足,用户ID：78138335716970496, 角色：user, 路径：/api/v1/product, 请求方法：POST"}
+{"level":"ERROR","ts":"2024-11-17T23:08:44.543+0800","caller":"gateway/main.go:20","msg":"初始化casbin错误，errs：open ./data/casbin/model.conf: The system cannot find the path specified."}
+{"level":"ERROR","ts":"2024-11-17T23:09:19.930+0800","caller":"role/role.go:29","msg":"权限不足,用户ID：78138335716970496, 角色：user, 路径：/api/v1/product, 请求方法：POST"}
+{"level":"ERROR","ts":"2024-11-17T23:13:56.554+0800","caller":"gateway/main.go:20","msg":"初始化casbin错误，errs：open ./data/casbin/model.conf: The system cannot find the path specified."}
+{"level":"ERROR","ts":"2024-11-17T23:16:16.822+0800","caller":"gateway/main.go:20","msg":"初始化casbin错误，errs：open ../common/data/casbin/model.conf: The system cannot find the path specified."}
+{"level":"ERROR","ts":"2024-11-17T23:18:50.382+0800","caller":"gateway/main.go:20","msg":"初始化casbin错误，errs：open D://gomall/common/data/casbin/model.conf: The system cannot find the path specified."}

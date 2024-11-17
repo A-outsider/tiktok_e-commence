@@ -25,7 +25,7 @@ type User struct {
 }
 
 type Address struct {
-	Aid     string `gorm:"primarykeyNOT NULL;comment:地址ID" json:"aid"`
+	Aid     string `gorm:"primarykey; NOT NULL;comment:地址ID" json:"aid"`
 	Uid     string `gorm:"NOT NULL" json:"uid"`
 	Address string `json:"address"`
 	Name    string `json:"name"`

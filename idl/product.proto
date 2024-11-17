@@ -8,6 +8,8 @@ service ProductCatalogService {
   rpc ListProducts(ListProductsReq) returns (ListProductsResp) {}
   rpc GetProduct(GetProductReq) returns (GetProductResp) {}
   rpc SearchProducts(SearchProductsReq) returns (SearchProductsResp) {}
+  rpc AddProduct(AddProductReq) returns (AddProductResp) {}
+  rpc DeleteProduct(DeleteProductReq) returns (DeleteProductResp) {}
 }
 
 message ListProductsReq{
@@ -23,20 +25,24 @@ message Product {
   string description = 3;
   string picture = 4;
   float price = 5;
+  string bid = 6;
+  string uid = 7;
 
-  repeated string categories = 6;
+  repeated string categories = 8;
 }
 
 message ListProductsResp {
   repeated Product products = 1;
+  int64 status_code = 2;
 }
 
 message GetProductReq {
-  uint32 id = 1;
+  string id = 1;
 }
 
 message GetProductResp {
   Product product = 1;
+  int64 status_code = 2;
 }
 
 message SearchProductsReq {
@@ -45,4 +51,21 @@ message SearchProductsReq {
 
 message SearchProductsResp {
   repeated Product results = 1;
+  int64 status_code = 2;
+}
+
+message AddProductReq {
+  Product product = 1;
+}
+
+message AddProductResp {
+  int64 status_code = 1;
+}
+
+message DeleteProductReq {
+  string pid = 1;
+}
+
+message DeleteProductResp {
+  int64 status_code = 1;
 }

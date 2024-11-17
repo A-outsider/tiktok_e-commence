@@ -54,5 +54,6 @@ func registerRouter(r *server.Hertz) {
 	// 分模块
 	model.RegisterAuth(v1.Group("/auth"))
 	model.RegisterUser(v1.Group("/user"))
+	model.RegisterProduct(v1.Group("/product"))
 
 }

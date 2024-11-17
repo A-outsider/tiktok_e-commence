@@ -1,4 +1,13 @@
-package code_gen
+package config
+
+import "gomall/common/config"
+
+var (
+	ServerName = "product"
+	MID        = int64(1)
+	EtcdAddr   = config.EtcdAddr
+	conf       Config
+)
 
 type Service struct {
 	Host string `yaml:"host"`
@@ -29,4 +38,8 @@ type Config struct {
 	Mysql         Mysql         `yaml:"mysql"`
 	ElasticSearch ElasticSearch `yaml:"elasticSearch"`
 	Jaeger        Jaeger        `yaml:"jaeger"`
+}
+
+func GetConf() *Config {
+	return &conf
 }

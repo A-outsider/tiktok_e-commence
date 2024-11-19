@@ -58,11 +58,10 @@ func (api *Api) AddProduct(ctx context.Context, c *app.RequestContext) {
 func (api *Api) ListProducts(ctx context.Context, c *app.RequestContext) {
 	// 参数绑定
 	ctrl := controller.NewCtrl[req.SearchProductByCategoryReq](c)
-	if err := c.BindForm(ctrl.Request); err != nil {
+	if err := c.BindQuery(ctrl.Request); err != nil {
 		ctrl.NoDataJSON(common.CodeInvalidParams)
 		return
 	}
-
 	// 转模型
 	kitexReq := new(rpcProduct.ListProductsReq)
 	err := copier.Copy(kitexReq, ctrl.Request)
@@ -84,4 +83,97 @@ func (api *Api) ListProducts(ctx context.Context, c *app.RequestContext) {
 	}
 
 	ctrl.WithDataJSON(result.GetStatusCode(), result.Products)
+}
+
+func (api *Api) SearchProducts(ctx context.Context, c *app.RequestContext) {
+	// 参数绑定
+	ctrl := controller.NewCtrl[req.SearchProductByQueryReq](c)
+	if err := c.BindQuery(ctrl.Request); err != nil {
+		ctrl.NoDataJSON(common.CodeInvalidParams)
+		return
+	}
+
+	// 转模型
+	kitexReq := new(rpcProduct.SearchProductsReq)
+	err := copier.Copy(kitexReq, ctrl.Request)
+	if err != nil {
+		ctrl.NoDataJSON(common.CodeInvalidParams)
+		return
+	}
+
+	// 调用 RPC 方法
+	result, _ := api.client.SearchProducts(ctx, kitexReq)
+	if result == nil || result.GetStatusCode() == 0 {
+		ctrl.NoDataJSON(common.CodeServerBusy)
+		return
+	}
+
+	if result.GetStatusCode() != common.CodeSuccess {
+		ctrl.NoDataJSON(result.GetStatusCode())
+		return
+	}
+
+	ctrl.WithDataJSON(result.GetStatusCode(), result.Results)
+}
+
+func (api *Api) DeleteProduct(ctx context.Context, c *app.RequestContext) {
+	// 参数绑定
+	ctrl := controller.NewCtrl[req.DeleteProductReq](c)
+	if err := c.BindForm(ctrl.Request); err != nil {
+		ctrl.NoDataJSON(common.CodeInvalidParams)
+		return
+	}
+
+	// 转模型
+	kitexReq := new(rpcProduct.DeleteProductReq)
+	err := copier.Copy(kitexReq, ctrl.Request)
+	if err != nil {
+		ctrl.NoDataJSON(common.CodeInvalidParams)
+		return
+	}
+
+	// 调用 RPC 方法
+	result, _ := api.client.DeleteProduct(ctx, kitexReq)
+	if result == nil || result.GetStatusCode() == 0 {
+		ctrl.NoDataJSON(common.CodeServerBusy)
+		return
+	}
+
+	if result.GetStatusCode() != common.CodeSuccess {
+		ctrl.NoDataJSON(result.GetStatusCode())
+		return
+	}
+
+	ctrl.NoDataJSON(result.GetStatusCode())
+}
+
+func (api *Api) GetProduct(ctx context.Context, c *app.RequestContext) {
+	// 参数绑定
+	ctrl := controller.NewCtrl[req.GetProductReq](c)
+	if err := c.BindQuery(ctrl.Request); err != nil {
+		ctrl.NoDataJSON(common.CodeInvalidParams)
+		return
+	}
+
+	// 转模型
+	kitexReq := new(rpcProduct.GetProductReq)
+	err := copier.Copy(kitexReq, ctrl.Request)
+	if err != nil {
+		ctrl.NoDataJSON(common.CodeInvalidParams)
+		return
+	}
+
+	// 调用 RPC 方法
+	result, _ := api.client.GetProduct(ctx, kitexReq)
+	if result == nil || result.GetStatusCode() == 0 {
+		ctrl.NoDataJSON(common.CodeServerBusy)
+		return
+	}
+
+	if result.GetStatusCode() != common.CodeSuccess {
+		ctrl.NoDataJSON(result.GetStatusCode())
+		return
+	}
+
+	ctrl.WithDataJSON(result.GetStatusCode(), result.GetProduct())
 }

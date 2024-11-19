@@ -11,7 +11,7 @@ func AddProduct(ctx context.Context, data *model.Product) error {
 }
 
 func DeleteProduct(ctx context.Context, pid string) error {
-	return initialize.GetMysql().WithContext(ctx).Delete(&model.Product{}, pid).Error
+	return initialize.GetMysql().WithContext(ctx).Where("pid = ?", pid).Delete(&model.Product{}).Error
 }
 
 func GetProductByPid(ctx context.Context, pid string) (*model.Product, error) {

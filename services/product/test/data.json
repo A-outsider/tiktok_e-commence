@@ -1,0 +1,41 @@
+{
+  "mappings": {
+    "properties": {
+      "pid":{
+        "type": "keyword"
+      },
+      "bid":{
+        "type":"keyword"
+      },
+      "uid":{
+        "type": "keyword"
+      },
+      "description":{
+        "type":"text",
+        "index": "false"
+      },
+      "picture":{
+        "type":"keyword",
+        "index": "false"
+      },
+      "price":{
+        "type": "float"
+      },
+      "name":{
+        "type": "text",
+        "analyzer": "ik_smart"
+      },
+      "categories":{
+        "type": "text",
+        "analyzer": "ik_smart"
+      },
+      "created_at": {
+        "type":"keyword",
+        "index": "false"
+      },
+      "deleted_at": {
+        "type":"keyword"
+      }
+    }
+  }
+}

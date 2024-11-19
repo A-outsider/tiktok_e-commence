@@ -8,8 +8,11 @@ import (
 )
 
 type ElasticSearch struct {
-	Host string `json:"host"`
-	Port int    `json:"port"`
+	Host                   string `json:"host"`
+	Port                   int    `json:"port"`
+	Username               string `json:"username"`
+	PassWord               string `json:"password"`
+	CertificateFingerprint string `json:"certificate_fingerprint"`
 }
 
 func NewElasticSearch(val any) *elasticsearch.TypedClient {
@@ -25,8 +28,11 @@ func NewElasticSearch(val any) *elasticsearch.TypedClient {
 
 	cfg := elasticsearch.Config{
 		Addresses: []string{
-			fmt.Sprintf("http://%s:%d", conf.Host, conf.Port),
+			fmt.Sprintf("https://%s:%d", conf.Host, conf.Port),
 		},
+		Username:               conf.Username,
+		Password:               conf.PassWord,
+		CertificateFingerprint: conf.CertificateFingerprint,
 	}
 
 	es, err := elasticsearch.NewTypedClient(cfg)

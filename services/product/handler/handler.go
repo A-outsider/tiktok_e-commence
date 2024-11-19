@@ -40,6 +40,7 @@ func (s *ProductCatalogServiceImpl) GetProduct(ctx context.Context, req *product
 	// TODO: Your code here...
 	resp = new(product.GetProductResp)
 	resp.StatusCode = common.CodeServerBusy
+	resp.Product = new(product.Product)
 
 	var data *model.Product
 	data, err = db.GetProductByPid(ctx, req.GetId())
@@ -60,6 +61,20 @@ func (s *ProductCatalogServiceImpl) GetProduct(ctx context.Context, req *product
 func (s *ProductCatalogServiceImpl) SearchProducts(ctx context.Context, req *product.SearchProductsReq) (resp *product.SearchProductsResp, err error) {
 	// TODO: Your code here...
 	resp = new(product.SearchProductsResp)
+	resp.StatusCode = common.CodeServerBusy
+
+	data, err := es.SearchProduct(ctx, req.Query)
+	if err != nil {
+		return
+	}
+
+	resp.Results = make([]*product.Product, len(data))
+	err = copier.Copy(&resp.Results, data)
+	if err != nil {
+		zap.L().Error("copier.Copy products failed", zap.Error(err))
+		return
+	}
+	resp.StatusCode = common.CodeSuccess
 	return
 }
 
@@ -87,12 +102,10 @@ func (s *ProductCatalogServiceImpl) AddProduct(ctx context.Context, req *product
 	}
 
 	// 添加商品到es, 该代码仅为测试时使用
-	go func() {
-		err := es.AddProduct(ctx, product)
-		if err != nil {
-			zap.L().Error("Failed to create es product", zap.Error(err))
-		}
-	}()
+	err = es.AddProduct(ctx, product)
+	if err != nil {
+		zap.L().Error("Failed to create es product", zap.Error(err))
+	}
 
 	resp.StatusCode = common.CodeSuccess
 
@@ -107,6 +120,12 @@ func (s *ProductCatalogServiceImpl) DeleteProduct(ctx context.Context, req *prod
 	if err != nil {
 		zap.L().Error("Failed to delete product", zap.Error(err))
 		return
+	}
+
+	// 从es删除该商品, 该代码仅为测试时使用
+	err = es.DeleteProduct(ctx, req.Pid)
+	if err != nil {
+		zap.L().Error("Failed to create es product", zap.Error(err))
 	}
 
 	resp.StatusCode = common.CodeSuccess

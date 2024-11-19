@@ -7,8 +7,21 @@ type AddProductReq struct {
 	Categories  []string `json:"categories" form:"categories"`
 	Price       float64  `json:"price" form:"price"`
 	Picture     string   `json:"picture" form:"picture"	`
+	Name        string   `json:"name" form:"name"`
 }
 
 type SearchProductByCategoryReq struct {
-	Category string `json:"category"`
+	CategoryName string `query:"category" json:"categoryName"`
+}
+
+type SearchProductByQueryReq struct {
+	Query string `query:"query" json:"query"`
+}
+
+type DeleteProductReq struct {
+	Pid string `json:"pid" form:"pid"`
+}
+
+type GetProductReq struct {
+	Id string `json:"id" query:"id"`
 }

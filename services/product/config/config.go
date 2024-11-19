@@ -15,17 +15,20 @@ type Service struct {
 }
 
 type Mysql struct {
-	Password string `yaml:"password"`
-	Charset  string `yaml:"charset"`
 	Host     string `yaml:"host"`
 	Port     int    `yaml:"port"`
 	Dbname   string `yaml:"dbname"`
 	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+	Charset  string `yaml:"charset"`
 }
 
 type ElasticSearch struct {
-	Host string `yaml:"host"`
-	Port int    `yaml:"port"`
+	Host                   string `json:"host"`
+	Port                   int    `json:"port"`
+	Username               string `json:"username"`
+	PassWord               string `json:"password"`
+	CertificateFingerprint string `json:"certificate_fingerprint"`
 }
 
 type Jaeger struct {

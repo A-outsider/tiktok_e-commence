@@ -1,1 +1,25 @@
-{   "jaeger": {     "host": "124.222.131.109",     "port": 24317   },   "jwt": {     "accessExpireTime": "60m",     "accessSecret": "tiktok_mall_access",     "issuer": "zty",     "refreshExpireTime": "168h",     "refreshSecret": "tiktok_mall_refresh"   },   "role": {     "model": "../data/casbin/model.conf",     "policy": "../data/casbin/policy.csv"   },   "service": {     "host": "127.0.0.1",     "port": 8080   },   "static": {     "avatarPath": "./data/static"   },   "visitLimit": {     "rateLimitCap": 30,     "rateLimitInterval": "0.5s"   } }
+{
+  "elasticSearch": {
+    "certificate_fingerprint": "039e813e2fc4847f3863ab90b05fbfa76adaaffe236ba9b26dac41b2136723fe",
+    "host": "124.222.151.35",
+    "password": "=Bq7JViaHHw_hdCabKVv",
+    "port": 9200,
+    "username": "elastic"
+  },
+  "jaeger": {
+    "host": "124.222.131.109",
+    "port": 24317
+  },
+  "mysql": {
+    "charset": "utf8mb4",
+    "dbname": "mall",
+    "host": "124.222.131.109",
+    "password": "lijialang666",
+    "port": 23306,
+    "username": "root"
+  },
+  "service": {
+    "host": "127.0.0.1",
+    "port": 9003
+  }
+}

@@ -13,4 +13,7 @@ func RegisterProduct(r *route.RouterGroup) {
 
 	r.POST("", productApi.AddProduct)
 	r.GET("/category", productApi.ListProducts)
+	r.GET("/query", productApi.SearchProducts)
+	r.DELETE("", productApi.DeleteProduct)
+	r.GET("", productApi.GetProduct)
 }

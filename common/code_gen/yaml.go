@@ -29,7 +29,7 @@ func (y *Yaml) GetStruct(filepath string) (err error) {
 	}
 
 	// 生成结构体
-	y.Struct = append(y.Struct, y.generateStructCode("config", temp))
+	y.Struct = append(y.Struct, y.generateStructCode("Config", temp))
 
 	create, err := os.Create("./struct_gen.go")
 	if err != nil {

@@ -40,3 +40,20 @@ func NewRedisClient(val any) (rdb *redis.Client, ctx context.Context) {
 
 	return rdb, ctx
 }
+
+func NewRedisClientWithNoContext(val any) *redis.Client {
+	r := new(Redis)
+	err := mapstructure.Decode(val, r)
+	if err != nil {
+		log.Panic(fmt.Errorf("error decoding config to Redis struct: %v", err))
+	}
+
+	addr := fmt.Sprintf("%s:%d", r.Host, r.Port)
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     addr,
+		Password: r.Password,
+		DB:       0, // use default DB
+	})
+
+	return rdb
+}

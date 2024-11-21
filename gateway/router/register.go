@@ -55,5 +55,5 @@ func registerRouter(r *server.Hertz) {
 	model.RegisterAuth(v1.Group("/auth"))
 	model.RegisterUser(v1.Group("/user"))
 	model.RegisterProduct(v1.Group("/product"))
-
+	model.RegisterCart(v1.Group("/cart"))
 }

@@ -5,21 +5,10 @@ type Service struct {
 	Port int `yaml:"port"`
 }
 
-type Mysql struct {
+type Redis struct {
 	Host string `yaml:"host"`
 	Port int `yaml:"port"`
-	Dbname string `yaml:"dbname"`
-	Username string `yaml:"username"`
 	Password string `yaml:"password"`
-	Charset string `yaml:"charset"`
-}
-
-type ElasticSearch struct {
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
-	CertificateFingerprint string `yaml:"certificate_fingerprint"`
-	Host string `yaml:"host"`
-	Port int `yaml:"port"`
 }
 
 type Jaeger struct {
@@ -27,9 +16,8 @@ type Jaeger struct {
 	Port int `yaml:"port"`
 }
 
-type config struct {
+type Config struct {
 	Service Service `yaml:"service"`
-	Mysql Mysql `yaml:"mysql"`
-	ElasticSearch ElasticSearch `yaml:"elasticSearch"`
+	Redis Redis `yaml:"redis"`
 	Jaeger Jaeger `yaml:"jaeger"`
 }

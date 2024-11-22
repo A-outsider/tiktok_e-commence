@@ -1,25 +1,15 @@
 {
-  "elasticSearch": {
-    "certificate_fingerprint": "039e813e2fc4847f3863ab90b05fbfa76adaaffe236ba9b26dac41b2136723fe",
-    "host": "124.222.151.35",
-    "password": "=Bq7JViaHHw_hdCabKVv",
-    "port": 9200,
-    "username": "elastic"
-  },
   "jaeger": {
     "host": "124.222.131.109",
     "port": 24317
   },
-  "mysql": {
-    "charset": "utf8mb4",
-    "dbname": "mall",
+  "redis": {
     "host": "124.222.131.109",
     "password": "lijialang666",
-    "port": 23306,
-    "username": "root"
+    "port": 26379
   },
   "service": {
     "host": "127.0.0.1",
-    "port": 9003
+    "port": 9004
   }
 }

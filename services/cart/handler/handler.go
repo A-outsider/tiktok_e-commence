@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"go.uber.org/zap"
 	"gomall/gateway/types/resp/common"
 	cart "gomall/kitex_gen/cart"
@@ -43,6 +44,8 @@ func (s *CartServiceImpl) GetCart(ctx context.Context, req *cart.GetCartReq) (re
 	resp.Cart.Items = items
 	resp.Cart.UserId = req.UserId
 	resp.StatusCode = common.CodeSuccess
+
+	fmt.Println(resp.Cart.Items)
 	return
 }
 

@@ -1,8 +1,9 @@
-package main
+package order
 
 import (
 	"fmt"
 	"math/rand"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -77,8 +78,8 @@ var (
 func GetOrderIdGeneratorManager() *OrderIdGeneratorManager {
 	once.Do(func() {
 		// 使用随机 nodeID 创建 DistributedIdGenerator
-		rand.Seed(time.Now().UnixNano())
-		nodeID := rand.Int63n(1 << 5) // 生成一个 0 到 31 之间的随机 nodeID
+		r := rand.New(rand.NewSource(time.Now().UnixNano()))
+		nodeID := r.Int63n(1 << 5) // 生成一个 0 到 31 之间的随机 nodeID
 		instance = &OrderIdGeneratorManager{
 			idGenerator: NewDistributedIdGenerator(nodeID),
 		}
@@ -87,24 +88,14 @@ func GetOrderIdGeneratorManager() *OrderIdGeneratorManager {
 }
 
 // GenerateId 生成订单 ID，传入 userId 后生成全局唯一的订单 ID
-func (o *OrderIdGeneratorManager) GenerateId(userId int64) (string, error) {
+func (o *OrderIdGeneratorManager) GenerateId(userId string) (string, error) {
 	id, err := o.idGenerator.GenerateId()
 	if err != nil {
 		return "", fmt.Errorf("error generating distributedIdGeneratorID")
 	}
-	return fmt.Sprintf("%d%d", id, userId%1000000), nil
-}
-
-func main() {
-	// 获取全局的 OrderIdGeneratorManager 实例
-	manager := GetOrderIdGeneratorManager()
-
-	// 使用 manager 生成订单 ID
-	userId := int64(123456)
-	orderId, err := manager.GenerateId(userId)
+	parseInt, err := strconv.ParseInt(userId, 10, 64)
 	if err != nil {
-		fmt.Println("Error generating order ID:", err)
-		return
+		return "", err
 	}
-	fmt.Println("Generated Order ID:", orderId)
+	return fmt.Sprintf("%d%d", id, parseInt%1000000), nil
 }

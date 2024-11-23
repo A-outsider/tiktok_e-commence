@@ -5,9 +5,12 @@ type Service struct {
 	Port int `yaml:"port"`
 }
 
-type Redis struct {
+type Mysql struct {
+	Charset string `yaml:"charset"`
 	Host string `yaml:"host"`
 	Port int `yaml:"port"`
+	Dbname string `yaml:"dbname"`
+	Username string `yaml:"username"`
 	Password string `yaml:"password"`
 }
 
@@ -18,6 +21,6 @@ type Jaeger struct {
 
 type Config struct {
 	Service Service `yaml:"service"`
-	Redis Redis `yaml:"redis"`
+	Mysql Mysql `yaml:"mysql"`
 	Jaeger Jaeger `yaml:"jaeger"`
 }

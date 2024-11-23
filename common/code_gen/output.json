@@ -3,10 +3,13 @@
     "host": "124.222.131.109",
     "port": 24317
   },
-  "redis": {
+  "mysql": {
+    "charset": "utf8mb4",
+    "dbname": "mall",
     "host": "124.222.131.109",
     "password": "lijialang666",
-    "port": 26379
+    "port": 23306,
+    "username": "root"
   },
   "service": {
     "host": "127.0.0.1",

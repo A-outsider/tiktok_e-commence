@@ -55,7 +55,7 @@ message Order {
   string pid = 7;
   int64 quantity = 8;
   float cost = 9;
-  int32 status = 10;
+  int64 status = 10;
   int32 created_at = 11;
 }
 

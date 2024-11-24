@@ -369,7 +369,7 @@ func (x *Order) fastReadField9(buf []byte, _type int8) (offset int, err error) {
 }
 
 func (x *Order) fastReadField10(buf []byte, _type int8) (offset int, err error) {
-	x.Status, offset, err = fastpb.ReadInt32(buf, _type)
+	x.Status, offset, err = fastpb.ReadInt64(buf, _type)
 	return offset, err
 }
 
@@ -735,7 +735,7 @@ func (x *Order) fastWriteField10(buf []byte) (offset int) {
 	if x.Status == 0 {
 		return offset
 	}
-	offset += fastpb.WriteInt32(buf[offset:], 10, x.GetStatus())
+	offset += fastpb.WriteInt64(buf[offset:], 10, x.GetStatus())
 	return offset
 }
 
@@ -1072,7 +1072,7 @@ func (x *Order) sizeField10() (n int) {
 	if x.Status == 0 {
 		return n
 	}
-	n += fastpb.SizeInt32(10, x.GetStatus())
+	n += fastpb.SizeInt64(10, x.GetStatus())
 	return n
 }
 

@@ -11,8 +11,13 @@
     "port": 23306,
     "username": "root"
   },
+  "redis": {
+    "host": "124.222.131.109",
+    "password": "lijialang666",
+    "port": 26379
+  },
   "service": {
     "host": "127.0.0.1",
-    "port": 9004
+    "port": 9005
   }
 }

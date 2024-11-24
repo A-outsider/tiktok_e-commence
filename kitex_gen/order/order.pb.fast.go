@@ -170,6 +170,11 @@ func (x *OrderResult) FastRead(buf []byte, _type int8, number int32) (offset int
 		if err != nil {
 			goto ReadFieldError
 		}
+	case 2:
+		offset, err = x.fastReadField2(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
 	default:
 		offset, err = fastpb.Skip(buf, _type, number)
 		if err != nil {
@@ -185,6 +190,11 @@ ReadFieldError:
 
 func (x *OrderResult) fastReadField1(buf []byte, _type int8) (offset int, err error) {
 	x.OrderId, offset, err = fastpb.ReadString(buf, _type)
+	return offset, err
+}
+
+func (x *OrderResult) fastReadField2(buf []byte, _type int8) (offset int, err error) {
+	x.Cost, offset, err = fastpb.ReadFloat(buf, _type)
 	return offset, err
 }
 
@@ -219,7 +229,7 @@ func (x *PlaceOrderResp) fastReadField1(buf []byte, _type int8) (offset int, err
 	if err != nil {
 		return offset, err
 	}
-	x.Order = append(x.Order, &v)
+	x.Order = &v
 	return offset, nil
 }
 
@@ -587,6 +597,7 @@ func (x *OrderResult) FastWrite(buf []byte) (offset int) {
 		return offset
 	}
 	offset += x.fastWriteField1(buf[offset:])
+	offset += x.fastWriteField2(buf[offset:])
 	return offset
 }
 
@@ -595,6 +606,14 @@ func (x *OrderResult) fastWriteField1(buf []byte) (offset int) {
 		return offset
 	}
 	offset += fastpb.WriteString(buf[offset:], 1, x.GetOrderId())
+	return offset
+}
+
+func (x *OrderResult) fastWriteField2(buf []byte) (offset int) {
+	if x.Cost == 0 {
+		return offset
+	}
+	offset += fastpb.WriteFloat(buf[offset:], 2, x.GetCost())
 	return offset
 }
 
@@ -611,9 +630,7 @@ func (x *PlaceOrderResp) fastWriteField1(buf []byte) (offset int) {
 	if x.Order == nil {
 		return offset
 	}
-	for i := range x.GetOrder() {
-		offset += fastpb.WriteMessage(buf[offset:], 1, x.GetOrder()[i])
-	}
+	offset += fastpb.WriteMessage(buf[offset:], 1, x.GetOrder())
 	return offset
 }
 
@@ -924,6 +941,7 @@ func (x *OrderResult) Size() (n int) {
 		return n
 	}
 	n += x.sizeField1()
+	n += x.sizeField2()
 	return n
 }
 
@@ -932,6 +950,14 @@ func (x *OrderResult) sizeField1() (n int) {
 		return n
 	}
 	n += fastpb.SizeString(1, x.GetOrderId())
+	return n
+}
+
+func (x *OrderResult) sizeField2() (n int) {
+	if x.Cost == 0 {
+		return n
+	}
+	n += fastpb.SizeFloat(2, x.GetCost())
 	return n
 }
 
@@ -948,9 +974,7 @@ func (x *PlaceOrderResp) sizeField1() (n int) {
 	if x.Order == nil {
 		return n
 	}
-	for i := range x.GetOrder() {
-		n += fastpb.SizeMessage(1, x.GetOrder()[i])
-	}
+	n += fastpb.SizeMessage(1, x.GetOrder())
 	return n
 }
 
@@ -1172,6 +1196,7 @@ var fieldIDToName_OrderItem = map[int32]string{
 
 var fieldIDToName_OrderResult = map[int32]string{
 	1: "OrderId",
+	2: "Cost",
 }
 
 var fieldIDToName_PlaceOrderResp = map[int32]string{

@@ -6,6 +6,7 @@ import (
 	"go.uber.org/zap"
 	"gomall/gateway/types/resp/common"
 	order "gomall/kitex_gen/order"
+	"gomall/services/order/dal/cache"
 	"gomall/services/order/dal/db"
 	"gomall/services/order/dal/model"
 	utils "gomall/services/order/utils/order"
@@ -22,9 +23,10 @@ func (s *OrderServiceImpl) PlaceOrder(ctx context.Context, req *order.PlaceOrder
 	resp.StatusCode = common.CodeServerBusy
 
 	orders := make([]*model.Order, len(req.OrderItems))
-	orderResults := make([]*order.OrderResult, len(req.OrderItems))
+	orderIds := make([]string, len(req.OrderItems))
 
 	manager := utils.GetOrderIdGeneratorManager()
+	var cost float32 = 0
 
 	for i := 0; i < len(orders); i++ {
 		var oid string
@@ -50,9 +52,8 @@ func (s *OrderServiceImpl) PlaceOrder(ctx context.Context, req *order.PlaceOrder
 			Status: model.OrderStatusPending,
 		}
 
-		orderResults[i] = &order.OrderResult{
-			OrderId: orders[i].Oid,
-		}
+		orderIds[i] = oid
+		cost += req.OrderItems[i].Cost
 	}
 
 	err = db.AddOrders(ctx, orders)
@@ -61,7 +62,23 @@ func (s *OrderServiceImpl) PlaceOrder(ctx context.Context, req *order.PlaceOrder
 		return
 	}
 
-	resp.Order = orderResults
+	var oid string
+	oid, err = manager.GenerateId(req.UserId)
+	if err != nil {
+		zap.L().Error("generate order id fail", zap.Error(err))
+		return
+	}
+
+	err = cache.SetPayId(ctx, orderIds, oid)
+	if err != nil {
+		zap.L().Error("set order id fail", zap.Error(err))
+		return
+	}
+
+	resp.Order = &order.OrderResult{
+		OrderId: oid,
+		Cost:    cost,
+	}
 	resp.StatusCode = common.CodeSuccess
 
 	return
@@ -95,7 +112,14 @@ func (s *OrderServiceImpl) MarkOrderPaid(ctx context.Context, req *order.MarkOrd
 	resp = new(order.MarkOrderPaidResp)
 	resp.StatusCode = common.CodeServerBusy
 
-	err = db.PutOrderStatus(ctx, req.OrderId, model.OrderStatusPaid)
+	orderIds := make([]string, 0)
+	orderIds, err = cache.GetPayId(ctx, req.OrderId)
+	if err != nil {
+		zap.L().Error("get order id fail", zap.Error(err))
+		return
+	}
+
+	err = db.PutOrdersStatus(ctx, orderIds, model.OrderStatusPaid)
 	if err != nil {
 		zap.L().Error("put order status fail", zap.Error(err))
 		return

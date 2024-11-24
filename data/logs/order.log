@@ -1,0 +1,2 @@
+{"level":"ERROR","ts":"2024-11-24T15:13:28.105+0800","caller":"orderservice/orderservice.go:119","msg":"add order fail","error":"empty slice found"}
+{"level":"ERROR","ts":"2024-11-24T15:14:56.036+0800","caller":"orderservice/orderservice.go:119","msg":"add order fail","error":"empty slice found"}

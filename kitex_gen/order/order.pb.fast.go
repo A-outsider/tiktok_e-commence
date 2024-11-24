@@ -149,8 +149,7 @@ ReadFieldError:
 }
 
 func (x *OrderItem) fastReadField1(buf []byte, _type int8) (offset int, err error) {
-	var v cart
-	rpcCart.CartItem
+	var v cart.CartItem
 	offset, err = fastpb.ReadMessage(buf, _type, &v)
 	if err != nil {
 		return offset, err

@@ -27,8 +27,8 @@ func (s *OrderServiceImpl) PlaceOrder(ctx context.Context, req *order.PlaceOrder
 	manager := utils.GetOrderIdGeneratorManager()
 
 	for i := 0; i < len(orders); i++ {
-
-		oid, err := manager.GenerateId(req.UserId)
+		var oid string
+		oid, err = manager.GenerateId(req.UserId)
 		if err != nil {
 			zap.L().Error("generate order id fail", zap.Error(err))
 			return

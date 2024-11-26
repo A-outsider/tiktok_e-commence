@@ -16,7 +16,7 @@ import (
 type OrderServiceImpl struct{}
 
 // PlaceOrder implements the OrderServiceImpl interface.
-func (s *OrderServiceImpl) PlaceOrder(ctx context.Context, req *order.PlaceOrderReq) (resp *order.PlaceOrderResp, err error) {
+func (s *OrderServiceImpl) PlaceOrder(ctx context.Context, req *order.PlaceOrderReq) (resp *order.PlaceOrderResp, _ error) {
 	// TODO: Your code here...
 
 	resp = new(order.PlaceOrderResp)
@@ -29,8 +29,7 @@ func (s *OrderServiceImpl) PlaceOrder(ctx context.Context, req *order.PlaceOrder
 	var cost float32 = 0
 
 	for i := 0; i < len(orders); i++ {
-		var oid string
-		oid, err = manager.GenerateId(req.UserId)
+		oid, err := manager.GenerateId(req.UserId)
 		if err != nil {
 			zap.L().Error("generate order id fail", zap.Error(err))
 			return
@@ -56,14 +55,13 @@ func (s *OrderServiceImpl) PlaceOrder(ctx context.Context, req *order.PlaceOrder
 		cost += req.OrderItems[i].Cost
 	}
 
-	err = db.AddOrders(ctx, orders)
+	err := db.AddOrders(ctx, orders)
 	if err != nil {
 		zap.L().Error("add order fail", zap.Error(err))
 		return
 	}
 
-	var oid string
-	oid, err = manager.GenerateId(req.UserId)
+	oid, err := manager.GenerateId(req.UserId)
 	if err != nil {
 		zap.L().Error("generate order id fail", zap.Error(err))
 		return
@@ -85,7 +83,7 @@ func (s *OrderServiceImpl) PlaceOrder(ctx context.Context, req *order.PlaceOrder
 }
 
 // ListOrder implements the OrderServiceImpl interface.
-func (s *OrderServiceImpl) ListOrder(ctx context.Context, req *order.ListOrderReq) (resp *order.ListOrderResp, err error) {
+func (s *OrderServiceImpl) ListOrder(ctx context.Context, req *order.ListOrderReq) (resp *order.ListOrderResp, _ error) {
 	// TODO: Your code here...
 	resp = new(order.ListOrderResp)
 	resp.StatusCode = common.CodeServerBusy
@@ -107,12 +105,13 @@ func (s *OrderServiceImpl) ListOrder(ctx context.Context, req *order.ListOrderRe
 }
 
 // MarkOrderPaid implements the OrderServiceImpl interface.
-func (s *OrderServiceImpl) MarkOrderPaid(ctx context.Context, req *order.MarkOrderPaidReq) (resp *order.MarkOrderPaidResp, err error) {
+func (s *OrderServiceImpl) MarkOrderPaid(ctx context.Context, req *order.MarkOrderPaidReq) (resp *order.MarkOrderPaidResp, _ error) {
 	// TODO: Your code here...
 	resp = new(order.MarkOrderPaidResp)
 	resp.StatusCode = common.CodeServerBusy
 
 	orderIds := make([]string, 0)
+	var err error
 	orderIds, err = cache.GetPayId(ctx, req.OrderId)
 	if err != nil {
 		zap.L().Error("get order id fail", zap.Error(err))

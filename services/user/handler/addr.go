@@ -14,11 +14,12 @@ import (
 )
 
 // GetAddressList implements the UserService interface.
-func (s *UserServiceImpl) GetAddressList(ctx context.Context, req *user.GetAddressListReq) (res *user.GetAddressListResp, err error) {
+func (s *UserServiceImpl) GetAddressList(ctx context.Context, req *user.GetAddressListReq) (res *user.GetAddressListResp, _ error) {
 	res = new(user.GetAddressListResp)
 	res.StatusCode = common.CodeServerBusy
 
 	var list []*model.Address
+	var err error
 	list, err = db.GetAddressList(req.GetId())
 	if err != nil {
 		zap.L().Error("Failed to get address list", zap.Error(err))
@@ -40,7 +41,7 @@ func (s *UserServiceImpl) GetAddressList(ctx context.Context, req *user.GetAddre
 }
 
 // AddAddress implements the UserService interface.
-func (s *UserServiceImpl) AddAddress(ctx context.Context, req *user.AddAddressReq) (res *user.AddAddressResp, err error) {
+func (s *UserServiceImpl) AddAddress(ctx context.Context, req *user.AddAddressReq) (res *user.AddAddressResp, _ error) {
 	res = new(user.AddAddressResp)
 	res.StatusCode = common.CodeServerBusy
 
@@ -54,7 +55,7 @@ func (s *UserServiceImpl) AddAddress(ctx context.Context, req *user.AddAddressRe
 		Address: req.GetAddress(),
 	}
 
-	err = db.CreateAddress(address)
+	err := db.CreateAddress(address)
 	if err != nil {
 		zap.L().Error("Failed to create address", zap.Error(err))
 		return
@@ -65,7 +66,7 @@ func (s *UserServiceImpl) AddAddress(ctx context.Context, req *user.AddAddressRe
 }
 
 // ModifyAddress implements the UserService interface.
-func (s *UserServiceImpl) ModifyAddress(ctx context.Context, req *user.ModifyAddressReq) (res *user.ModifyAddressResp, err error) {
+func (s *UserServiceImpl) ModifyAddress(ctx context.Context, req *user.ModifyAddressReq) (res *user.ModifyAddressResp, _ error) {
 	res = new(user.ModifyAddressResp)
 	res.StatusCode = common.CodeServerBusy
 
@@ -75,7 +76,7 @@ func (s *UserServiceImpl) ModifyAddress(ctx context.Context, req *user.ModifyAdd
 		Address: req.GetAddress(),
 	}
 
-	err = db.ModifyAddress(req.GetId(), req.GetAid(), address)
+	err := db.ModifyAddress(req.GetId(), req.GetAid(), address)
 	if err != nil {
 		zap.L().Error("Failed to update address", zap.Error(err))
 		return
@@ -86,7 +87,7 @@ func (s *UserServiceImpl) ModifyAddress(ctx context.Context, req *user.ModifyAdd
 }
 
 // DeleteAddress implements the UserService interface.
-func (s *UserServiceImpl) DeleteAddress(ctx context.Context, req *user.DeleteAddressReq) (res *user.DeleteAddressResp, err error) {
+func (s *UserServiceImpl) DeleteAddress(ctx context.Context, req *user.DeleteAddressReq) (res *user.DeleteAddressResp, _ error) {
 	res = new(user.DeleteAddressResp)
 	res.StatusCode = common.CodeServerBusy
 
@@ -101,7 +102,7 @@ func (s *UserServiceImpl) DeleteAddress(ctx context.Context, req *user.DeleteAdd
 }
 
 // SetDefaultAddress implements the UserService interface.
-func (s *UserServiceImpl) SetDefaultAddress(ctx context.Context, req *user.SetDefaultAddressReq) (res *user.SetDefaultAddressResp, err error) {
+func (s *UserServiceImpl) SetDefaultAddress(ctx context.Context, req *user.SetDefaultAddressReq) (res *user.SetDefaultAddressResp, _ error) {
 	res = new(user.SetDefaultAddressResp)
 	res.StatusCode = common.CodeServerBusy
 

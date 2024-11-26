@@ -22,7 +22,7 @@ func main() {
 	// 初始化策略模型
 	role.InitCasbin()
 
-	// kitex 版链路追踪 					TODO 未测试
+	// kitex 版链路追踪
 	p := provider.NewOpenTelemetryProvider(
 		provider.WithServiceName(config.ServerName), // 配置服务名称
 		provider.WithExportEndpoint(fmt.Sprintf("%s:%d", config.GetConf().Jaeger.Host, config.GetConf().Jaeger.Port)), // Jaeger导出地址

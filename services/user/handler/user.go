@@ -25,7 +25,7 @@ func NewUserServiceImpl() *UserServiceImpl {
 }
 
 // GetUserInfo implements the UserService interface.
-func (s *UserServiceImpl) GetUserInfo(ctx context.Context, req *user.GetUserInfoReq) (res *user.GetUserInfoResp, err error) {
+func (s *UserServiceImpl) GetUserInfo(ctx context.Context, req *user.GetUserInfoReq) (res *user.GetUserInfoResp, _ error) {
 	res = new(user.GetUserInfoResp)
 	res.StatusCode = common.CodeServerBusy
 
@@ -50,17 +50,17 @@ func (s *UserServiceImpl) GetUserInfo(ctx context.Context, req *user.GetUserInfo
 }
 
 // ModifyUserInfo implements the UserService interface.
-func (s *UserServiceImpl) ModifyUserInfo(ctx context.Context, req *user.ModifyUserInfoReq) (res *user.ModifyUserInfoResp, err error) {
+func (s *UserServiceImpl) ModifyUserInfo(ctx context.Context, req *user.ModifyUserInfoReq) (res *user.ModifyUserInfoResp, _ error) {
 	res = new(user.ModifyUserInfoResp)
 	res.StatusCode = common.CodeServerBusy
 
 	u := new(model.User)
-	if err = copier.Copy(u, req); err != nil {
+	if err := copier.Copy(u, req); err != nil {
 		zap.L().Error("Failed to copy user info", zap.Error(err))
 		return
 	}
 
-	err = db.ModifyUserInfo(req.GetId(), u)
+	err := db.ModifyUserInfo(req.GetId(), u)
 	if err != nil {
 		zap.L().Error("Failed to update user info", zap.Error(err))
 		return
@@ -71,7 +71,7 @@ func (s *UserServiceImpl) ModifyUserInfo(ctx context.Context, req *user.ModifyUs
 }
 
 // DeleteUser implements the UserService interface.
-func (s *UserServiceImpl) DeleteUser(ctx context.Context, req *user.DeleteUserReq) (res *user.DeleteUserResp, err error) {
+func (s *UserServiceImpl) DeleteUser(ctx context.Context, req *user.DeleteUserReq) (res *user.DeleteUserResp, _ error) {
 	res = new(user.DeleteUserResp)
 	res.StatusCode = common.CodeServerBusy
 
@@ -108,7 +108,7 @@ func (s *UserServiceImpl) DeleteUser(ctx context.Context, req *user.DeleteUserRe
 }
 
 // UploadAvatar implements the UserService interface.
-func (s *UserServiceImpl) UploadAvatar(ctx context.Context, req *user.UploadAvatarReq) (res *user.UploadAvatarResp, err error) {
+func (s *UserServiceImpl) UploadAvatar(ctx context.Context, req *user.UploadAvatarReq) (res *user.UploadAvatarResp, _ error) {
 	res = new(user.UploadAvatarResp)
 	res.StatusCode = common.CodeServerBusy
 

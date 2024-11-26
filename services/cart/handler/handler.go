@@ -13,12 +13,12 @@ import (
 type CartServiceImpl struct{}
 
 // AddItem implements the CartServiceImpl interface.
-func (s *CartServiceImpl) AddItem(ctx context.Context, req *cart.AddItemReq) (resp *cart.AddItemResp, err error) {
+func (s *CartServiceImpl) AddItem(ctx context.Context, req *cart.AddItemReq) (resp *cart.AddItemResp, _ error) {
 	// TODO: Your code here...
 	resp = new(cart.AddItemResp)
 	resp.StatusCode = common.CodeServerBusy
 
-	err = cache.AddItem(ctx, req.UserId, req.Item.ProductId, req.Item.Quantity)
+	err := cache.AddItem(ctx, req.UserId, req.Item.ProductId, req.Item.Quantity)
 	if err != nil {
 		zap.L().Error("add item failed", zap.Error(err))
 		return
@@ -29,7 +29,7 @@ func (s *CartServiceImpl) AddItem(ctx context.Context, req *cart.AddItemReq) (re
 }
 
 // GetCart implements the CartServiceImpl interface.
-func (s *CartServiceImpl) GetCart(ctx context.Context, req *cart.GetCartReq) (resp *cart.GetCartResp, err error) {
+func (s *CartServiceImpl) GetCart(ctx context.Context, req *cart.GetCartReq) (resp *cart.GetCartResp, _ error) {
 	// TODO: Your code here...
 	resp = new(cart.GetCartResp)
 	resp.StatusCode = common.CodeServerBusy
@@ -50,12 +50,12 @@ func (s *CartServiceImpl) GetCart(ctx context.Context, req *cart.GetCartReq) (re
 }
 
 // EmptyCart implements the CartServiceImpl interface.
-func (s *CartServiceImpl) EmptyCart(ctx context.Context, req *cart.EmptyCartReq) (resp *cart.EmptyCartResp, err error) {
+func (s *CartServiceImpl) EmptyCart(ctx context.Context, req *cart.EmptyCartReq) (resp *cart.EmptyCartResp, _ error) {
 	// TODO: Your code here...
 	resp = new(cart.EmptyCartResp)
 	resp.StatusCode = common.CodeServerBusy
 
-	err = cache.DeleteItems(ctx, req.UserId)
+	err := cache.DeleteItems(ctx, req.UserId)
 	if err != nil {
 		zap.L().Error("empty cart failed", zap.Error(err))
 		return

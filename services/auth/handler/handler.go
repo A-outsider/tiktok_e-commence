@@ -32,12 +32,13 @@ func NewAuthServiceImpl() *AuthServiceImpl {
 }
 
 // LoginByCode implements the AuthService interface.
-func (s *AuthServiceImpl) LoginByCode(ctx context.Context, req *auth.LoginByCodeReq) (res *auth.LoginByCodeResp, err error) {
+func (s *AuthServiceImpl) LoginByCode(ctx context.Context, req *auth.LoginByCodeReq) (res *auth.LoginByCodeResp, _ error) {
 	res = new(auth.LoginByCodeResp)
 	res.StatusCode = common.CodeServerBusy
 
 	// 校验用户是否存在
 	user := new(model.User)
+	var err error
 	user, err = db.SelectUserByPhone(req.GetPhone())
 
 	if err != nil {
@@ -90,12 +91,13 @@ func (s *AuthServiceImpl) LoginByCode(ctx context.Context, req *auth.LoginByCode
 }
 
 // LoginByPwd implements the AuthService interface.
-func (s *AuthServiceImpl) LoginByPwd(ctx context.Context, req *auth.LoginByPwdReq) (res *auth.LoginByPwdResp, err error) {
+func (s *AuthServiceImpl) LoginByPwd(ctx context.Context, req *auth.LoginByPwdReq) (res *auth.LoginByPwdResp, _ error) {
 	res = new(auth.LoginByPwdResp)
 	res.StatusCode = common.CodeServerBusy
 
 	// 校验用户是否存在
 	user := new(model.User)
+	var err error
 	user, err = db.SelectUserByPhone(req.GetPhone())
 
 	if err != nil {
@@ -158,7 +160,7 @@ func (s *AuthServiceImpl) LoginByPwd(ctx context.Context, req *auth.LoginByPwdRe
 
 // Register implements the AuthService interface.
 const defaultAvatar = "./data/" // TODO : 写入配置文件
-func (s *AuthServiceImpl) Register(ctx context.Context, req *auth.RegisterReq) (res *auth.RegisterResp, err error) {
+func (s *AuthServiceImpl) Register(ctx context.Context, req *auth.RegisterReq) (res *auth.RegisterResp, _ error) {
 	res = new(auth.RegisterResp)
 	res.StatusCode = common.CodeServerBusy
 
@@ -185,7 +187,7 @@ func (s *AuthServiceImpl) Register(ctx context.Context, req *auth.RegisterReq) (
 	}
 
 	var e *mysql.MySQLError
-	err = db.InsertUser(user)
+	err := db.InsertUser(user)
 	if errors.As(err, &e) && e.Number == 1062 {
 		res.StatusCode = common.CodeUserExist
 		return
@@ -200,13 +202,12 @@ func (s *AuthServiceImpl) Register(ctx context.Context, req *auth.RegisterReq) (
 }
 
 // SendPhoneCode implements the AuthService interface.
-func (s *AuthServiceImpl) SendPhoneCode(ctx context.Context, req *auth.SendPhoneCodeReq) (res *auth.SendPhoneCodeResp, err error) {
+func (s *AuthServiceImpl) SendPhoneCode(ctx context.Context, req *auth.SendPhoneCodeReq) (res *auth.SendPhoneCodeResp, _ error) {
 	res = new(auth.SendPhoneCodeResp)
 	res.StatusCode = common.CodeServerBusy
 
 	// 校验发送间隔
-	var result string
-	if result, err = cache.Get(cache.GetSendCaptchaIntervalKey(req.GetPhone())); len(result) != 0 || err == nil {
+	if result, err := cache.Get(cache.GetSendCaptchaIntervalKey(req.GetPhone())); len(result) != 0 || err == nil {
 		res.StatusCode = common.CodeRateLimitExceeded
 		return
 	}
@@ -217,7 +218,7 @@ func (s *AuthServiceImpl) SendPhoneCode(ctx context.Context, req *auth.SendPhone
 	// 发送code
 	phoneConf := config.GetConf().Phone
 
-	if err = sms.SendCaptcha(req.GetPhone(), Captcha); err != nil {
+	if err := sms.SendCaptcha(req.GetPhone(), Captcha); err != nil {
 		zap.L().Error("手机验证码发送失败" + err.Error())
 		return
 	}
@@ -227,7 +228,7 @@ func (s *AuthServiceImpl) SendPhoneCode(ctx context.Context, req *auth.SendPhone
 
 	// 放入缓存
 	cache.SetWithTime(cache.GetSendCaptchaIntervalKey(req.GetPhone()), "1", parse.Duration(phoneConf.SendInterval)) // 刷新间隔
-	_, err = cache.SetWithTime(cache.GetPhoneCodeKey(req.GetPhone()), Captcha, parse.Duration(phoneConf.ExpirationTime))
+	_, err := cache.SetWithTime(cache.GetPhoneCodeKey(req.GetPhone()), Captcha, parse.Duration(phoneConf.ExpirationTime))
 	if err != nil {
 		zap.L().Error("redis.Set fail", zap.Error(err))
 		return
@@ -239,13 +240,12 @@ func (s *AuthServiceImpl) SendPhoneCode(ctx context.Context, req *auth.SendPhone
 
 // SendEmailCode implements the AuthService interface.
 const defaultCaptchaLength = 6 // TODO : 写入配置文件
-func (s *AuthServiceImpl) SendEmailCode(ctx context.Context, req *auth.SendEmailCodeReq) (res *auth.SendEmailCodeResp, err error) {
+func (s *AuthServiceImpl) SendEmailCode(ctx context.Context, req *auth.SendEmailCodeReq) (res *auth.SendEmailCodeResp, _ error) {
 	res = new(auth.SendEmailCodeResp)
 	res.StatusCode = common.CodeServerBusy
 
 	// 校验发送间隔
-	var result string
-	if result, err = cache.Get(cache.GetSendCaptchaIntervalKey(req.GetEmail())); len(result) != 0 || err == nil {
+	if result, err := cache.Get(cache.GetSendCaptchaIntervalKey(req.GetEmail())); len(result) != 0 || err == nil {
 		res.StatusCode = common.CodeRateLimitExceeded
 		return
 	}
@@ -256,7 +256,7 @@ func (s *AuthServiceImpl) SendEmailCode(ctx context.Context, req *auth.SendEmail
 	// 发送code
 	emailConf := config.GetConf().Email
 
-	if err = mail.SendCaptcha(req.GetEmail(), Captcha); err != nil {
+	if err := mail.SendCaptcha(req.GetEmail(), Captcha); err != nil {
 		zap.L().Error("邮箱验证码发送失败" + err.Error())
 		return
 	}
@@ -266,7 +266,7 @@ func (s *AuthServiceImpl) SendEmailCode(ctx context.Context, req *auth.SendEmail
 
 	// 放入缓存
 	cache.SetWithTime(cache.GetSendCaptchaIntervalKey(req.GetEmail()), "1", parse.Duration(config.GetConf().Email.SendInterval)) // 刷新间隔
-	_, err = cache.SetWithTime(cache.GetEmailKey(req.GetEmail()), Captcha, parse.Duration(emailConf.ExpirationTime))
+	_, err := cache.SetWithTime(cache.GetEmailKey(req.GetEmail()), Captcha, parse.Duration(emailConf.ExpirationTime))
 	if err != nil {
 		zap.L().Error("redis.Set fail", zap.Error(err))
 		return
@@ -277,10 +277,11 @@ func (s *AuthServiceImpl) SendEmailCode(ctx context.Context, req *auth.SendEmail
 }
 
 // ShowPhotoCaptcha implements the AuthService interface.
-func (s *AuthServiceImpl) ShowPhotoCaptcha(ctx context.Context, req *auth.ShowPhotoCaptchaReq) (res *auth.ShowPhotoCaptchaResp, err error) {
+func (s *AuthServiceImpl) ShowPhotoCaptcha(ctx context.Context, req *auth.ShowPhotoCaptchaReq) (res *auth.ShowPhotoCaptchaResp, _ error) {
 	res = new(auth.ShowPhotoCaptchaResp)
 	res.StatusCode = common.CodeServerBusy
 
+	var err error
 	res.CaptchaId, res.CaptchaImg, _, err = captcha.NewCapt().GenerateCaptcha()
 	if err != nil {
 		zap.L().Error("生成验证码失败", zap.Error(err))
@@ -292,7 +293,7 @@ func (s *AuthServiceImpl) ShowPhotoCaptcha(ctx context.Context, req *auth.ShowPh
 }
 
 // RefreshToken implements the AuthService interface.
-func (s *AuthServiceImpl) RefreshToken(ctx context.Context, req *auth.RefreshTokenReq) (res *auth.RefreshTokenResp, err error) {
+func (s *AuthServiceImpl) RefreshToken(ctx context.Context, req *auth.RefreshTokenReq) (res *auth.RefreshTokenResp, _ error) {
 	res = new(auth.RefreshTokenResp)
 	res.StatusCode = common.CodeServerBusy
 
@@ -351,7 +352,7 @@ func (s *AuthServiceImpl) RefreshToken(ctx context.Context, req *auth.RefreshTok
 
 // GetUserAdmin implements the AuthService interface.
 const expireTime = "7d" // TODO 写入配置文件
-func (s *AuthServiceImpl) GetUserAdmin(ctx context.Context, req *auth.CheckAdminReq) (res *auth.CheckAdminResp, err error) {
+func (s *AuthServiceImpl) GetUserAdmin(ctx context.Context, req *auth.CheckAdminReq) (res *auth.CheckAdminResp, _ error) {
 	res = new(auth.CheckAdminResp)
 	res.StatusCode = common.CodeServerBusy
 

@@ -16,7 +16,7 @@ import (
 type ProductCatalogServiceImpl struct{}
 
 // ListProducts implements the ProductCatalogServiceImpl interface.
-func (s *ProductCatalogServiceImpl) ListProducts(ctx context.Context, req *product.ListProductsReq) (resp *product.ListProductsResp, err error) {
+func (s *ProductCatalogServiceImpl) ListProducts(ctx context.Context, req *product.ListProductsReq) (resp *product.ListProductsResp, _ error) {
 	// TODO: Your code here...
 	resp = new(product.ListProductsResp)
 	resp.StatusCode = common.CodeServerBusy
@@ -36,14 +36,13 @@ func (s *ProductCatalogServiceImpl) ListProducts(ctx context.Context, req *produ
 }
 
 // GetProduct implements the ProductCatalogServiceImpl interface.
-func (s *ProductCatalogServiceImpl) GetProduct(ctx context.Context, req *product.GetProductReq) (resp *product.GetProductResp, err error) {
+func (s *ProductCatalogServiceImpl) GetProduct(ctx context.Context, req *product.GetProductReq) (resp *product.GetProductResp, _ error) {
 	// TODO: Your code here...
 	resp = new(product.GetProductResp)
 	resp.StatusCode = common.CodeServerBusy
 	resp.Product = new(product.Product)
 
-	var data *model.Product
-	data, err = db.GetProductByPid(ctx, req.GetId())
+	data, err := db.GetProductByPid(ctx, req.GetId())
 
 	err = copier.Copy(&resp.Product, data)
 	if err != nil {
@@ -58,7 +57,7 @@ func (s *ProductCatalogServiceImpl) GetProduct(ctx context.Context, req *product
 }
 
 // SearchProducts implements the ProductCatalogServiceImpl interface.
-func (s *ProductCatalogServiceImpl) SearchProducts(ctx context.Context, req *product.SearchProductsReq) (resp *product.SearchProductsResp, err error) {
+func (s *ProductCatalogServiceImpl) SearchProducts(ctx context.Context, req *product.SearchProductsReq) (resp *product.SearchProductsResp, _ error) {
 	// TODO: Your code here...
 	resp = new(product.SearchProductsResp)
 	resp.StatusCode = common.CodeServerBusy
@@ -78,7 +77,7 @@ func (s *ProductCatalogServiceImpl) SearchProducts(ctx context.Context, req *pro
 	return
 }
 
-func (s *ProductCatalogServiceImpl) AddProduct(ctx context.Context, req *product.AddProductReq) (resp *product.AddProductResp, err error) {
+func (s *ProductCatalogServiceImpl) AddProduct(ctx context.Context, req *product.AddProductReq) (resp *product.AddProductResp, _ error) {
 	resp = new(product.AddProductResp)
 	resp.StatusCode = common.CodeServerBusy
 
@@ -95,7 +94,7 @@ func (s *ProductCatalogServiceImpl) AddProduct(ctx context.Context, req *product
 
 	*product.Categories = req.Product.Categories
 
-	err = db.AddProduct(ctx, product)
+	err := db.AddProduct(ctx, product)
 	if err != nil {
 		zap.L().Error("Failed to create product", zap.Error(err))
 		return
@@ -112,11 +111,11 @@ func (s *ProductCatalogServiceImpl) AddProduct(ctx context.Context, req *product
 	return
 }
 
-func (s *ProductCatalogServiceImpl) DeleteProduct(ctx context.Context, req *product.DeleteProductReq) (resp *product.DeleteProductResp, err error) {
+func (s *ProductCatalogServiceImpl) DeleteProduct(ctx context.Context, req *product.DeleteProductReq) (resp *product.DeleteProductResp, _ error) {
 	resp = new(product.DeleteProductResp)
 	resp.StatusCode = common.CodeServerBusy
 
-	err = db.DeleteProduct(ctx, req.Pid)
+	err := db.DeleteProduct(ctx, req.Pid)
 	if err != nil {
 		zap.L().Error("Failed to delete product", zap.Error(err))
 		return

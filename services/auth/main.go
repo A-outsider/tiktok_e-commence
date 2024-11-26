@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/pkg/transmeta"
@@ -11,8 +12,12 @@ import (
 	"gomall/common/logs"
 	auth "gomall/kitex_gen/auth/authservice"
 	"gomall/services/auth/config"
+	"gomall/services/auth/dal/db"
+	"gomall/services/auth/dal/model"
 	"gomall/services/auth/handler"
 	"gomall/services/auth/initialize"
+	"gomall/services/auth/utils/password"
+	"gorm.io/gorm"
 	"net"
 	"time"
 )
@@ -35,6 +40,18 @@ func main() {
 
 	// 初始化一系列主件
 	initialize.Init()
+
+	// 创建超级管理员
+	_, err := db.GetUser("1")
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		err = db.InsertUser(&model.User{
+			ID:       "1",
+			Phone:    "12345678901",
+			Name:     "tiktok_admin",
+			Password: password.Encrypt("lijialang666"),
+			Role:     model.ConstRoleOfAdmin,
+		})
+	}
 
 	// 服务注册
 	addr, _ := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:%d", config.GetConf().Service.Host, config.GetConf().Service.Port))

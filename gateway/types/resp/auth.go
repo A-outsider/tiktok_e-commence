@@ -1,22 +1,22 @@
 package resp
 
 type LoginByCodeResp struct {
-	Token        string `form:"token"`
-	RefreshToken string `form:"refresh_token"`
+	Token        string `json:"token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 type LoginByPwdResp struct {
-	Token        string `form:"token"`
-	RefreshToken string `form:"refresh_token"`
+	Token        string `json:"token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 type RefreshTokenResp struct {
-	Token        string `form:"token"`
-	RefreshToken string `form:"refresh_token"`
+	Token        string `json:"token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 // 图片
 type ShowPhotoCaptchaResp struct {
-	CaptchaId  string `form:"captcha_id"`
-	CaptchaImg string `form:"captcha_img"`
+	CaptchaId  string `json:"captcha_id"`
+	CaptchaImg string `json:"captcha_img"`
 }

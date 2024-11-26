@@ -15,10 +15,24 @@ import (
 var errInvalidMessageType = errors.New("invalid message type for service method handler")
 
 var serviceMethods = map[string]kitex.MethodInfo{
-	"Charge": kitex.NewMethodInfo(
-		chargeHandler,
-		newChargeArgs,
-		newChargeResult,
+	"CreatePayment": kitex.NewMethodInfo(
+		createPaymentHandler,
+		newCreatePaymentArgs,
+		newCreatePaymentResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
+	"PayCallback": kitex.NewMethodInfo(
+		payCallbackHandler,
+		newPayCallbackArgs,
+		newPayCallbackResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
+	"PayNotify": kitex.NewMethodInfo(
+		payNotifyHandler,
+		newPayNotifyArgs,
+		newPayNotifyResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
@@ -88,73 +102,73 @@ func newServiceInfo(hasStreaming bool, keepStreamingMethods bool, keepNonStreami
 	return svcInfo
 }
 
-func chargeHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+func createPaymentHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	switch s := arg.(type) {
 	case *streaming.Args:
 		st := s.Stream
-		req := new(payment.ChargeReq)
+		req := new(payment.CreatePaymentReq)
 		if err := st.RecvMsg(req); err != nil {
 			return err
 		}
-		resp, err := handler.(payment.PaymentService).Charge(ctx, req)
+		resp, err := handler.(payment.PaymentService).CreatePayment(ctx, req)
 		if err != nil {
 			return err
 		}
 		return st.SendMsg(resp)
-	case *ChargeArgs:
-		success, err := handler.(payment.PaymentService).Charge(ctx, s.Req)
+	case *CreatePaymentArgs:
+		success, err := handler.(payment.PaymentService).CreatePayment(ctx, s.Req)
 		if err != nil {
 			return err
 		}
-		realResult := result.(*ChargeResult)
+		realResult := result.(*CreatePaymentResult)
 		realResult.Success = success
 		return nil
 	default:
 		return errInvalidMessageType
 	}
 }
-func newChargeArgs() interface{} {
-	return &ChargeArgs{}
+func newCreatePaymentArgs() interface{} {
+	return &CreatePaymentArgs{}
 }
 
-func newChargeResult() interface{} {
-	return &ChargeResult{}
+func newCreatePaymentResult() interface{} {
+	return &CreatePaymentResult{}
 }
 
-type ChargeArgs struct {
-	Req *payment.ChargeReq
+type CreatePaymentArgs struct {
+	Req *payment.CreatePaymentReq
 }
 
-func (p *ChargeArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+func (p *CreatePaymentArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
 	if !p.IsSetReq() {
-		p.Req = new(payment.ChargeReq)
+		p.Req = new(payment.CreatePaymentReq)
 	}
 	return p.Req.FastRead(buf, _type, number)
 }
 
-func (p *ChargeArgs) FastWrite(buf []byte) (n int) {
+func (p *CreatePaymentArgs) FastWrite(buf []byte) (n int) {
 	if !p.IsSetReq() {
 		return 0
 	}
 	return p.Req.FastWrite(buf)
 }
 
-func (p *ChargeArgs) Size() (n int) {
+func (p *CreatePaymentArgs) Size() (n int) {
 	if !p.IsSetReq() {
 		return 0
 	}
 	return p.Req.Size()
 }
 
-func (p *ChargeArgs) Marshal(out []byte) ([]byte, error) {
+func (p *CreatePaymentArgs) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetReq() {
 		return out, nil
 	}
 	return proto.Marshal(p.Req)
 }
 
-func (p *ChargeArgs) Unmarshal(in []byte) error {
-	msg := new(payment.ChargeReq)
+func (p *CreatePaymentArgs) Unmarshal(in []byte) error {
+	msg := new(payment.CreatePaymentReq)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -162,59 +176,59 @@ func (p *ChargeArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var ChargeArgs_Req_DEFAULT *payment.ChargeReq
+var CreatePaymentArgs_Req_DEFAULT *payment.CreatePaymentReq
 
-func (p *ChargeArgs) GetReq() *payment.ChargeReq {
+func (p *CreatePaymentArgs) GetReq() *payment.CreatePaymentReq {
 	if !p.IsSetReq() {
-		return ChargeArgs_Req_DEFAULT
+		return CreatePaymentArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-func (p *ChargeArgs) IsSetReq() bool {
+func (p *CreatePaymentArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *ChargeArgs) GetFirstArgument() interface{} {
+func (p *CreatePaymentArgs) GetFirstArgument() interface{} {
 	return p.Req
 }
 
-type ChargeResult struct {
-	Success *payment.ChargeResp
+type CreatePaymentResult struct {
+	Success *payment.CreatePaymentResp
 }
 
-var ChargeResult_Success_DEFAULT *payment.ChargeResp
+var CreatePaymentResult_Success_DEFAULT *payment.CreatePaymentResp
 
-func (p *ChargeResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+func (p *CreatePaymentResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
 	if !p.IsSetSuccess() {
-		p.Success = new(payment.ChargeResp)
+		p.Success = new(payment.CreatePaymentResp)
 	}
 	return p.Success.FastRead(buf, _type, number)
 }
 
-func (p *ChargeResult) FastWrite(buf []byte) (n int) {
+func (p *CreatePaymentResult) FastWrite(buf []byte) (n int) {
 	if !p.IsSetSuccess() {
 		return 0
 	}
 	return p.Success.FastWrite(buf)
 }
 
-func (p *ChargeResult) Size() (n int) {
+func (p *CreatePaymentResult) Size() (n int) {
 	if !p.IsSetSuccess() {
 		return 0
 	}
 	return p.Success.Size()
 }
 
-func (p *ChargeResult) Marshal(out []byte) ([]byte, error) {
+func (p *CreatePaymentResult) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetSuccess() {
 		return out, nil
 	}
 	return proto.Marshal(p.Success)
 }
 
-func (p *ChargeResult) Unmarshal(in []byte) error {
-	msg := new(payment.ChargeResp)
+func (p *CreatePaymentResult) Unmarshal(in []byte) error {
+	msg := new(payment.CreatePaymentResp)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -222,22 +236,328 @@ func (p *ChargeResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *ChargeResult) GetSuccess() *payment.ChargeResp {
+func (p *CreatePaymentResult) GetSuccess() *payment.CreatePaymentResp {
 	if !p.IsSetSuccess() {
-		return ChargeResult_Success_DEFAULT
+		return CreatePaymentResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-func (p *ChargeResult) SetSuccess(x interface{}) {
-	p.Success = x.(*payment.ChargeResp)
+func (p *CreatePaymentResult) SetSuccess(x interface{}) {
+	p.Success = x.(*payment.CreatePaymentResp)
 }
 
-func (p *ChargeResult) IsSetSuccess() bool {
+func (p *CreatePaymentResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *ChargeResult) GetResult() interface{} {
+func (p *CreatePaymentResult) GetResult() interface{} {
+	return p.Success
+}
+
+func payCallbackHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(payment.PayCallbackReq)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(payment.PaymentService).PayCallback(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *PayCallbackArgs:
+		success, err := handler.(payment.PaymentService).PayCallback(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*PayCallbackResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newPayCallbackArgs() interface{} {
+	return &PayCallbackArgs{}
+}
+
+func newPayCallbackResult() interface{} {
+	return &PayCallbackResult{}
+}
+
+type PayCallbackArgs struct {
+	Req *payment.PayCallbackReq
+}
+
+func (p *PayCallbackArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetReq() {
+		p.Req = new(payment.PayCallbackReq)
+	}
+	return p.Req.FastRead(buf, _type, number)
+}
+
+func (p *PayCallbackArgs) FastWrite(buf []byte) (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.FastWrite(buf)
+}
+
+func (p *PayCallbackArgs) Size() (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.Size()
+}
+
+func (p *PayCallbackArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *PayCallbackArgs) Unmarshal(in []byte) error {
+	msg := new(payment.PayCallbackReq)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var PayCallbackArgs_Req_DEFAULT *payment.PayCallbackReq
+
+func (p *PayCallbackArgs) GetReq() *payment.PayCallbackReq {
+	if !p.IsSetReq() {
+		return PayCallbackArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *PayCallbackArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *PayCallbackArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type PayCallbackResult struct {
+	Success *payment.PayCallbackResp
+}
+
+var PayCallbackResult_Success_DEFAULT *payment.PayCallbackResp
+
+func (p *PayCallbackResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetSuccess() {
+		p.Success = new(payment.PayCallbackResp)
+	}
+	return p.Success.FastRead(buf, _type, number)
+}
+
+func (p *PayCallbackResult) FastWrite(buf []byte) (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.FastWrite(buf)
+}
+
+func (p *PayCallbackResult) Size() (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.Size()
+}
+
+func (p *PayCallbackResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *PayCallbackResult) Unmarshal(in []byte) error {
+	msg := new(payment.PayCallbackResp)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *PayCallbackResult) GetSuccess() *payment.PayCallbackResp {
+	if !p.IsSetSuccess() {
+		return PayCallbackResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *PayCallbackResult) SetSuccess(x interface{}) {
+	p.Success = x.(*payment.PayCallbackResp)
+}
+
+func (p *PayCallbackResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *PayCallbackResult) GetResult() interface{} {
+	return p.Success
+}
+
+func payNotifyHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(payment.PayNotifyReq)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(payment.PaymentService).PayNotify(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *PayNotifyArgs:
+		success, err := handler.(payment.PaymentService).PayNotify(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*PayNotifyResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newPayNotifyArgs() interface{} {
+	return &PayNotifyArgs{}
+}
+
+func newPayNotifyResult() interface{} {
+	return &PayNotifyResult{}
+}
+
+type PayNotifyArgs struct {
+	Req *payment.PayNotifyReq
+}
+
+func (p *PayNotifyArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetReq() {
+		p.Req = new(payment.PayNotifyReq)
+	}
+	return p.Req.FastRead(buf, _type, number)
+}
+
+func (p *PayNotifyArgs) FastWrite(buf []byte) (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.FastWrite(buf)
+}
+
+func (p *PayNotifyArgs) Size() (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.Size()
+}
+
+func (p *PayNotifyArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *PayNotifyArgs) Unmarshal(in []byte) error {
+	msg := new(payment.PayNotifyReq)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var PayNotifyArgs_Req_DEFAULT *payment.PayNotifyReq
+
+func (p *PayNotifyArgs) GetReq() *payment.PayNotifyReq {
+	if !p.IsSetReq() {
+		return PayNotifyArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *PayNotifyArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *PayNotifyArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type PayNotifyResult struct {
+	Success *payment.PayNotifyResp
+}
+
+var PayNotifyResult_Success_DEFAULT *payment.PayNotifyResp
+
+func (p *PayNotifyResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetSuccess() {
+		p.Success = new(payment.PayNotifyResp)
+	}
+	return p.Success.FastRead(buf, _type, number)
+}
+
+func (p *PayNotifyResult) FastWrite(buf []byte) (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.FastWrite(buf)
+}
+
+func (p *PayNotifyResult) Size() (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.Size()
+}
+
+func (p *PayNotifyResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *PayNotifyResult) Unmarshal(in []byte) error {
+	msg := new(payment.PayNotifyResp)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *PayNotifyResult) GetSuccess() *payment.PayNotifyResp {
+	if !p.IsSetSuccess() {
+		return PayNotifyResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *PayNotifyResult) SetSuccess(x interface{}) {
+	p.Success = x.(*payment.PayNotifyResp)
+}
+
+func (p *PayNotifyResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *PayNotifyResult) GetResult() interface{} {
 	return p.Success
 }
 
@@ -251,11 +571,31 @@ func newServiceClient(c client.Client) *kClient {
 	}
 }
 
-func (p *kClient) Charge(ctx context.Context, Req *payment.ChargeReq) (r *payment.ChargeResp, err error) {
-	var _args ChargeArgs
+func (p *kClient) CreatePayment(ctx context.Context, Req *payment.CreatePaymentReq) (r *payment.CreatePaymentResp, err error) {
+	var _args CreatePaymentArgs
 	_args.Req = Req
-	var _result ChargeResult
-	if err = p.c.Call(ctx, "Charge", &_args, &_result); err != nil {
+	var _result CreatePaymentResult
+	if err = p.c.Call(ctx, "CreatePayment", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) PayCallback(ctx context.Context, Req *payment.PayCallbackReq) (r *payment.PayCallbackResp, err error) {
+	var _args PayCallbackArgs
+	_args.Req = Req
+	var _result PayCallbackResult
+	if err = p.c.Call(ctx, "PayCallback", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) PayNotify(ctx context.Context, Req *payment.PayNotifyReq) (r *payment.PayNotifyResp, err error) {
+	var _args PayNotifyArgs
+	_args.Req = Req
+	var _result PayNotifyResult
+	if err = p.c.Call(ctx, "PayNotify", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

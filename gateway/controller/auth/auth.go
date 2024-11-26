@@ -231,7 +231,7 @@ func (api *Api) RefreshToken(ctx context.Context, c *app.RequestContext) {
 
 // 显示图片验证码
 func (api *Api) ShowPhotoCaptcha(ctx context.Context, c *app.RequestContext) {
-	ctrl := controller.NewCtrl[struct{}](c)
+	ctrl := controller.NewCtrl[req.None](c)
 
 	result, _ := api.client.ShowPhotoCaptcha(ctx, nil)
 	if result == nil || result.GetStatusCode() == 0 {

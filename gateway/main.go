@@ -1,6 +1,9 @@
 package main
 
 import (
+	"context"
+	"fmt"
+	"github.com/kitex-contrib/obs-opentelemetry/provider"
 	cc "gomall/common/config"
 	"gomall/common/logs"
 	"gomall/gateway/config"
@@ -20,13 +23,13 @@ func main() {
 	role.InitCasbin()
 
 	// kitex 版链路追踪 					TODO 未测试
-	//p := provider.NewOpenTelemetryProvider(
-	//	provider.WithServiceName(config.ServerName), // 配置服务名称
-	//	provider.WithExportEndpoint(fmt.Sprintf("%s:%d", config.GetConf().Jaeger.Host, config.GetConf().Jaeger.Port)), // Jaeger导出地址
-	//	provider.WithInsecure(),
-	//	provider.WithEnableMetrics(false),
-	//)
-	//defer p.Shutdown(context.Background())
+	p := provider.NewOpenTelemetryProvider(
+		provider.WithServiceName(config.ServerName), // 配置服务名称
+		provider.WithExportEndpoint(fmt.Sprintf("%s:%d", config.GetConf().Jaeger.Host, config.GetConf().Jaeger.Port)), // Jaeger导出地址
+		provider.WithInsecure(),
+		provider.WithEnableMetrics(false),
+	)
+	defer p.Shutdown(context.Background())
 
 	// 服务发现
 	rpc.Init()

@@ -6,23 +6,36 @@ option go_package = "payment;rpcPayment";
 
 
 service PaymentService {
-  rpc Charge(ChargeReq) returns (ChargeResp) {}
+  rpc CreatePayment(CreatePaymentReq) returns (CreatePaymentResp) {}
+  rpc PayCallback(PayCallbackReq) returns (PayCallbackResp) {}
+  rpc PayNotify(PayNotifyReq) returns (PayNotifyResp) {}
 }
 
-message CreditCardInfo {
-  string credit_card_number = 1;
-  int32 credit_card_cvv = 2;
-  int32 credit_card_expiration_year = 3;
-  int32 credit_card_expiration_month = 4;
+
+message CreatePaymentReq {
+  string oid = 1;
+  double amount = 2;
+  string user_id = 3;
 }
 
-message ChargeReq {
-  float amount = 1;
-  CreditCardInfo credit_card = 2;
-  string order_id = 3;
-  uint32 user_id = 4;
+message CreatePaymentResp {
+  int64 status_code = 1;
+  string payment_url = 2;
 }
 
-message ChargeResp {
-  string transaction_id = 1;
+
+message PayCallbackReq {
+  bytes raw_data = 1;
+}
+
+ message PayCallbackResp {
+  int64 status_code = 1;
+}
+
+message PayNotifyReq {
+  bytes raw_data = 1;
+}
+
+message  PayNotifyResp {
+  int64 status_code = 1;
 }

@@ -11,7 +11,9 @@ import (
 
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.
 type Client interface {
-	Charge(ctx context.Context, Req *payment.ChargeReq, callOptions ...callopt.Option) (r *payment.ChargeResp, err error)
+	CreatePayment(ctx context.Context, Req *payment.CreatePaymentReq, callOptions ...callopt.Option) (r *payment.CreatePaymentResp, err error)
+	PayCallback(ctx context.Context, Req *payment.PayCallbackReq, callOptions ...callopt.Option) (r *payment.PayCallbackResp, err error)
+	PayNotify(ctx context.Context, Req *payment.PayNotifyReq, callOptions ...callopt.Option) (r *payment.PayNotifyResp, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -43,7 +45,17 @@ type kPaymentServiceClient struct {
 	*kClient
 }
 
-func (p *kPaymentServiceClient) Charge(ctx context.Context, Req *payment.ChargeReq, callOptions ...callopt.Option) (r *payment.ChargeResp, err error) {
+func (p *kPaymentServiceClient) CreatePayment(ctx context.Context, Req *payment.CreatePaymentReq, callOptions ...callopt.Option) (r *payment.CreatePaymentResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.Charge(ctx, Req)
+	return p.kClient.CreatePayment(ctx, Req)
+}
+
+func (p *kPaymentServiceClient) PayCallback(ctx context.Context, Req *payment.PayCallbackReq, callOptions ...callopt.Option) (r *payment.PayCallbackResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.PayCallback(ctx, Req)
+}
+
+func (p *kPaymentServiceClient) PayNotify(ctx context.Context, Req *payment.PayNotifyReq, callOptions ...callopt.Option) (r *payment.PayNotifyResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.PayNotify(ctx, Req)
 }

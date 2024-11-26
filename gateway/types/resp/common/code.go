@@ -6,7 +6,7 @@ const (
 	// 成功
 	CodeSuccess int64 = 1000
 
-	// 认证模块 2001 ~ 2099
+	// 认证模块
 	CodeInvalidParams int64 = 2000 + iota
 	CodeUserExist
 	CodeUserNotExist
@@ -26,6 +26,10 @@ const (
 	CodeInvalidTokenExpired
 	CodeUserALREADYLocked
 	CodeVisitLimitExceeded
+
+	// 支付
+	CodePaySignatureVerifyFailed int64 = 2300 + iota
+	CodePayMsgError
 
 	// 其他错误  TODO 待规划
 	CodeForbidden         int64 = 3001
@@ -57,6 +61,10 @@ var Msg = map[int64]string{
 	CodeVisitLimitExceeded:   "访问流量达到限制",
 	CodeInvalidTokenExpired:  "Token无效",
 	CodeUserALREADYLocked:    "用户已被锁定",
+
+	// 支付
+	CodePaySignatureVerifyFailed: "支付签名验证失败",
+	CodePayMsgError:              "支付失败",
 
 	// 其他错误
 	CodeForbidden:         "权限不足",

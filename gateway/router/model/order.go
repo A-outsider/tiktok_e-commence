@@ -11,6 +11,6 @@ func RegisterOrder(r *route.RouterGroup) {
 
 	r.Use(middleware.Auth())
 
-	r.POST("", orderApi.PlaceOrder)
-	r.GET("", orderApi.ListOrder)
+	r.POST("", orderApi.PlaceOrder) // 创建订单
+	r.GET("", orderApi.ListOrder)   // 获取订单列表
 }

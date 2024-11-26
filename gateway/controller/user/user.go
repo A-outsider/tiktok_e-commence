@@ -30,7 +30,7 @@ func (api *Api) GetUserInfo(ctx context.Context, c *app.RequestContext) {
 	userId := c.GetString("userId")
 
 	// 参数绑定
-	ctrl := controller.NewCtrl[struct{}](c)
+	ctrl := controller.NewCtrl[req.None](c)
 
 	kitexReq := &rpcUser.GetUserInfoReq{Id: userId}
 	result, _ := api.client.GetUserInfo(ctx, kitexReq)
@@ -107,7 +107,7 @@ func (api *Api) DeleteUser(ctx context.Context, c *app.RequestContext) {
 // 上传头像
 func (api *Api) UploadAvatar(ctx context.Context, c *app.RequestContext) {
 
-	ctrl := controller.NewCtrl[struct{}](c)
+	ctrl := controller.NewCtrl[req.None](c)
 
 	file, err := c.FormFile("avatar")
 	if err != nil {
@@ -154,7 +154,7 @@ func (api *Api) UploadAvatar(ctx context.Context, c *app.RequestContext) {
 // 获取地址列表
 func (api *Api) GetAddressList(ctx context.Context, c *app.RequestContext) {
 
-	ctrl := controller.NewCtrl[struct{}](c)
+	ctrl := controller.NewCtrl[req.None](c)
 
 	kitexReq := &rpcUser.GetAddressListReq{Id: c.GetString("userId")}
 

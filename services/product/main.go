@@ -1,10 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/pkg/transmeta"
 	"github.com/cloudwego/kitex/server"
+	"github.com/kitex-contrib/obs-opentelemetry/provider"
+	"github.com/kitex-contrib/obs-opentelemetry/tracing"
 	etcd "github.com/kitex-contrib/registry-etcd"
 	"github.com/kitex-contrib/registry-etcd/retry"
 	cc "gomall/common/config"
@@ -12,7 +15,7 @@ import (
 	product "gomall/kitex_gen/product/productcatalogservice"
 	"gomall/services/product/config"
 	"gomall/services/product/handler"
-	initialize "gomall/services/product/initialize"
+	"gomall/services/product/initialize"
 	"net"
 	"time"
 )
@@ -24,13 +27,13 @@ func main() {
 	logs.LogInit(config.ServerName)
 
 	// kitex 版链路追踪
-	/*	p := provider.NewOpenTelemetryProvider(
-			provider.WithServiceName(config.ServerName), // 配置服务名称
-			provider.WithExportEndpoint(fmt.Sprintf("%s:%d", config.GetConf().Jaeger.Host, config.GetConf().Jaeger.Port)), // Jaeger导出地址
-			provider.WithInsecure(),
-			provider.WithEnableMetrics(false),
-		)
-		defer p.Shutdown(context.Background())*/
+	p := provider.NewOpenTelemetryProvider(
+		provider.WithServiceName(config.ServerName), // 配置服务名称
+		provider.WithExportEndpoint(fmt.Sprintf("%s:%d", config.GetConf().Jaeger.Host, config.GetConf().Jaeger.Port)), // Jaeger导出地址
+		provider.WithInsecure(),
+		provider.WithEnableMetrics(false),
+	)
+	defer p.Shutdown(context.Background())
 
 	// 初始化一系列主件
 	initialize.Init()
@@ -56,7 +59,7 @@ func main() {
 		server.WithRefuseTrafficWithoutServiceName(),            // 拒绝没有服务名的请求
 		server.WithMetaHandler(transmeta.ServerTTHeaderHandler), // 元数据处理器
 		server.WithSuite(etcdSuite),                             // etcd套件
-		// server.WithSuite(tracing.NewServerSuite()),              // opentelemetry 套件
+		server.WithSuite(tracing.NewServerSuite()),              // opentelemetry 套件
 	)
 
 	if err = product.RegisterService(svr, handler.NewProductCatalogServiceImpl()); err != nil {

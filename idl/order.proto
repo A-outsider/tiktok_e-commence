@@ -11,6 +11,8 @@ service OrderService {
   rpc ListOrder(ListOrderReq) returns (ListOrderResp) {}
   rpc MarkOrderPaid(MarkOrderPaidReq) returns (MarkOrderPaidResp) {}
   rpc MakeSureOrderExpired(MakeSureOrderExpiredReq) returns (MakeSureOrderExpiredResp) {}
+  rpc MarkOrderShipped(MarkOrderShippedReq) returns (MarkOrderShippedResp) {}
+  rpc MarkOrderCompleted(MarkOrderCompletedReq) returns (MarkOrderCompletedResp) {}
 }
 
 message Address {
@@ -85,4 +87,22 @@ message MakeSureOrderExpiredReq {
 message MakeSureOrderExpiredResp {
   bool IsExpired = 1;
   int64 status_code = 2;
+}
+
+message MarkOrderShippedReq {
+  string user_id = 1;
+  string order_id = 2;
+}
+
+message MarkOrderShippedResp {
+  int64 status_code = 1;
+}
+
+message MarkOrderCompletedReq {
+  string user_id = 1;
+  string order_id = 2;
+}
+
+message MarkOrderCompletedResp {
+  int64 status_code = 1;
 }

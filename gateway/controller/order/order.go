@@ -76,3 +76,49 @@ func (api *Api) ListOrder(ctx context.Context, c *app.RequestContext) {
 
 	ctrl.WithDataJSON(result.GetStatusCode(), result.Orders)
 }
+
+func (api *Api) MarkOrderShipped(ctx context.Context, c *app.RequestContext) {
+	// 参数绑定
+	ctrl := controller.NewCtrl[req.ChangeStatusReq](c)
+
+	// 转模型
+	kitexReq := new(rpcOrder.MarkOrderShippedReq)
+	kitexReq.UserId = c.GetString("userId")
+
+	// 调用 RPC 方法
+	result, _ := api.client.MarkOrderShipped(ctx, kitexReq)
+	if result == nil || result.GetStatusCode() == 0 {
+		ctrl.NoDataJSON(common.CodeServerBusy)
+		return
+	}
+
+	if result.GetStatusCode() != common.CodeSuccess {
+		ctrl.NoDataJSON(result.GetStatusCode())
+		return
+	}
+
+	ctrl.NoDataJSON(result.StatusCode)
+}
+
+func (api *Api) MarkOrderCompleted(ctx context.Context, c *app.RequestContext) {
+	// 参数绑定
+	ctrl := controller.NewCtrl[req.ChangeStatusReq](c)
+
+	// 转模型
+	kitexReq := new(rpcOrder.MarkOrderCompletedReq)
+	kitexReq.UserId = c.GetString("userId")
+
+	// 调用 RPC 方法
+	result, _ := api.client.MarkOrderCompleted(ctx, kitexReq)
+	if result == nil || result.GetStatusCode() == 0 {
+		ctrl.NoDataJSON(common.CodeServerBusy)
+		return
+	}
+
+	if result.GetStatusCode() != common.CodeSuccess {
+		ctrl.NoDataJSON(result.GetStatusCode())
+		return
+	}
+
+	ctrl.NoDataJSON(result.StatusCode)
+}

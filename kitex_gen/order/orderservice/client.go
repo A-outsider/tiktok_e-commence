@@ -15,6 +15,8 @@ type Client interface {
 	ListOrder(ctx context.Context, Req *order.ListOrderReq, callOptions ...callopt.Option) (r *order.ListOrderResp, err error)
 	MarkOrderPaid(ctx context.Context, Req *order.MarkOrderPaidReq, callOptions ...callopt.Option) (r *order.MarkOrderPaidResp, err error)
 	MakeSureOrderExpired(ctx context.Context, Req *order.MakeSureOrderExpiredReq, callOptions ...callopt.Option) (r *order.MakeSureOrderExpiredResp, err error)
+	MarkOrderShipped(ctx context.Context, Req *order.MarkOrderShippedReq, callOptions ...callopt.Option) (r *order.MarkOrderShippedResp, err error)
+	MarkOrderCompleted(ctx context.Context, Req *order.MarkOrderCompletedReq, callOptions ...callopt.Option) (r *order.MarkOrderCompletedResp, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -64,4 +66,14 @@ func (p *kOrderServiceClient) MarkOrderPaid(ctx context.Context, Req *order.Mark
 func (p *kOrderServiceClient) MakeSureOrderExpired(ctx context.Context, Req *order.MakeSureOrderExpiredReq, callOptions ...callopt.Option) (r *order.MakeSureOrderExpiredResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.MakeSureOrderExpired(ctx, Req)
+}
+
+func (p *kOrderServiceClient) MarkOrderShipped(ctx context.Context, Req *order.MarkOrderShippedReq, callOptions ...callopt.Option) (r *order.MarkOrderShippedResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.MarkOrderShipped(ctx, Req)
+}
+
+func (p *kOrderServiceClient) MarkOrderCompleted(ctx context.Context, Req *order.MarkOrderCompletedReq, callOptions ...callopt.Option) (r *order.MarkOrderCompletedResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.MarkOrderCompleted(ctx, Req)
 }

@@ -27,6 +27,9 @@ const (
 	CodeUserALREADYLocked
 	CodeVisitLimitExceeded
 
+	// 订单
+	CodeOrderStatusErr int64 = 2200 + iota
+
 	// 支付
 	CodePaySignatureVerifyFailed int64 = 2300 + iota
 	CodePayMsgError
@@ -63,6 +66,9 @@ var Msg = map[int64]string{
 	CodeVisitLimitExceeded:   "访问流量达到限制",
 	CodeInvalidTokenExpired:  "Token无效",
 	CodeUserALREADYLocked:    "用户已被锁定",
+
+	// 订单
+	CodeOrderStatusErr: "订单当前状态错误",
 
 	// 支付
 	CodePaySignatureVerifyFailed: "支付签名验证失败",

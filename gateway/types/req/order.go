@@ -21,3 +21,7 @@ type CartItem struct {
 	ProductId string `json:"product_id" form:"product_id"`
 	Quantity  int64  `json:"quantity" form:"quantity"`
 }
+
+type ChangeStatusReq struct {
+	OrderId string `json:"order_id" form:"order_id"`
+}

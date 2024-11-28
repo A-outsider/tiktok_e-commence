@@ -22,6 +22,8 @@ p, user, /api/v1/cart, DELETE
 
 p, user, /api/v1/order, POST
 p, user, /api/v1/order, GET
+p, seller, /api/v1/order/shipped, PUT
+p, user, /api/v1/order/completed, PUT
 
 p, user, /api/v1/payment/createPay, GET
 

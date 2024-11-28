@@ -43,6 +43,20 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
+	"MarkOrderShipped": kitex.NewMethodInfo(
+		markOrderShippedHandler,
+		newMarkOrderShippedArgs,
+		newMarkOrderShippedResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
+	"MarkOrderCompleted": kitex.NewMethodInfo(
+		markOrderCompletedHandler,
+		newMarkOrderCompletedArgs,
+		newMarkOrderCompletedResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
 }
 
 var (
@@ -721,6 +735,312 @@ func (p *MakeSureOrderExpiredResult) GetResult() interface{} {
 	return p.Success
 }
 
+func markOrderShippedHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(order.MarkOrderShippedReq)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(order.OrderService).MarkOrderShipped(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *MarkOrderShippedArgs:
+		success, err := handler.(order.OrderService).MarkOrderShipped(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*MarkOrderShippedResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newMarkOrderShippedArgs() interface{} {
+	return &MarkOrderShippedArgs{}
+}
+
+func newMarkOrderShippedResult() interface{} {
+	return &MarkOrderShippedResult{}
+}
+
+type MarkOrderShippedArgs struct {
+	Req *order.MarkOrderShippedReq
+}
+
+func (p *MarkOrderShippedArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetReq() {
+		p.Req = new(order.MarkOrderShippedReq)
+	}
+	return p.Req.FastRead(buf, _type, number)
+}
+
+func (p *MarkOrderShippedArgs) FastWrite(buf []byte) (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.FastWrite(buf)
+}
+
+func (p *MarkOrderShippedArgs) Size() (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.Size()
+}
+
+func (p *MarkOrderShippedArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *MarkOrderShippedArgs) Unmarshal(in []byte) error {
+	msg := new(order.MarkOrderShippedReq)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var MarkOrderShippedArgs_Req_DEFAULT *order.MarkOrderShippedReq
+
+func (p *MarkOrderShippedArgs) GetReq() *order.MarkOrderShippedReq {
+	if !p.IsSetReq() {
+		return MarkOrderShippedArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *MarkOrderShippedArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *MarkOrderShippedArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type MarkOrderShippedResult struct {
+	Success *order.MarkOrderShippedResp
+}
+
+var MarkOrderShippedResult_Success_DEFAULT *order.MarkOrderShippedResp
+
+func (p *MarkOrderShippedResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetSuccess() {
+		p.Success = new(order.MarkOrderShippedResp)
+	}
+	return p.Success.FastRead(buf, _type, number)
+}
+
+func (p *MarkOrderShippedResult) FastWrite(buf []byte) (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.FastWrite(buf)
+}
+
+func (p *MarkOrderShippedResult) Size() (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.Size()
+}
+
+func (p *MarkOrderShippedResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *MarkOrderShippedResult) Unmarshal(in []byte) error {
+	msg := new(order.MarkOrderShippedResp)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *MarkOrderShippedResult) GetSuccess() *order.MarkOrderShippedResp {
+	if !p.IsSetSuccess() {
+		return MarkOrderShippedResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *MarkOrderShippedResult) SetSuccess(x interface{}) {
+	p.Success = x.(*order.MarkOrderShippedResp)
+}
+
+func (p *MarkOrderShippedResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *MarkOrderShippedResult) GetResult() interface{} {
+	return p.Success
+}
+
+func markOrderCompletedHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(order.MarkOrderCompletedReq)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(order.OrderService).MarkOrderCompleted(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *MarkOrderCompletedArgs:
+		success, err := handler.(order.OrderService).MarkOrderCompleted(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*MarkOrderCompletedResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newMarkOrderCompletedArgs() interface{} {
+	return &MarkOrderCompletedArgs{}
+}
+
+func newMarkOrderCompletedResult() interface{} {
+	return &MarkOrderCompletedResult{}
+}
+
+type MarkOrderCompletedArgs struct {
+	Req *order.MarkOrderCompletedReq
+}
+
+func (p *MarkOrderCompletedArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetReq() {
+		p.Req = new(order.MarkOrderCompletedReq)
+	}
+	return p.Req.FastRead(buf, _type, number)
+}
+
+func (p *MarkOrderCompletedArgs) FastWrite(buf []byte) (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.FastWrite(buf)
+}
+
+func (p *MarkOrderCompletedArgs) Size() (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.Size()
+}
+
+func (p *MarkOrderCompletedArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *MarkOrderCompletedArgs) Unmarshal(in []byte) error {
+	msg := new(order.MarkOrderCompletedReq)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var MarkOrderCompletedArgs_Req_DEFAULT *order.MarkOrderCompletedReq
+
+func (p *MarkOrderCompletedArgs) GetReq() *order.MarkOrderCompletedReq {
+	if !p.IsSetReq() {
+		return MarkOrderCompletedArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *MarkOrderCompletedArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *MarkOrderCompletedArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type MarkOrderCompletedResult struct {
+	Success *order.MarkOrderCompletedResp
+}
+
+var MarkOrderCompletedResult_Success_DEFAULT *order.MarkOrderCompletedResp
+
+func (p *MarkOrderCompletedResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetSuccess() {
+		p.Success = new(order.MarkOrderCompletedResp)
+	}
+	return p.Success.FastRead(buf, _type, number)
+}
+
+func (p *MarkOrderCompletedResult) FastWrite(buf []byte) (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.FastWrite(buf)
+}
+
+func (p *MarkOrderCompletedResult) Size() (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.Size()
+}
+
+func (p *MarkOrderCompletedResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *MarkOrderCompletedResult) Unmarshal(in []byte) error {
+	msg := new(order.MarkOrderCompletedResp)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *MarkOrderCompletedResult) GetSuccess() *order.MarkOrderCompletedResp {
+	if !p.IsSetSuccess() {
+		return MarkOrderCompletedResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *MarkOrderCompletedResult) SetSuccess(x interface{}) {
+	p.Success = x.(*order.MarkOrderCompletedResp)
+}
+
+func (p *MarkOrderCompletedResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *MarkOrderCompletedResult) GetResult() interface{} {
+	return p.Success
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -766,6 +1086,26 @@ func (p *kClient) MakeSureOrderExpired(ctx context.Context, Req *order.MakeSureO
 	_args.Req = Req
 	var _result MakeSureOrderExpiredResult
 	if err = p.c.Call(ctx, "MakeSureOrderExpired", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) MarkOrderShipped(ctx context.Context, Req *order.MarkOrderShippedReq) (r *order.MarkOrderShippedResp, err error) {
+	var _args MarkOrderShippedArgs
+	_args.Req = Req
+	var _result MarkOrderShippedResult
+	if err = p.c.Call(ctx, "MarkOrderShipped", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) MarkOrderCompleted(ctx context.Context, Req *order.MarkOrderCompletedReq) (r *order.MarkOrderCompletedResp, err error) {
+	var _args MarkOrderCompletedArgs
+	_args.Req = Req
+	var _result MarkOrderCompletedResult
+	if err = p.c.Call(ctx, "MarkOrderCompleted", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

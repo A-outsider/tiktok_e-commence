@@ -10,6 +10,7 @@ import (
 	"gomall/services/order/dal/db"
 	"gomall/services/order/dal/model"
 	utils "gomall/services/order/utils/order"
+	"strconv"
 )
 
 // OrderServiceImpl implements the last service interface defined in the IDL.
@@ -139,6 +140,66 @@ func (s *OrderServiceImpl) MakeSureOrderExpired(ctx context.Context, req *order.
 		resp.IsExpired = true
 	}
 
+	return
+}
+
+func (s *OrderServiceImpl) MarkOrderShipped(ctx context.Context, req *order.MarkOrderShippedReq) (resp *order.MarkOrderShippedResp, _ error) {
+	resp = new(order.MarkOrderShippedResp)
+	resp.StatusCode = common.CodeServerBusy
+
+	parseInt, err := strconv.ParseInt(req.OrderId, 10, 64)
+	if err != nil {
+		zap.L().Error("parse order id fail", zap.Error(err))
+		return
+	}
+
+	order, err := db.GetOrderById(ctx, parseInt)
+	if err != nil {
+		zap.L().Error("get order id fail", zap.Error(err))
+		return
+	}
+	if order.Status != model.OrderStatusPaid {
+		resp.StatusCode = common.CodeOrderStatusErr
+		return
+	}
+
+	err = db.PutOrderStatus(ctx, order.Oid, model.OrderStatusShipped)
+	if err != nil {
+		zap.L().Error("put order status fail", zap.Error(err))
+		return
+	}
+
+	resp.StatusCode = common.CodeSuccess
+	return
+}
+
+func (s *OrderServiceImpl) MarkOrderCompleted(ctx context.Context, req *order.MarkOrderCompletedReq) (resp *order.MarkOrderCompletedResp, _ error) {
+	resp = new(order.MarkOrderCompletedResp)
+	resp.StatusCode = common.CodeServerBusy
+
+	parseInt, err := strconv.ParseInt(req.OrderId, 10, 64)
+	if err != nil {
+		zap.L().Error("parse order id fail", zap.Error(err))
+		return
+	}
+
+	order, err := db.GetOrderById(ctx, parseInt)
+	if err != nil {
+		zap.L().Error("get order id fail", zap.Error(err))
+		return
+	}
+	if order.Status != model.OrderStatusShipped {
+		resp.StatusCode = common.CodeOrderStatusErr
+		return
+	}
+
+	err = db.PutOrderStatus(ctx, order.Oid, model.OrderStatusCompleted)
+	if err != nil {
+		zap.L().Error("put order status fail", zap.Error(err))
+		return
+	}
+
+	resp.StatusCode = common.CodeSuccess
 	return
 }
 

@@ -16,6 +16,12 @@ func GetOrders(ctx context.Context, userId string) (orders []*model.Order, err e
 	return
 }
 
+func GetOrderById(ctx context.Context, orderId int64) (order *model.Order, err error) {
+	order = new(model.Order)
+	err = initialize.GetMysql().WithContext(ctx).Model(&model.Order{}).Where("id = ?", orderId).First(&order).Error
+	return
+}
+
 func PutOrderStatus(ctx context.Context, orderId string, status int) error {
 	return initialize.GetMysql().WithContext(ctx).Model(&model.Order{}).Where("order_id = ?", orderId).Update("status", status).Error
 }

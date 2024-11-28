@@ -29,6 +29,6 @@ func Set(ctx context.Context, value string) error {
 	return initialize.GetRedis().Set(ctx, getPaymentId(value), 1, 0).Err()
 }
 
-func IsExist(ctx context.Context, value string) bool {
-	return initialize.GetRedis().Exists(ctx, getPaymentId(value)).Err() == nil
+func IsExist(ctx context.Context, value string) error {
+	return initialize.GetRedis().Exists(ctx, getPaymentId(value)).Err()
 }

@@ -36,6 +36,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
+	"MakeSureOrderExpired": kitex.NewMethodInfo(
+		makeSureOrderExpiredHandler,
+		newMakeSureOrderExpiredArgs,
+		newMakeSureOrderExpiredResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
 }
 
 var (
@@ -561,6 +568,159 @@ func (p *MarkOrderPaidResult) GetResult() interface{} {
 	return p.Success
 }
 
+func makeSureOrderExpiredHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(order.MakeSureOrderExpiredReq)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(order.OrderService).MakeSureOrderExpired(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *MakeSureOrderExpiredArgs:
+		success, err := handler.(order.OrderService).MakeSureOrderExpired(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*MakeSureOrderExpiredResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newMakeSureOrderExpiredArgs() interface{} {
+	return &MakeSureOrderExpiredArgs{}
+}
+
+func newMakeSureOrderExpiredResult() interface{} {
+	return &MakeSureOrderExpiredResult{}
+}
+
+type MakeSureOrderExpiredArgs struct {
+	Req *order.MakeSureOrderExpiredReq
+}
+
+func (p *MakeSureOrderExpiredArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetReq() {
+		p.Req = new(order.MakeSureOrderExpiredReq)
+	}
+	return p.Req.FastRead(buf, _type, number)
+}
+
+func (p *MakeSureOrderExpiredArgs) FastWrite(buf []byte) (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.FastWrite(buf)
+}
+
+func (p *MakeSureOrderExpiredArgs) Size() (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.Size()
+}
+
+func (p *MakeSureOrderExpiredArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *MakeSureOrderExpiredArgs) Unmarshal(in []byte) error {
+	msg := new(order.MakeSureOrderExpiredReq)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var MakeSureOrderExpiredArgs_Req_DEFAULT *order.MakeSureOrderExpiredReq
+
+func (p *MakeSureOrderExpiredArgs) GetReq() *order.MakeSureOrderExpiredReq {
+	if !p.IsSetReq() {
+		return MakeSureOrderExpiredArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *MakeSureOrderExpiredArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *MakeSureOrderExpiredArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type MakeSureOrderExpiredResult struct {
+	Success *order.MakeSureOrderExpiredResp
+}
+
+var MakeSureOrderExpiredResult_Success_DEFAULT *order.MakeSureOrderExpiredResp
+
+func (p *MakeSureOrderExpiredResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetSuccess() {
+		p.Success = new(order.MakeSureOrderExpiredResp)
+	}
+	return p.Success.FastRead(buf, _type, number)
+}
+
+func (p *MakeSureOrderExpiredResult) FastWrite(buf []byte) (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.FastWrite(buf)
+}
+
+func (p *MakeSureOrderExpiredResult) Size() (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.Size()
+}
+
+func (p *MakeSureOrderExpiredResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *MakeSureOrderExpiredResult) Unmarshal(in []byte) error {
+	msg := new(order.MakeSureOrderExpiredResp)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *MakeSureOrderExpiredResult) GetSuccess() *order.MakeSureOrderExpiredResp {
+	if !p.IsSetSuccess() {
+		return MakeSureOrderExpiredResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *MakeSureOrderExpiredResult) SetSuccess(x interface{}) {
+	p.Success = x.(*order.MakeSureOrderExpiredResp)
+}
+
+func (p *MakeSureOrderExpiredResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *MakeSureOrderExpiredResult) GetResult() interface{} {
+	return p.Success
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -596,6 +756,16 @@ func (p *kClient) MarkOrderPaid(ctx context.Context, Req *order.MarkOrderPaidReq
 	_args.Req = Req
 	var _result MarkOrderPaidResult
 	if err = p.c.Call(ctx, "MarkOrderPaid", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) MakeSureOrderExpired(ctx context.Context, Req *order.MakeSureOrderExpiredReq) (r *order.MakeSureOrderExpiredResp, err error) {
+	var _args MakeSureOrderExpiredArgs
+	_args.Req = Req
+	var _result MakeSureOrderExpiredResult
+	if err = p.c.Call(ctx, "MakeSureOrderExpired", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

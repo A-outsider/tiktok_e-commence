@@ -2,12 +2,16 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"github.com/redis/go-redis/v9"
 	"github.com/smartwalle/alipay/v3"
 	"go.uber.org/zap"
 	"gomall/gateway/types/resp/common"
 	order "gomall/kitex_gen/order"
 	payment "gomall/kitex_gen/payment"
+	"gomall/services/payment/dal/cache"
+	"gomall/services/payment/dal/db"
 	"gomall/services/payment/initialize"
 	"log"
 	"net/url"
@@ -20,6 +24,44 @@ func (p PaymentServiceImpl) CreatePayment(ctx context.Context, req *payment.Crea
 	res = new(payment.CreatePaymentResp)
 	res.StatusCode = common.CodeServerBusy
 
+	// 判断订单是否过期
+	result, _ := initialize.GetOrderClient().MakeSureOrderExpired(ctx, &order.MakeSureOrderExpiredReq{
+		PayId: req.Oid,
+	})
+	if result.StatusCode != common.CodeSuccess {
+		res.StatusCode = result.StatusCode
+		return
+	}
+	if result.IsExpired {
+		res.StatusCode = common.CodePayIdExpired
+		return
+	}
+
+	// 先走bloom过滤器一遍, 确认该订单是否已经支付
+	// 因为bloom只存在假阳性, 当确认没有订单的时候直接进行下一步操作
+	bloom, err := cache.ExistBloom(ctx, req.Oid)
+	if err != nil {
+		zap.L().Error("cache.ExistBloom", zap.Error(err))
+		return
+	}
+
+	if bloom {
+		// 布隆过滤器可能存在误判, 为了避免这种情况, 使用cache保证是真的支付过了
+		err = cache.IsExist(ctx, req.Oid)
+		if err != nil {
+			if errors.Is(err, redis.Nil) {
+				goto payment
+			} else if db.IsHavePayment(ctx, req.Oid) {
+				// redis返回err, 只要err不是redis.Nil, 那就是redis出现了错误
+				// 故使用mysql查询是否存在
+				return
+			}
+		} else {
+			return
+		}
+	}
+
+payment:
 	var pay = alipay.TradePagePay{}
 	pay.NotifyURL = initialize.GatewayDomain + "/payment/notify" // 提供给支付宝服务器的地址
 	pay.ReturnURL = initialize.GatewayDomain + "/payment/callback"
@@ -118,6 +160,25 @@ func (p PaymentServiceImpl) PayNotify(ctx context.Context, req *payment.PayNotif
 		zap.L().Error(fmt.Sprintf("异步验证订单 %s 信息发生错误: %s-%s", outTradeNo, rsp.Msg, rsp.SubMsg))
 		res.StatusCode = common.CodePayMsgError
 		return
+	}
+
+	// 标记订单已经支付
+	// 数据库层
+	err = db.CreatePaymentId(ctx, outTradeNo)
+	if err != nil {
+		zap.L().Error("create payment fail", zap.Error(err))
+	}
+
+	// 缓存层
+	err = cache.Set(ctx, outTradeNo)
+	if err != nil {
+		zap.L().Error("set payment fail", zap.Error(err))
+	}
+
+	// bloom过滤器
+	err = cache.AddBloom(ctx, outTradeNo)
+	if err != nil {
+		zap.L().Error("add bloom fail", zap.Error(err))
 	}
 
 	// 处理业务逻辑

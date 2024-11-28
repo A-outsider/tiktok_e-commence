@@ -129,6 +129,19 @@ func (s *OrderServiceImpl) MarkOrderPaid(ctx context.Context, req *order.MarkOrd
 	return
 }
 
+func (s *OrderServiceImpl) MakeSureOrderExpired(ctx context.Context, req *order.MakeSureOrderExpiredReq) (resp *order.MakeSureOrderExpiredResp, _ error) {
+	resp = new(order.MakeSureOrderExpiredResp)
+	resp.StatusCode = common.CodeServerBusy
+	resp.IsExpired = false
+
+	_, err := cache.GetPayId(ctx, req.PayId)
+	if err != nil {
+		resp.IsExpired = true
+	}
+
+	return
+}
+
 func NewOrderServiceImpl() *OrderServiceImpl {
 	return &OrderServiceImpl{}
 }

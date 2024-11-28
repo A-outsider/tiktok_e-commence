@@ -54,9 +54,11 @@ func (p PaymentServiceImpl) CreatePayment(ctx context.Context, req *payment.Crea
 			} else if db.IsHavePayment(ctx, req.Oid) {
 				// redis返回err, 只要err不是redis.Nil, 那就是redis出现了错误
 				// 故使用mysql查询是否存在
+				res.StatusCode = common.CodePayRepeat
 				return
 			}
 		} else {
+			res.StatusCode = common.CodePayRepeat
 			return
 		}
 	}

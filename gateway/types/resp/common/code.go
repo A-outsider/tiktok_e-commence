@@ -31,6 +31,7 @@ const (
 	CodePaySignatureVerifyFailed int64 = 2300 + iota
 	CodePayMsgError
 	CodePayIdExpired
+	CodePayRepeat
 
 	// 其他错误  TODO 待规划
 	CodeForbidden         int64 = 3001
@@ -67,6 +68,7 @@ var Msg = map[int64]string{
 	CodePaySignatureVerifyFailed: "支付签名验证失败",
 	CodePayMsgError:              "支付失败",
 	CodePayIdExpired:             "支付订单已过期",
+	CodePayRepeat:                "重复支付",
 
 	// 其他错误
 	CodeForbidden:         "权限不足",

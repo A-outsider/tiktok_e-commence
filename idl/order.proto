@@ -9,6 +9,7 @@ option go_package = "order;rpcOrder";
 service OrderService {
   rpc PlaceOrder(PlaceOrderReq) returns (PlaceOrderResp) {}
   rpc ListOrder(ListOrderReq) returns (ListOrderResp) {}
+  rpc ListOrderFromSeller(ListOrderFromSellerReq) returns(ListOrderFromSellerResp) {}
   rpc MarkOrderPaid(MarkOrderPaidReq) returns (MarkOrderPaidResp) {}
   rpc MakeSureOrderExpired(MakeSureOrderExpiredReq) returns (MakeSureOrderExpiredResp) {}
   rpc MarkOrderShipped(MarkOrderShippedReq) returns (MarkOrderShippedResp) {}
@@ -105,4 +106,13 @@ message MarkOrderCompletedReq {
 
 message MarkOrderCompletedResp {
   int64 status_code = 1;
+}
+
+message ListOrderFromSellerReq {
+  string seller_id = 1;
+}
+
+message ListOrderFromSellerResp {
+  repeated Order orders = 1;
+  int64 status_code = 2;
 }

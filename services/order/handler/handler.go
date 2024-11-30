@@ -16,6 +16,27 @@ import (
 // OrderServiceImpl implements the last service interface defined in the IDL.
 type OrderServiceImpl struct{}
 
+func (s *OrderServiceImpl) ListOrderFromSeller(ctx context.Context, req *order.ListOrderFromSellerReq) (resp *order.ListOrderFromSellerResp, _ error) {
+	//TODO implement me
+	resp = new(order.ListOrderFromSellerResp)
+	resp.StatusCode = common.CodeServerBusy
+
+	orders, err := db.GetOrdersBySeller(ctx, req.SellerId)
+	if err != nil {
+		return
+	}
+
+	resp.Orders = make([]*order.Order, len(orders))
+	err = copier.Copy(&resp.Orders, orders)
+	if err != nil {
+		zap.L().Error("copy order fail", zap.Error(err))
+		return
+	}
+
+	resp.StatusCode = common.CodeSuccess
+	return
+}
+
 // PlaceOrder implements the OrderServiceImpl interface.
 func (s *OrderServiceImpl) PlaceOrder(ctx context.Context, req *order.PlaceOrderReq) (resp *order.PlaceOrderResp, _ error) {
 	// TODO: Your code here...
@@ -91,14 +112,14 @@ func (s *OrderServiceImpl) ListOrder(ctx context.Context, req *order.ListOrderRe
 
 	orders, err := db.GetOrders(ctx, req.UserId)
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	resp.Orders = make([]*order.Order, len(orders))
 	err = copier.Copy(&resp.Orders, orders)
 	if err != nil {
 		zap.L().Error("copy order fail", zap.Error(err))
-		return nil, err
+		return
 	}
 
 	resp.StatusCode = common.CodeSuccess

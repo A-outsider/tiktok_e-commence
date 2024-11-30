@@ -668,6 +668,71 @@ func (x *MarkOrderCompletedResp) fastReadField1(buf []byte, _type int8) (offset 
 	return offset, err
 }
 
+func (x *ListOrderFromSellerReq) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+	switch number {
+	case 1:
+		offset, err = x.fastReadField1(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	default:
+		offset, err = fastpb.Skip(buf, _type, number)
+		if err != nil {
+			goto SkipFieldError
+		}
+	}
+	return offset, nil
+SkipFieldError:
+	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
+ReadFieldError:
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_ListOrderFromSellerReq[number], err)
+}
+
+func (x *ListOrderFromSellerReq) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+	x.SellerId, offset, err = fastpb.ReadString(buf, _type)
+	return offset, err
+}
+
+func (x *ListOrderFromSellerResp) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+	switch number {
+	case 1:
+		offset, err = x.fastReadField1(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	case 2:
+		offset, err = x.fastReadField2(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	default:
+		offset, err = fastpb.Skip(buf, _type, number)
+		if err != nil {
+			goto SkipFieldError
+		}
+	}
+	return offset, nil
+SkipFieldError:
+	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
+ReadFieldError:
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_ListOrderFromSellerResp[number], err)
+}
+
+func (x *ListOrderFromSellerResp) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+	var v Order
+	offset, err = fastpb.ReadMessage(buf, _type, &v)
+	if err != nil {
+		return offset, err
+	}
+	x.Orders = append(x.Orders, &v)
+	return offset, nil
+}
+
+func (x *ListOrderFromSellerResp) fastReadField2(buf []byte, _type int8) (offset int, err error) {
+	x.StatusCode, offset, err = fastpb.ReadInt64(buf, _type)
+	return offset, err
+}
+
 func (x *Address) FastWrite(buf []byte) (offset int) {
 	if x == nil {
 		return offset
@@ -1132,6 +1197,49 @@ func (x *MarkOrderCompletedResp) fastWriteField1(buf []byte) (offset int) {
 		return offset
 	}
 	offset += fastpb.WriteInt64(buf[offset:], 1, x.GetStatusCode())
+	return offset
+}
+
+func (x *ListOrderFromSellerReq) FastWrite(buf []byte) (offset int) {
+	if x == nil {
+		return offset
+	}
+	offset += x.fastWriteField1(buf[offset:])
+	return offset
+}
+
+func (x *ListOrderFromSellerReq) fastWriteField1(buf []byte) (offset int) {
+	if x.SellerId == "" {
+		return offset
+	}
+	offset += fastpb.WriteString(buf[offset:], 1, x.GetSellerId())
+	return offset
+}
+
+func (x *ListOrderFromSellerResp) FastWrite(buf []byte) (offset int) {
+	if x == nil {
+		return offset
+	}
+	offset += x.fastWriteField1(buf[offset:])
+	offset += x.fastWriteField2(buf[offset:])
+	return offset
+}
+
+func (x *ListOrderFromSellerResp) fastWriteField1(buf []byte) (offset int) {
+	if x.Orders == nil {
+		return offset
+	}
+	for i := range x.GetOrders() {
+		offset += fastpb.WriteMessage(buf[offset:], 1, x.GetOrders()[i])
+	}
+	return offset
+}
+
+func (x *ListOrderFromSellerResp) fastWriteField2(buf []byte) (offset int) {
+	if x.StatusCode == 0 {
+		return offset
+	}
+	offset += fastpb.WriteInt64(buf[offset:], 2, x.GetStatusCode())
 	return offset
 }
 
@@ -1602,6 +1710,49 @@ func (x *MarkOrderCompletedResp) sizeField1() (n int) {
 	return n
 }
 
+func (x *ListOrderFromSellerReq) Size() (n int) {
+	if x == nil {
+		return n
+	}
+	n += x.sizeField1()
+	return n
+}
+
+func (x *ListOrderFromSellerReq) sizeField1() (n int) {
+	if x.SellerId == "" {
+		return n
+	}
+	n += fastpb.SizeString(1, x.GetSellerId())
+	return n
+}
+
+func (x *ListOrderFromSellerResp) Size() (n int) {
+	if x == nil {
+		return n
+	}
+	n += x.sizeField1()
+	n += x.sizeField2()
+	return n
+}
+
+func (x *ListOrderFromSellerResp) sizeField1() (n int) {
+	if x.Orders == nil {
+		return n
+	}
+	for i := range x.GetOrders() {
+		n += fastpb.SizeMessage(1, x.GetOrders()[i])
+	}
+	return n
+}
+
+func (x *ListOrderFromSellerResp) sizeField2() (n int) {
+	if x.StatusCode == 0 {
+		return n
+	}
+	n += fastpb.SizeInt64(2, x.GetStatusCode())
+	return n
+}
+
 var fieldIDToName_Address = map[int32]string{
 	1: "Address",
 	2: "Phone",
@@ -1687,6 +1838,15 @@ var fieldIDToName_MarkOrderCompletedReq = map[int32]string{
 
 var fieldIDToName_MarkOrderCompletedResp = map[int32]string{
 	1: "StatusCode",
+}
+
+var fieldIDToName_ListOrderFromSellerReq = map[int32]string{
+	1: "SellerId",
+}
+
+var fieldIDToName_ListOrderFromSellerResp = map[int32]string{
+	1: "Orders",
+	2: "StatusCode",
 }
 
 var _ = cart.File_idl_cart_proto

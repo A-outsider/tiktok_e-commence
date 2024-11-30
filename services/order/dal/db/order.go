@@ -16,6 +16,17 @@ func GetOrders(ctx context.Context, userId string) (orders []*model.Order, err e
 	return
 }
 
+func GetOrdersBySeller(ctx context.Context, sellerId string) (orders []*model.Order, err error) {
+	orders = make([]*model.Order, 0)
+	pids := make([]string, 0)
+	err = initialize.GetMysql().WithContext(ctx).Model(model.Product{}).Select("pid").Where("uid = ?", sellerId).Find(&pids).Error
+	if err != nil {
+		return
+	}
+	err = initialize.GetMysql().WithContext(ctx).Where("pid in ?", pids).Find(&orders).Error
+	return
+}
+
 func GetOrderById(ctx context.Context, orderId int64) (order *model.Order, err error) {
 	order = new(model.Order)
 	err = initialize.GetMysql().WithContext(ctx).Model(&model.Order{}).Where("oid = ?", orderId).First(&order).Error

@@ -13,6 +13,7 @@ func RegisterOrder(r *route.RouterGroup) {
 
 	r.POST("", orderApi.PlaceOrder) // 创建订单
 	r.GET("", orderApi.ListOrder)   // 获取订单列表
+	r.GET("/seller", orderApi.ListOrderFromSeller)
 	r.PUT("/shipped", orderApi.MarkOrderShipped)
 	r.PUT("/completed", orderApi.MarkOrderCompleted)
 }

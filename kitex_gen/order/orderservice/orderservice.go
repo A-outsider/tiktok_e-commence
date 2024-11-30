@@ -29,6 +29,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
+	"ListOrderFromSeller": kitex.NewMethodInfo(
+		listOrderFromSellerHandler,
+		newListOrderFromSellerArgs,
+		newListOrderFromSellerResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
 	"MarkOrderPaid": kitex.NewMethodInfo(
 		markOrderPaidHandler,
 		newMarkOrderPaidArgs,
@@ -426,6 +433,159 @@ func (p *ListOrderResult) IsSetSuccess() bool {
 }
 
 func (p *ListOrderResult) GetResult() interface{} {
+	return p.Success
+}
+
+func listOrderFromSellerHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(order.ListOrderFromSellerReq)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(order.OrderService).ListOrderFromSeller(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *ListOrderFromSellerArgs:
+		success, err := handler.(order.OrderService).ListOrderFromSeller(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*ListOrderFromSellerResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newListOrderFromSellerArgs() interface{} {
+	return &ListOrderFromSellerArgs{}
+}
+
+func newListOrderFromSellerResult() interface{} {
+	return &ListOrderFromSellerResult{}
+}
+
+type ListOrderFromSellerArgs struct {
+	Req *order.ListOrderFromSellerReq
+}
+
+func (p *ListOrderFromSellerArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetReq() {
+		p.Req = new(order.ListOrderFromSellerReq)
+	}
+	return p.Req.FastRead(buf, _type, number)
+}
+
+func (p *ListOrderFromSellerArgs) FastWrite(buf []byte) (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.FastWrite(buf)
+}
+
+func (p *ListOrderFromSellerArgs) Size() (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.Size()
+}
+
+func (p *ListOrderFromSellerArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *ListOrderFromSellerArgs) Unmarshal(in []byte) error {
+	msg := new(order.ListOrderFromSellerReq)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var ListOrderFromSellerArgs_Req_DEFAULT *order.ListOrderFromSellerReq
+
+func (p *ListOrderFromSellerArgs) GetReq() *order.ListOrderFromSellerReq {
+	if !p.IsSetReq() {
+		return ListOrderFromSellerArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *ListOrderFromSellerArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *ListOrderFromSellerArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type ListOrderFromSellerResult struct {
+	Success *order.ListOrderFromSellerResp
+}
+
+var ListOrderFromSellerResult_Success_DEFAULT *order.ListOrderFromSellerResp
+
+func (p *ListOrderFromSellerResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetSuccess() {
+		p.Success = new(order.ListOrderFromSellerResp)
+	}
+	return p.Success.FastRead(buf, _type, number)
+}
+
+func (p *ListOrderFromSellerResult) FastWrite(buf []byte) (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.FastWrite(buf)
+}
+
+func (p *ListOrderFromSellerResult) Size() (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.Size()
+}
+
+func (p *ListOrderFromSellerResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *ListOrderFromSellerResult) Unmarshal(in []byte) error {
+	msg := new(order.ListOrderFromSellerResp)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *ListOrderFromSellerResult) GetSuccess() *order.ListOrderFromSellerResp {
+	if !p.IsSetSuccess() {
+		return ListOrderFromSellerResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *ListOrderFromSellerResult) SetSuccess(x interface{}) {
+	p.Success = x.(*order.ListOrderFromSellerResp)
+}
+
+func (p *ListOrderFromSellerResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *ListOrderFromSellerResult) GetResult() interface{} {
 	return p.Success
 }
 
@@ -1066,6 +1226,16 @@ func (p *kClient) ListOrder(ctx context.Context, Req *order.ListOrderReq) (r *or
 	_args.Req = Req
 	var _result ListOrderResult
 	if err = p.c.Call(ctx, "ListOrder", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) ListOrderFromSeller(ctx context.Context, Req *order.ListOrderFromSellerReq) (r *order.ListOrderFromSellerResp, err error) {
+	var _args ListOrderFromSellerArgs
+	_args.Req = Req
+	var _result ListOrderFromSellerResult
+	if err = p.c.Call(ctx, "ListOrderFromSeller", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

@@ -77,6 +77,29 @@ func (api *Api) ListOrder(ctx context.Context, c *app.RequestContext) {
 	ctrl.WithDataJSON(result.GetStatusCode(), result.Orders)
 }
 
+func (api *Api) ListOrderFromSeller(ctx context.Context, c *app.RequestContext) {
+	// 参数绑定
+	ctrl := controller.NewCtrl[req.None](c)
+
+	// 转模型
+	kitexReq := new(rpcOrder.ListOrderFromSellerReq)
+	kitexReq.SellerId = c.GetString("userId")
+
+	// 调用 RPC 方法
+	result, _ := api.client.ListOrderFromSeller(ctx, kitexReq)
+	if result == nil || result.GetStatusCode() == 0 {
+		ctrl.NoDataJSON(common.CodeServerBusy)
+		return
+	}
+
+	if result.GetStatusCode() != common.CodeSuccess {
+		ctrl.NoDataJSON(result.GetStatusCode())
+		return
+	}
+
+	ctrl.WithDataJSON(result.GetStatusCode(), result.Orders)
+}
+
 func (api *Api) MarkOrderShipped(ctx context.Context, c *app.RequestContext) {
 	// 参数绑定
 	ctrl := controller.NewCtrl[req.ChangeStatusReq](c)

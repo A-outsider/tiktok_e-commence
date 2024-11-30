@@ -24,18 +24,18 @@ func (p PaymentServiceImpl) CreatePayment(ctx context.Context, req *payment.Crea
 	res = new(payment.CreatePaymentResp)
 	res.StatusCode = common.CodeServerBusy
 
-	// 判断订单是否过期
-	result, _ := initialize.GetOrderClient().MakeSureOrderExpired(ctx, &order.MakeSureOrderExpiredReq{
-		PayId: req.Oid,
-	})
-	if result.StatusCode != common.CodeSuccess {
-		res.StatusCode = result.StatusCode
-		return
-	}
-	if result.IsExpired {
-		res.StatusCode = common.CodePayIdExpired
-		return
-	}
+	//// 判断订单是否过期
+	//result, _ := initialize.GetOrderClient().MakeSureOrderExpired(ctx, &order.MakeSureOrderExpiredReq{
+	//	PayId: req.Oid,
+	//})
+	//if result.StatusCode != common.CodeSuccess {
+	//	res.StatusCode = result.StatusCode
+	//	return
+	//}
+	//if result.IsExpired {
+	//	res.StatusCode = common.CodePayIdExpired
+	//	return
+	//}
 
 	// 先走bloom过滤器一遍, 确认该订单是否已经支付
 	// 因为bloom只存在假阳性, 当确认没有订单的时候直接进行下一步操作

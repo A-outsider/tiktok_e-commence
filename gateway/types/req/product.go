@@ -6,7 +6,6 @@ type AddProductReq struct {
 	Description string   `json:"description" form:"description"`
 	Categories  []string `json:"categories" form:"categories"`
 	Price       float64  `json:"price" form:"price"`
-	Picture     string   `json:"picture" form:"picture"	`
 	Name        string   `json:"name" form:"name"`
 }
 

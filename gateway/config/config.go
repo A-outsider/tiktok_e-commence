@@ -15,7 +15,8 @@ type Jaeger struct {
 }
 
 type Static struct {
-	AvatarPath string `yaml:"avatarPath"`
+	AvatarPath  string `yaml:"avatarPath"`
+	ProductPath string `yaml:"productPath"`
 }
 
 type Role struct {

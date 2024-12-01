@@ -1,33 +1,25 @@
 package code_gen
 
-type Mysql struct {
-	Port     int    `yaml:"port"`
-	Dbname   string `yaml:"dbname"`
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
-	Charset  string `yaml:"charset"`
-	Host     string `yaml:"host"`
-}
-
 type Service struct {
 	Host string `yaml:"host"`
-	Port int    `yaml:"port"`
+	Port int `yaml:"port"`
 }
 
-type Redis struct {
-	Host     string `yaml:"host"`
-	Port     int    `yaml:"port"`
+type Mysql struct {
+	Username string `yaml:"username"`
 	Password string `yaml:"password"`
+	Charset string `yaml:"charset"`
+	Host string `yaml:"host"`
+	Port int `yaml:"port"`
+	Dbname string `yaml:"dbname"`
 }
 
-type Jaeger struct {
-	Host string `yaml:"host"`
-	Port int    `yaml:"port"`
+type Static struct {
+	AvatarPath string `yaml:"avatar_path"`
 }
 
 type Config struct {
-	Mysql   Mysql   `yaml:"mysql"`
 	Service Service `yaml:"service"`
-	Redis   Redis   `yaml:"redis"`
-	Jaeger  Jaeger  `yaml:"jaeger"`
+	Mysql Mysql `yaml:"mysql"`
+	Static Static `yaml:"static"`
 }

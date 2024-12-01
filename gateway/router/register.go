@@ -42,7 +42,8 @@ func registerRouter(r *server.Hertz) {
 	r.Use(middleware.CORS())
 
 	// 获取静态文件
-	r.Static("/static", config.GetConf().Static.AvatarPath) // 用户头像文件夹	TODO : 这个框架的映射好像有bug ?
+	r.Static("/static/avatar", config.GetConf().Static.AvatarPath) // 用户头像文件夹	TODO : 这个框架的映射好像有bug ?
+	r.Static("/static/product", config.GetConf().Static.ProductPath)
 
 	v1 := r.Group("/api/v1")
 

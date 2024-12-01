@@ -7,9 +7,12 @@ import (
 	"go.uber.org/zap"
 	"gomall/gateway/types/resp/common"
 	product "gomall/kitex_gen/product"
+	"gomall/services/product/config"
 	"gomall/services/product/dal/db"
 	"gomall/services/product/dal/es"
 	"gomall/services/product/dal/model"
+	"os"
+	"path/filepath"
 )
 
 // ProductCatalogServiceImpl implements the last service interface defined in the IDL.
@@ -92,7 +95,17 @@ func (s *ProductCatalogServiceImpl) AddProduct(ctx context.Context, req *product
 		Categories:  new(model.Strings),
 	}
 
+	// 保存商品图片
+	fileName := product.Pid + req.Ext
+
+	os.MkdirAll(config.GetConf().Static.ProductPath, 0755)
+	if err := os.WriteFile(filepath.Join(config.GetConf().Static.ProductPath, fileName), req.Body, 0755); err != nil {
+		zap.L().Error("os.WriteFile failed", zap.Error(err))
+		return
+	}
+
 	*product.Categories = req.Product.Categories
+	product.Picture = fileName
 
 	err := db.AddProduct(ctx, product)
 	if err != nil {

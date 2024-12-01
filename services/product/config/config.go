@@ -36,11 +36,16 @@ type Jaeger struct {
 	Port int    `yaml:"port"`
 }
 
+type Static struct {
+	ProductPath string `yaml:"product_path"`
+}
+
 type Config struct {
 	Service       Service       `yaml:"service"`
 	Mysql         Mysql         `yaml:"mysql"`
 	ElasticSearch ElasticSearch `yaml:"elasticSearch"`
 	Jaeger        Jaeger        `yaml:"jaeger"`
+	Static        Static        `yaml:"static"`
 }
 
 func GetConf() *Config {

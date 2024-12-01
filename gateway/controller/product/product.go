@@ -8,8 +8,10 @@ import (
 	"gomall/gateway/rpc"
 	"gomall/gateway/types/req"
 	"gomall/gateway/types/resp/common"
+	"gomall/gateway/utils/check"
 	rpcProduct "gomall/kitex_gen/product"
 	"gomall/kitex_gen/product/productcatalogservice"
+	"path/filepath"
 )
 
 type Api struct {
@@ -30,15 +32,44 @@ func (api *Api) AddProduct(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
+	file, err := c.FormFile("picture")
+	if err != nil {
+		ctrl.NoDataJSON(common.CodeInvalidParams)
+		return
+	}
+
+	// 校验文件格式
+	fileExt := filepath.Ext(file.Filename)
+	if !check.PhotoSize(file.Size) || !check.PhotoType(fileExt) {
+		ctrl.NoDataJSON(common.CodeInvalidParams) // TODO 参数细化
+		return
+	}
+
+	fileReader, err := file.Open()
+	if err != nil {
+		ctrl.NoDataJSON(common.CodeInvalidParams)
+		return
+	}
+	defer fileReader.Close()
+
+	body := make([]byte, file.Size)
+	_, err = fileReader.Read(body)
+	if err != nil {
+		ctrl.NoDataJSON(common.CodeInvalidParams)
+		return
+	}
+
 	// 转模型
 	kitexReq := new(rpcProduct.AddProductReq)
 	kitexReq.Product = new(rpcProduct.Product)
-	err := copier.Copy(kitexReq.Product, ctrl.Request)
+	err = copier.Copy(kitexReq.Product, ctrl.Request)
 	if err != nil {
 		ctrl.NoDataJSON(common.CodeInvalidParams)
 		return
 	}
 	kitexReq.Product.Uid = c.GetString("userId")
+	kitexReq.Ext = fileExt
+	kitexReq.Body = body
 
 	// 调用 RPC 方法
 	result, _ := api.client.AddProduct(ctx, kitexReq)

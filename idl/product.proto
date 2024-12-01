@@ -56,6 +56,8 @@ message SearchProductsResp {
 
 message AddProductReq {
   Product product = 1;
+  bytes body = 2;
+  string ext = 3;
 }
 
 message AddProductResp {

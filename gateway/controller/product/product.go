@@ -208,3 +208,29 @@ func (api *Api) GetProduct(ctx context.Context, c *app.RequestContext) {
 
 	ctrl.WithDataJSON(result.GetStatusCode(), result.GetProduct())
 }
+
+func (api *Api) GetRankings(ctx context.Context, c *app.RequestContext) {
+	// 参数绑定
+	ctrl := controller.NewCtrl[req.None](c)
+	if err := c.BindQuery(ctrl.Request); err != nil {
+		ctrl.NoDataJSON(common.CodeInvalidParams)
+		return
+	}
+
+	// 转模型
+	kitexReq := new(rpcProduct.GetRankingsReq)
+
+	// 调用 RPC 方法
+	result, _ := api.client.GetRankings(ctx, kitexReq)
+	if result == nil || result.GetStatusCode() == 0 {
+		ctrl.NoDataJSON(common.CodeServerBusy)
+		return
+	}
+
+	if result.GetStatusCode() != common.CodeSuccess {
+		ctrl.NoDataJSON(result.GetStatusCode())
+		return
+	}
+
+	ctrl.WithDataJSON(result.GetStatusCode(), result.GetProductItems())
+}

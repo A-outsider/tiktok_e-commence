@@ -8,6 +8,7 @@ import (
 	"gomall/gateway/types/resp/common"
 	product "gomall/kitex_gen/product"
 	"gomall/services/product/config"
+	"gomall/services/product/dal/cache"
 	"gomall/services/product/dal/db"
 	"gomall/services/product/dal/es"
 	"gomall/services/product/dal/model"
@@ -17,6 +18,28 @@ import (
 
 // ProductCatalogServiceImpl implements the last service interface defined in the IDL.
 type ProductCatalogServiceImpl struct{}
+
+func (s *ProductCatalogServiceImpl) GetRankings(ctx context.Context, req *product.GetRankingsReq) (resp *product.GetRankingsResp, _ error) {
+	//TODO implement me
+	resp = new(product.GetRankingsResp)
+	resp.StatusCode = common.CodeServerBusy
+
+	details, err := cache.GetRankingsWithDetails(ctx, 100)
+	if err != nil {
+		zap.L().Error("GetRankings failed", zap.Error(err))
+		return
+	}
+
+	resp.ProductItems = make([]*product.ProductItem, len(details))
+	err = copier.Copy(&resp.ProductItems, details)
+	if err != nil {
+		zap.L().Error("GetRankings failed", zap.Error(err))
+		return
+	}
+
+	resp.StatusCode = common.CodeSuccess
+	return
+}
 
 // ListProducts implements the ProductCatalogServiceImpl interface.
 func (s *ProductCatalogServiceImpl) ListProducts(ctx context.Context, req *product.ListProductsReq) (resp *product.ListProductsResp, _ error) {
@@ -51,6 +74,12 @@ func (s *ProductCatalogServiceImpl) GetProduct(ctx context.Context, req *product
 	if err != nil {
 		zap.L().Error("copier.Copy product failed", zap.Error(err))
 		return
+	}
+
+	// 增加商品热度, 因为错误不会影响到商品的正常使用, 所以忽略该错误
+	err = cache.IncrProductHotness(ctx, req.GetId())
+	if err != nil {
+		zap.L().Error("cache.IncrProductHotness failed", zap.Error(err))
 	}
 
 	resp.Product.Categories = *data.Categories
@@ -117,6 +146,12 @@ func (s *ProductCatalogServiceImpl) AddProduct(ctx context.Context, req *product
 	err = es.AddProduct(ctx, product)
 	if err != nil {
 		zap.L().Error("Failed to create es product", zap.Error(err))
+	}
+
+	// 添加商品到热度排行榜, 因为不影响实际商品的用图, 所以这里忽略它的报错
+	err = cache.AddProductToRanking(ctx, product)
+	if err != nil {
+		zap.L().Error("Failed to add product to ranking", zap.Error(err))
 	}
 
 	resp.StatusCode = common.CodeSuccess

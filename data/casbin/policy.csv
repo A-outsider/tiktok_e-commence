@@ -15,6 +15,7 @@ p, seller, /api/v1/product, DELETE
 p, user, /api/v1/product, GET
 p, user, /api/v1/product/category, GET
 p, user, /api/v1/product/query, GET
+p, user, /api/v1/product/rankings, GET
 
 p, user, /api/v1/cart, GET
 p, user, /api/v1/cart, POST

@@ -9,6 +9,16 @@ var (
 	conf       Config
 )
 
+type Redis struct {
+	Password string `yaml:"password"`
+	Host     string `yaml:"host"`
+	Port     int    `yaml:"port"`
+}
+
+type Static struct {
+	ProductPath string `yaml:"product_path"`
+}
+
 type Service struct {
 	Host string `yaml:"host"`
 	Port int    `yaml:"port"`
@@ -24,11 +34,11 @@ type Mysql struct {
 }
 
 type ElasticSearch struct {
-	Host                   string `json:"host"`
-	Port                   int    `json:"port"`
-	Username               string `json:"username"`
-	PassWord               string `json:"password"`
-	CertificateFingerprint string `json:"certificate_fingerprint"`
+	Host                   string `yaml:"host"`
+	Port                   int    `yaml:"port"`
+	Username               string `yaml:"username"`
+	Password               string `yaml:"password"`
+	CertificateFingerprint string `yaml:"certificate_fingerprint"`
 }
 
 type Jaeger struct {
@@ -36,16 +46,13 @@ type Jaeger struct {
 	Port int    `yaml:"port"`
 }
 
-type Static struct {
-	ProductPath string `yaml:"product_path"`
-}
-
 type Config struct {
+	Redis         Redis         `yaml:"redis"`
+	Static        Static        `yaml:"static"`
 	Service       Service       `yaml:"service"`
 	Mysql         Mysql         `yaml:"mysql"`
 	ElasticSearch ElasticSearch `yaml:"elasticSearch"`
 	Jaeger        Jaeger        `yaml:"jaeger"`
-	Static        Static        `yaml:"static"`
 }
 
 func GetConf() *Config {

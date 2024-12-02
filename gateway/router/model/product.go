@@ -16,4 +16,5 @@ func RegisterProduct(r *route.RouterGroup) {
 	r.GET("/query", productApi.SearchProducts)
 	r.DELETE("", productApi.DeleteProduct)
 	r.GET("", productApi.GetProduct)
+	r.GET("/rankings", productApi.GetRankings)
 }

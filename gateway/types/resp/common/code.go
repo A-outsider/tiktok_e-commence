@@ -5,9 +5,11 @@ package common
 const (
 	// 成功
 	CodeSuccess int64 = 1000
+)
 
+const (
 	// 认证模块
-	CodeInvalidParams int64 = 2000 + iota
+	CodeInvalidParams int64 = 2001 + iota
 	CodeUserExist
 	CodeUserNotExist
 	CodeInvalidPassword
@@ -26,16 +28,22 @@ const (
 	CodeInvalidTokenExpired
 	CodeUserALREADYLocked
 	CodeVisitLimitExceeded
+)
 
+const (
 	// 订单
-	CodeOrderStatusErr int64 = 2200 + iota
+	CodeOrderStatusErr int64 = 2201 + iota
+)
 
+const (
 	// 支付
-	CodePaySignatureVerifyFailed int64 = 2300 + iota
+	CodePaySignatureVerifyFailed int64 = 2301 + iota
 	CodePayMsgError
 	CodePayIdExpired
 	CodePayRepeat
+)
 
+const (
 	// 其他错误  TODO 待规划
 	CodeForbidden         int64 = 3001
 	CodeServerBusy        int64 = 4001

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"github.com/jinzhu/copier"
+	"github.com/mitchellh/mapstructure"
 	"go.uber.org/zap"
 	"gomall/gateway/types/resp/common"
 	product "gomall/kitex_gen/product"
@@ -31,10 +32,12 @@ func (s *ProductCatalogServiceImpl) GetRankings(ctx context.Context, req *produc
 	}
 
 	resp.ProductItems = make([]*product.ProductItem, len(details))
-	err = copier.Copy(&resp.ProductItems, details)
-	if err != nil {
-		zap.L().Error("GetRankings failed", zap.Error(err))
-		return
+	for i := 0; i < len(details); i++ {
+		err = mapstructure.Decode(details[i], &resp.ProductItems[i])
+		if err != nil {
+			zap.L().Error("GetRankings failed", zap.Error(err))
+			return
+		}
 	}
 
 	resp.StatusCode = common.CodeSuccess

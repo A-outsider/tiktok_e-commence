@@ -72,7 +72,7 @@ var Msg = map[int64]string{
 	CodeInvalidEmailWithUser: "邮箱与用户信息不匹配",
 	CodeInvalidPhotoCaptcha:  "图片验证码错误",
 	CodeVisitLimitExceeded:   "访问流量达到限制",
-	CodeInvalidTokenExpired:  "Token无效",
+	CodeInvalidTokenExpired:  "Token过期",
 	CodeUserALREADYLocked:    "用户已被锁定",
 
 	// 订单

@@ -1,8 +1,10 @@
 package initialize
 
 import (
+	"fmt"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/redis/go-redis/v9"
+	"gomall/services/product/config"
 	"gorm.io/gorm"
 )
 
@@ -15,6 +17,7 @@ type ServiceContext struct {
 var svcContext *ServiceContext = new(ServiceContext)
 
 func Init() {
+	fmt.Println(config.GetConf())
 	initMysql()
 	initElasticSearch()
 	initRedis()

@@ -33,3 +33,8 @@ type SendPhoneCodeReq struct {
 type SendEmailCodeReq struct {
 	Email string `form:"email" binding:"required,email"`
 }
+
+// 修改为卖家
+type ModifyUserToSellerReq struct {
+	UserId string `form:"user_id" binding:"required"`
+}

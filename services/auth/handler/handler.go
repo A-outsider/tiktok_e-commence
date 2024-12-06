@@ -384,3 +384,16 @@ func (s *AuthServiceImpl) GetUserAdmin(ctx context.Context, req *auth.CheckAdmin
 	res.StatusCode = common.CodeSuccess
 	return
 }
+
+func (s *AuthServiceImpl) ModifyUserToSeller(ctx context.Context, req *auth.ModifyUserToSellerReq) (res *auth.ModifyUserToSellerResp, _ error) {
+	res = new(auth.ModifyUserToSellerResp)
+	res.StatusCode = common.CodeServerBusy
+
+	if err := db.UpdateUserRoleTOSeller(req.GetUserId()); err != nil {
+		zap.L().Error("ModifyUserToSeller failed", zap.Error(err))
+		return
+	}
+
+	res.StatusCode = common.CodeSuccess
+	return
+}

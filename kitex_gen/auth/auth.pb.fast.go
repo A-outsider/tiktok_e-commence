@@ -550,6 +550,56 @@ func (x *CheckAdminResp) fastReadField2(buf []byte, _type int8) (offset int, err
 	return offset, err
 }
 
+func (x *ModifyUserToSellerReq) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+	switch number {
+	case 1:
+		offset, err = x.fastReadField1(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	default:
+		offset, err = fastpb.Skip(buf, _type, number)
+		if err != nil {
+			goto SkipFieldError
+		}
+	}
+	return offset, nil
+SkipFieldError:
+	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
+ReadFieldError:
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_ModifyUserToSellerReq[number], err)
+}
+
+func (x *ModifyUserToSellerReq) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+	x.UserId, offset, err = fastpb.ReadString(buf, _type)
+	return offset, err
+}
+
+func (x *ModifyUserToSellerResp) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+	switch number {
+	case 1:
+		offset, err = x.fastReadField1(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	default:
+		offset, err = fastpb.Skip(buf, _type, number)
+		if err != nil {
+			goto SkipFieldError
+		}
+	}
+	return offset, nil
+SkipFieldError:
+	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
+ReadFieldError:
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_ModifyUserToSellerResp[number], err)
+}
+
+func (x *ModifyUserToSellerResp) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+	x.StatusCode, offset, err = fastpb.ReadInt64(buf, _type)
+	return offset, err
+}
+
 func (x *LoginByCodeReq) FastWrite(buf []byte) (offset int) {
 	if x == nil {
 		return offset
@@ -929,6 +979,38 @@ func (x *CheckAdminResp) fastWriteField2(buf []byte) (offset int) {
 		return offset
 	}
 	offset += fastpb.WriteInt64(buf[offset:], 2, x.GetRole())
+	return offset
+}
+
+func (x *ModifyUserToSellerReq) FastWrite(buf []byte) (offset int) {
+	if x == nil {
+		return offset
+	}
+	offset += x.fastWriteField1(buf[offset:])
+	return offset
+}
+
+func (x *ModifyUserToSellerReq) fastWriteField1(buf []byte) (offset int) {
+	if x.UserId == "" {
+		return offset
+	}
+	offset += fastpb.WriteString(buf[offset:], 1, x.GetUserId())
+	return offset
+}
+
+func (x *ModifyUserToSellerResp) FastWrite(buf []byte) (offset int) {
+	if x == nil {
+		return offset
+	}
+	offset += x.fastWriteField1(buf[offset:])
+	return offset
+}
+
+func (x *ModifyUserToSellerResp) fastWriteField1(buf []byte) (offset int) {
+	if x.StatusCode == 0 {
+		return offset
+	}
+	offset += fastpb.WriteInt64(buf[offset:], 1, x.GetStatusCode())
 	return offset
 }
 
@@ -1314,6 +1396,38 @@ func (x *CheckAdminResp) sizeField2() (n int) {
 	return n
 }
 
+func (x *ModifyUserToSellerReq) Size() (n int) {
+	if x == nil {
+		return n
+	}
+	n += x.sizeField1()
+	return n
+}
+
+func (x *ModifyUserToSellerReq) sizeField1() (n int) {
+	if x.UserId == "" {
+		return n
+	}
+	n += fastpb.SizeString(1, x.GetUserId())
+	return n
+}
+
+func (x *ModifyUserToSellerResp) Size() (n int) {
+	if x == nil {
+		return n
+	}
+	n += x.sizeField1()
+	return n
+}
+
+func (x *ModifyUserToSellerResp) sizeField1() (n int) {
+	if x.StatusCode == 0 {
+		return n
+	}
+	n += fastpb.SizeInt64(1, x.GetStatusCode())
+	return n
+}
+
 var fieldIDToName_LoginByCodeReq = map[int32]string{
 	1: "Phone",
 	2: "Code",
@@ -1389,4 +1503,12 @@ var fieldIDToName_CheckAdminReq = map[int32]string{
 var fieldIDToName_CheckAdminResp = map[int32]string{
 	1: "StatusCode",
 	2: "Role",
+}
+
+var fieldIDToName_ModifyUserToSellerReq = map[int32]string{
+	1: "UserId",
+}
+
+var fieldIDToName_ModifyUserToSellerResp = map[int32]string{
+	1: "StatusCode",
 }

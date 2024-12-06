@@ -18,4 +18,6 @@ func RegisterAuth(r *route.RouterGroup) {
 	r.POST("/refresh_token", authApi.RefreshToken)
 	r.POST("/photo_captcha", authApi.ShowPhotoCaptcha)
 
+	// 管理员接口 TODO : 暂时写这
+	r.POST("/user_role", authApi.ModifyUserToSeller)
 }

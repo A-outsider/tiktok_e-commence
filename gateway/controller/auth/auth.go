@@ -199,7 +199,6 @@ func (api *Api) RefreshToken(ctx context.Context, c *app.RequestContext) {
 		ctrl.NoDataJSON(common.CodeInvalidParams)
 		return
 	}
-
 	// 转模型
 	kitexReq := new(rpcAuth.RefreshTokenReq)
 	if err := copier.Copy(kitexReq, ctrl.Request); err != nil {
@@ -252,4 +251,31 @@ func (api *Api) ShowPhotoCaptcha(ctx context.Context, c *app.RequestContext) {
 	}
 
 	ctrl.WithDataJSON(common.CodeSuccess, respModel)
+}
+
+// 修改用户权限
+
+func (api *Api) ModifyUserToSeller(ctx context.Context, c *app.RequestContext) {
+	ctrl := controller.NewCtrl[req.ModifyUserToSellerReq](c)
+
+	if err := c.BindForm(ctrl.Request); err != nil {
+		ctrl.NoDataJSON(common.CodeInvalidParams)
+		return
+	}
+
+	kitexReq := new(rpcAuth.ModifyUserToSellerReq)
+
+	if err := copier.Copy(kitexReq, ctrl.Request); err != nil {
+		ctrl.NoDataJSON(common.CodeInvalidParams)
+		return
+	}
+
+	result, _ := api.client.ModifyUserToSeller(ctx, kitexReq)
+
+	if result == nil || result.GetStatusCode() == 0 {
+		ctrl.NoDataJSON(common.CodeServerBusy)
+		return
+	}
+
+	ctrl.NoDataJSON(result.GetStatusCode())
 }

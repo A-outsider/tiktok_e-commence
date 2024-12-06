@@ -26,3 +26,8 @@ func GetUserByID(userId string) (user *model.User, err error) {
 	user = new(model.User)
 	return user, initialize.GetMysql().Where("id = ?", userId).First(user).Error
 }
+
+func UpdateUserRoleTOSeller(userId string) error {
+
+	return initialize.GetMysql().Model(&model.User{}).Where("id = ?", userId).Update("role", 1).Error // 1 为卖家
+}

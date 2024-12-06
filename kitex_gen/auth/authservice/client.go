@@ -19,6 +19,7 @@ type Client interface {
 	ShowPhotoCaptcha(ctx context.Context, Req *auth.ShowPhotoCaptchaReq, callOptions ...callopt.Option) (r *auth.ShowPhotoCaptchaResp, err error)
 	RefreshToken(ctx context.Context, Req *auth.RefreshTokenReq, callOptions ...callopt.Option) (r *auth.RefreshTokenResp, err error)
 	GetUserAdmin(ctx context.Context, Req *auth.CheckAdminReq, callOptions ...callopt.Option) (r *auth.CheckAdminResp, err error)
+	ModifyUserToSeller(ctx context.Context, Req *auth.ModifyUserToSellerReq, callOptions ...callopt.Option) (r *auth.ModifyUserToSellerResp, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -88,4 +89,9 @@ func (p *kAuthServiceClient) RefreshToken(ctx context.Context, Req *auth.Refresh
 func (p *kAuthServiceClient) GetUserAdmin(ctx context.Context, Req *auth.CheckAdminReq, callOptions ...callopt.Option) (r *auth.CheckAdminResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.GetUserAdmin(ctx, Req)
+}
+
+func (p *kAuthServiceClient) ModifyUserToSeller(ctx context.Context, Req *auth.ModifyUserToSellerReq, callOptions ...callopt.Option) (r *auth.ModifyUserToSellerResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.ModifyUserToSeller(ctx, Req)
 }

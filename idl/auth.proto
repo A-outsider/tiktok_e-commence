@@ -12,6 +12,7 @@ service AuthService {
   rpc ShowPhotoCaptcha(ShowPhotoCaptchaReq) returns (ShowPhotoCaptchaResp);
   rpc RefreshToken(RefreshTokenReq) returns (RefreshTokenResp);
   rpc GetUserAdmin(CheckAdminReq) returns (CheckAdminResp);
+  rpc ModifyUserToSeller(ModifyUserToSellerReq) returns (ModifyUserToSellerResp);
 }
 
 
@@ -94,4 +95,12 @@ message  CheckAdminReq {
 message  CheckAdminResp {
   int64  StatusCode = 1;
   int64 Role = 2;
+}
+
+message ModifyUserToSellerReq {
+  string UserId = 1;
+}
+
+message  ModifyUserToSellerResp {
+  int64 StatusCode = 1;
 }

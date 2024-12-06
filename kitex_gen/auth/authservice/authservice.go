@@ -71,6 +71,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
+	"ModifyUserToSeller": kitex.NewMethodInfo(
+		modifyUserToSellerHandler,
+		newModifyUserToSellerArgs,
+		newModifyUserToSellerResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
 }
 
 var (
@@ -1361,6 +1368,159 @@ func (p *GetUserAdminResult) GetResult() interface{} {
 	return p.Success
 }
 
+func modifyUserToSellerHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(auth.ModifyUserToSellerReq)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(auth.AuthService).ModifyUserToSeller(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *ModifyUserToSellerArgs:
+		success, err := handler.(auth.AuthService).ModifyUserToSeller(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*ModifyUserToSellerResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newModifyUserToSellerArgs() interface{} {
+	return &ModifyUserToSellerArgs{}
+}
+
+func newModifyUserToSellerResult() interface{} {
+	return &ModifyUserToSellerResult{}
+}
+
+type ModifyUserToSellerArgs struct {
+	Req *auth.ModifyUserToSellerReq
+}
+
+func (p *ModifyUserToSellerArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetReq() {
+		p.Req = new(auth.ModifyUserToSellerReq)
+	}
+	return p.Req.FastRead(buf, _type, number)
+}
+
+func (p *ModifyUserToSellerArgs) FastWrite(buf []byte) (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.FastWrite(buf)
+}
+
+func (p *ModifyUserToSellerArgs) Size() (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.Size()
+}
+
+func (p *ModifyUserToSellerArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *ModifyUserToSellerArgs) Unmarshal(in []byte) error {
+	msg := new(auth.ModifyUserToSellerReq)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var ModifyUserToSellerArgs_Req_DEFAULT *auth.ModifyUserToSellerReq
+
+func (p *ModifyUserToSellerArgs) GetReq() *auth.ModifyUserToSellerReq {
+	if !p.IsSetReq() {
+		return ModifyUserToSellerArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *ModifyUserToSellerArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *ModifyUserToSellerArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type ModifyUserToSellerResult struct {
+	Success *auth.ModifyUserToSellerResp
+}
+
+var ModifyUserToSellerResult_Success_DEFAULT *auth.ModifyUserToSellerResp
+
+func (p *ModifyUserToSellerResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetSuccess() {
+		p.Success = new(auth.ModifyUserToSellerResp)
+	}
+	return p.Success.FastRead(buf, _type, number)
+}
+
+func (p *ModifyUserToSellerResult) FastWrite(buf []byte) (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.FastWrite(buf)
+}
+
+func (p *ModifyUserToSellerResult) Size() (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.Size()
+}
+
+func (p *ModifyUserToSellerResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *ModifyUserToSellerResult) Unmarshal(in []byte) error {
+	msg := new(auth.ModifyUserToSellerResp)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *ModifyUserToSellerResult) GetSuccess() *auth.ModifyUserToSellerResp {
+	if !p.IsSetSuccess() {
+		return ModifyUserToSellerResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *ModifyUserToSellerResult) SetSuccess(x interface{}) {
+	p.Success = x.(*auth.ModifyUserToSellerResp)
+}
+
+func (p *ModifyUserToSellerResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *ModifyUserToSellerResult) GetResult() interface{} {
+	return p.Success
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -1446,6 +1606,16 @@ func (p *kClient) GetUserAdmin(ctx context.Context, Req *auth.CheckAdminReq) (r 
 	_args.Req = Req
 	var _result GetUserAdminResult
 	if err = p.c.Call(ctx, "GetUserAdmin", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) ModifyUserToSeller(ctx context.Context, Req *auth.ModifyUserToSellerReq) (r *auth.ModifyUserToSellerResp, err error) {
+	var _args ModifyUserToSellerArgs
+	_args.Req = Req
+	var _result ModifyUserToSellerResult
+	if err = p.c.Call(ctx, "ModifyUserToSeller", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

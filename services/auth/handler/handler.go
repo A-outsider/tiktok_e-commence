@@ -6,6 +6,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/golang-jwt/jwt/v5"
 	"go.uber.org/zap"
+	"gomall/common/utils/encrypt"
 	"gomall/common/utils/parse"
 	"gomall/common/utils/random"
 	"gomall/gateway/types/resp/common"
@@ -14,6 +15,7 @@ import (
 	"gomall/services/auth/dal/cache"
 	"gomall/services/auth/dal/db"
 	"gomall/services/auth/dal/model"
+	"gomall/services/auth/initialize"
 	"gomall/services/auth/utils/captcha"
 	"gomall/services/auth/utils/mail"
 	"gomall/services/auth/utils/password"
@@ -25,6 +27,39 @@ import (
 
 // AuthServiceImpl implements the last service interface defined in the IDL.
 type AuthServiceImpl struct{}
+
+func (s *AuthServiceImpl) SetAESKey(ctx context.Context, req *auth.SetAESKeyReq) (res *auth.SetAESKeyResp, err error) {
+	//TODO implement me
+	res = new(auth.SetAESKeyResp)
+	res.StatusCode = common.CodeServerBusy
+
+	rsaManager := encrypt.NewKeyManager(initialize.GetRedisWithNoContext(), ctx)
+	err = rsaManager.SetAESKey(req.UserId, req.Key)
+	if err != nil {
+		zap.L().Error("setAESKey error: ", zap.Error(err))
+		return
+	}
+
+	res.StatusCode = common.CodeSuccess
+
+	return
+}
+
+func (s *AuthServiceImpl) GetRSAKey(ctx context.Context, req *auth.GetRSAKeyReq) (res *auth.GetRSAKeyResp, err error) {
+	//TODO implement me
+	res = new(auth.GetRSAKeyResp)
+	res.StatusCode = common.CodeServerBusy
+
+	rsaManager := encrypt.NewKeyManager(initialize.GetRedisWithNoContext(), ctx)
+	key, err := rsaManager.GenerateAndSaveKeyPair(req.UserId, 2048)
+	if err != nil {
+		return
+	}
+
+	res.Key = key
+	res.StatusCode = common.CodeSuccess
+	return
+}
 
 // NewAuthServiceImpl creates a new instance of AuthServiceImpl.
 func NewAuthServiceImpl() *AuthServiceImpl {

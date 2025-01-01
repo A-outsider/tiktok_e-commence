@@ -22,7 +22,7 @@ func initMysql() {
 //ID:       "1",
 //Phone:    "12345678901",
 //Username: "tiktok_admin",
-//Password: password.Encrypt("lijialang666"),
+//Password: password.encrypt("lijialang666"),
 //Role:     model.ConstRoleOfAdmin,
 //})
 //}

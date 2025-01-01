@@ -279,3 +279,43 @@ func (api *Api) ModifyUserToSeller(ctx context.Context, c *app.RequestContext) {
 
 	ctrl.NoDataJSON(result.GetStatusCode())
 }
+
+func (api *Api) GetRSAKey(ctx context.Context, c *app.RequestContext) {
+	ctrl := controller.NewCtrl[req.None](c)
+
+	kitexReq := new(rpcAuth.GetRSAKeyReq)
+	kitexReq.UserId = c.GetString("userId")
+
+	result, _ := api.client.GetRSAKey(ctx, kitexReq)
+
+	if result.GetStatusCode() != common.CodeSuccess {
+		ctrl.NoDataJSON(result.GetStatusCode())
+		return
+	}
+
+	ctrl.WithDataJSON(result.GetStatusCode(), result.GetKey())
+}
+
+func (api *Api) SetAESKey(ctx context.Context, c *app.RequestContext) {
+	ctrl := controller.NewCtrl[req.SetAESKeyReq](c)
+	if err := c.BindForm(ctrl.Request); err != nil {
+		ctrl.NoDataJSON(common.CodeInvalidParams)
+		return
+	}
+
+	kitexReq := new(rpcAuth.SetAESKeyReq)
+
+	if err := copier.Copy(kitexReq, ctrl.Request); err != nil {
+		ctrl.NoDataJSON(common.CodeInvalidParams)
+		return
+	}
+	kitexReq.UserId = c.GetString("userId")
+
+	result, _ := api.client.SetAESKey(ctx, kitexReq)
+	if result.GetStatusCode() != common.CodeSuccess {
+		ctrl.NoDataJSON(result.GetStatusCode())
+		return
+	}
+
+	ctrl.NoDataJSON(result.GetStatusCode())
+}

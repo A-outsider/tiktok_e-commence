@@ -23,7 +23,7 @@ func Encrypt(password string) string {
 //	return hex.EncodeToString(salt), nil
 //}
 //
-//func Encrypt(password, salt string) string {
+//func encrypt(password, salt string) string {
 //	hash := sha256.New()
 //	hash.Write([]byte(password + salt))
 //	return hex.EncodeToString(hash.Sum(nil))

@@ -13,6 +13,8 @@ service AuthService {
   rpc RefreshToken(RefreshTokenReq) returns (RefreshTokenResp);
   rpc GetUserAdmin(CheckAdminReq) returns (CheckAdminResp);
   rpc ModifyUserToSeller(ModifyUserToSellerReq) returns (ModifyUserToSellerResp);
+  rpc GetRSAKey(GetRSAKeyReq) returns (GetRSAKeyResp);
+  rpc SetAESKey(SetAESKeyReq) returns (SetAESKeyResp);
 }
 
 
@@ -102,5 +104,23 @@ message ModifyUserToSellerReq {
 }
 
 message  ModifyUserToSellerResp {
+  int64 StatusCode = 1;
+}
+
+message GetRSAKeyReq {
+  string userId = 1;
+}
+
+message GetRSAKeyResp {
+  string key = 1;
+  int64 StatusCode = 2;
+}
+
+message SetAESKeyReq {
+  string userId = 1;
+  string key = 2;
+}
+
+message SetAESKeyResp {
   int64 StatusCode = 1;
 }

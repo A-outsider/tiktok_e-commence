@@ -3,6 +3,7 @@ package model
 import (
 	"github.com/cloudwego/hertz/pkg/route"
 	"gomall/gateway/controller/auth"
+	"gomall/gateway/middleware"
 )
 
 func RegisterAuth(r *route.RouterGroup) {
@@ -20,4 +21,10 @@ func RegisterAuth(r *route.RouterGroup) {
 
 	// 管理员接口 TODO : 暂时写这
 	r.POST("/user_role", authApi.ModifyUserToSeller)
+
+	// 加密url
+	encr := r.Group("/encrypt")
+	encr.Use(middleware.Auth())
+	encr.GET("/rsa-key", authApi.GetRSAKey)
+	encr.POST("/aes-key", authApi.SetAESKey)
 }

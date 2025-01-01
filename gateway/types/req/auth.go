@@ -38,3 +38,7 @@ type SendEmailCodeReq struct {
 type ModifyUserToSellerReq struct {
 	UserId string `form:"user_id" binding:"required"`
 }
+
+type SetAESKeyReq struct {
+	Key string `form:"key" binding:"required"`
+}

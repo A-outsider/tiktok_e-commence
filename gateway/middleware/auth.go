@@ -5,6 +5,10 @@ import (
 	"errors"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/golang-jwt/jwt/v4"
+	"gomall/common/utils/encrypt"
+	"gomall/gateway/controller"
+	"gomall/gateway/initialize"
+	"gomall/gateway/types/req"
 	"gomall/gateway/types/resp/common"
 	"gomall/gateway/utils/role"
 	"gomall/gateway/utils/token"
@@ -89,4 +93,29 @@ func getToken(c *app.RequestContext) (string, bool) {
 
 	tokenString = []byte(strings.TrimPrefix(string(tokenString), "Bearer "))
 	return string(tokenString), true
+}
+
+func DecodeParam() app.HandlerFunc {
+	return func(ctx context.Context, c *app.RequestContext) {
+
+		ctrl := controller.NewCtrl[req.None](c)
+
+		params := c.Param("param")
+
+		manager := encrypt.NewKeyManager(initialize.GetRedis(), ctx)
+		aes, err := manager.DecryptAES(c.GetString("userId"), []byte(params))
+		if err != nil {
+			ctrl.NoDataJSON(common.CodeInvalidParams)
+			c.Abort()
+		}
+
+		data, err := manager.QueryToJSONWithSignature(string(aes), c.GetString("userId"))
+		if err != nil {
+			ctrl.NoDataJSON(common.CodeInvalidParams)
+			return
+		}
+
+		c.Set("param", data)
+		c.Next(ctx)
+	}
 }

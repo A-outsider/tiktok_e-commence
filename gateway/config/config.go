@@ -42,6 +42,12 @@ type Service struct {
 	Port int    `yaml:"port"`
 }
 
+type Redis struct {
+	Host     string `yaml:"host"`
+	Port     int    `yaml:"port"`
+	Password string `yaml:"password"`
+}
+
 type Config struct {
 	Jaeger     Jaeger     `yaml:"jaeger"`
 	Static     Static     `yaml:"static"`
@@ -49,6 +55,7 @@ type Config struct {
 	Jwt        Jwt        `yaml:"jwt"`
 	VisitLimit VisitLimit `yaml:"visitLimit"`
 	Service    Service    `yaml:"service"`
+	Redis      Redis      `yaml:"redis"`
 }
 
 func GetConf() *Config {

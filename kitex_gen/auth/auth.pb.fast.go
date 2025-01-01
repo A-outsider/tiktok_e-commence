@@ -600,6 +600,126 @@ func (x *ModifyUserToSellerResp) fastReadField1(buf []byte, _type int8) (offset 
 	return offset, err
 }
 
+func (x *GetRSAKeyReq) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+	switch number {
+	case 1:
+		offset, err = x.fastReadField1(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	default:
+		offset, err = fastpb.Skip(buf, _type, number)
+		if err != nil {
+			goto SkipFieldError
+		}
+	}
+	return offset, nil
+SkipFieldError:
+	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
+ReadFieldError:
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_GetRSAKeyReq[number], err)
+}
+
+func (x *GetRSAKeyReq) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+	x.UserId, offset, err = fastpb.ReadString(buf, _type)
+	return offset, err
+}
+
+func (x *GetRSAKeyResp) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+	switch number {
+	case 1:
+		offset, err = x.fastReadField1(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	case 2:
+		offset, err = x.fastReadField2(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	default:
+		offset, err = fastpb.Skip(buf, _type, number)
+		if err != nil {
+			goto SkipFieldError
+		}
+	}
+	return offset, nil
+SkipFieldError:
+	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
+ReadFieldError:
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_GetRSAKeyResp[number], err)
+}
+
+func (x *GetRSAKeyResp) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+	x.Key, offset, err = fastpb.ReadString(buf, _type)
+	return offset, err
+}
+
+func (x *GetRSAKeyResp) fastReadField2(buf []byte, _type int8) (offset int, err error) {
+	x.StatusCode, offset, err = fastpb.ReadInt64(buf, _type)
+	return offset, err
+}
+
+func (x *SetAESKeyReq) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+	switch number {
+	case 1:
+		offset, err = x.fastReadField1(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	case 2:
+		offset, err = x.fastReadField2(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	default:
+		offset, err = fastpb.Skip(buf, _type, number)
+		if err != nil {
+			goto SkipFieldError
+		}
+	}
+	return offset, nil
+SkipFieldError:
+	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
+ReadFieldError:
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_SetAESKeyReq[number], err)
+}
+
+func (x *SetAESKeyReq) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+	x.UserId, offset, err = fastpb.ReadString(buf, _type)
+	return offset, err
+}
+
+func (x *SetAESKeyReq) fastReadField2(buf []byte, _type int8) (offset int, err error) {
+	x.Key, offset, err = fastpb.ReadString(buf, _type)
+	return offset, err
+}
+
+func (x *SetAESKeyResp) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+	switch number {
+	case 1:
+		offset, err = x.fastReadField1(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	default:
+		offset, err = fastpb.Skip(buf, _type, number)
+		if err != nil {
+			goto SkipFieldError
+		}
+	}
+	return offset, nil
+SkipFieldError:
+	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
+ReadFieldError:
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_SetAESKeyResp[number], err)
+}
+
+func (x *SetAESKeyResp) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+	x.StatusCode, offset, err = fastpb.ReadInt64(buf, _type)
+	return offset, err
+}
+
 func (x *LoginByCodeReq) FastWrite(buf []byte) (offset int) {
 	if x == nil {
 		return offset
@@ -1007,6 +1127,88 @@ func (x *ModifyUserToSellerResp) FastWrite(buf []byte) (offset int) {
 }
 
 func (x *ModifyUserToSellerResp) fastWriteField1(buf []byte) (offset int) {
+	if x.StatusCode == 0 {
+		return offset
+	}
+	offset += fastpb.WriteInt64(buf[offset:], 1, x.GetStatusCode())
+	return offset
+}
+
+func (x *GetRSAKeyReq) FastWrite(buf []byte) (offset int) {
+	if x == nil {
+		return offset
+	}
+	offset += x.fastWriteField1(buf[offset:])
+	return offset
+}
+
+func (x *GetRSAKeyReq) fastWriteField1(buf []byte) (offset int) {
+	if x.UserId == "" {
+		return offset
+	}
+	offset += fastpb.WriteString(buf[offset:], 1, x.GetUserId())
+	return offset
+}
+
+func (x *GetRSAKeyResp) FastWrite(buf []byte) (offset int) {
+	if x == nil {
+		return offset
+	}
+	offset += x.fastWriteField1(buf[offset:])
+	offset += x.fastWriteField2(buf[offset:])
+	return offset
+}
+
+func (x *GetRSAKeyResp) fastWriteField1(buf []byte) (offset int) {
+	if x.Key == "" {
+		return offset
+	}
+	offset += fastpb.WriteString(buf[offset:], 1, x.GetKey())
+	return offset
+}
+
+func (x *GetRSAKeyResp) fastWriteField2(buf []byte) (offset int) {
+	if x.StatusCode == 0 {
+		return offset
+	}
+	offset += fastpb.WriteInt64(buf[offset:], 2, x.GetStatusCode())
+	return offset
+}
+
+func (x *SetAESKeyReq) FastWrite(buf []byte) (offset int) {
+	if x == nil {
+		return offset
+	}
+	offset += x.fastWriteField1(buf[offset:])
+	offset += x.fastWriteField2(buf[offset:])
+	return offset
+}
+
+func (x *SetAESKeyReq) fastWriteField1(buf []byte) (offset int) {
+	if x.UserId == "" {
+		return offset
+	}
+	offset += fastpb.WriteString(buf[offset:], 1, x.GetUserId())
+	return offset
+}
+
+func (x *SetAESKeyReq) fastWriteField2(buf []byte) (offset int) {
+	if x.Key == "" {
+		return offset
+	}
+	offset += fastpb.WriteString(buf[offset:], 2, x.GetKey())
+	return offset
+}
+
+func (x *SetAESKeyResp) FastWrite(buf []byte) (offset int) {
+	if x == nil {
+		return offset
+	}
+	offset += x.fastWriteField1(buf[offset:])
+	return offset
+}
+
+func (x *SetAESKeyResp) fastWriteField1(buf []byte) (offset int) {
 	if x.StatusCode == 0 {
 		return offset
 	}
@@ -1428,6 +1630,88 @@ func (x *ModifyUserToSellerResp) sizeField1() (n int) {
 	return n
 }
 
+func (x *GetRSAKeyReq) Size() (n int) {
+	if x == nil {
+		return n
+	}
+	n += x.sizeField1()
+	return n
+}
+
+func (x *GetRSAKeyReq) sizeField1() (n int) {
+	if x.UserId == "" {
+		return n
+	}
+	n += fastpb.SizeString(1, x.GetUserId())
+	return n
+}
+
+func (x *GetRSAKeyResp) Size() (n int) {
+	if x == nil {
+		return n
+	}
+	n += x.sizeField1()
+	n += x.sizeField2()
+	return n
+}
+
+func (x *GetRSAKeyResp) sizeField1() (n int) {
+	if x.Key == "" {
+		return n
+	}
+	n += fastpb.SizeString(1, x.GetKey())
+	return n
+}
+
+func (x *GetRSAKeyResp) sizeField2() (n int) {
+	if x.StatusCode == 0 {
+		return n
+	}
+	n += fastpb.SizeInt64(2, x.GetStatusCode())
+	return n
+}
+
+func (x *SetAESKeyReq) Size() (n int) {
+	if x == nil {
+		return n
+	}
+	n += x.sizeField1()
+	n += x.sizeField2()
+	return n
+}
+
+func (x *SetAESKeyReq) sizeField1() (n int) {
+	if x.UserId == "" {
+		return n
+	}
+	n += fastpb.SizeString(1, x.GetUserId())
+	return n
+}
+
+func (x *SetAESKeyReq) sizeField2() (n int) {
+	if x.Key == "" {
+		return n
+	}
+	n += fastpb.SizeString(2, x.GetKey())
+	return n
+}
+
+func (x *SetAESKeyResp) Size() (n int) {
+	if x == nil {
+		return n
+	}
+	n += x.sizeField1()
+	return n
+}
+
+func (x *SetAESKeyResp) sizeField1() (n int) {
+	if x.StatusCode == 0 {
+		return n
+	}
+	n += fastpb.SizeInt64(1, x.GetStatusCode())
+	return n
+}
+
 var fieldIDToName_LoginByCodeReq = map[int32]string{
 	1: "Phone",
 	2: "Code",
@@ -1510,5 +1794,23 @@ var fieldIDToName_ModifyUserToSellerReq = map[int32]string{
 }
 
 var fieldIDToName_ModifyUserToSellerResp = map[int32]string{
+	1: "StatusCode",
+}
+
+var fieldIDToName_GetRSAKeyReq = map[int32]string{
+	1: "UserId",
+}
+
+var fieldIDToName_GetRSAKeyResp = map[int32]string{
+	1: "Key",
+	2: "StatusCode",
+}
+
+var fieldIDToName_SetAESKeyReq = map[int32]string{
+	1: "UserId",
+	2: "Key",
+}
+
+var fieldIDToName_SetAESKeyResp = map[int32]string{
 	1: "StatusCode",
 }

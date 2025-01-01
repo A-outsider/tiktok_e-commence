@@ -31,6 +31,8 @@ p, user, /api/v1/order/completed, PUT
 p, user, /api/v1/payment/createPay, GET
 
 p, admin, /api/v1/auth/user_role, POST
+p, user, /api/v1/auth/encrypt/rsa-key, GET
+p, user, /api/v1/auth/encrypt/aes-key, POST
 
 g, seller, user
 g, admin, seller

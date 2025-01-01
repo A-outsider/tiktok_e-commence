@@ -7,6 +7,7 @@ import (
 	cc "gomall/common/config"
 	"gomall/common/logs"
 	"gomall/gateway/config"
+	"gomall/gateway/initialize"
 	"gomall/gateway/router"
 	"gomall/gateway/rpc"
 	"gomall/gateway/utils/role"
@@ -33,6 +34,9 @@ func main() {
 
 	// 服务发现
 	rpc.Init()
+
+	// 初始化工具
+	initialize.Init()
 
 	// 启动路由
 	router.InitRouter().Spin()

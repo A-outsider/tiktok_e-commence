@@ -2,8 +2,14 @@ package encrypt
 
 import (
 	"context"
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
+	"encoding/base64"
+	"errors"
 	"fmt"
 	"gomall/common/utils/encrypt"
+	"io"
 	"testing"
 )
 
@@ -24,7 +30,7 @@ bwIDAQAB
 		return
 	}
 
-	encodedData, err := manager.EncryptWithPublicKey(pub, []byte("hello world"))
+	encodedData, err := manager.EncryptWithPublicKey(pub, []byte(`ugQiO/004Gt6/7rwf2mg8A==`))
 	if err != nil {
 		t.Error(err)
 		return
@@ -71,4 +77,96 @@ bwIDAQAB
 	//	return
 	//}
 
+}
+
+func TestEncryptAES(t *testing.T) {
+
+	manager := encrypt.NewKeyManager(nil, context.Background())
+	key := base64.StdEncoding.EncodeToString([]byte("ugQiO/004Gt6/7rwf2mg8A=="))
+	//key, err := manager.GenerateAESKey("78138335716970496", 16)
+	//if err != nil {
+	//	return
+	//}
+	fmt.Println(key)
+	url := []byte("?text = 666")
+	data, err := EncrypAES(url, key)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	signature := manager.GenerateSignature([]byte(data), key)
+
+	url = []byte(string(url) + "&signature=" + signature)
+
+	fmt.Println(string(url))
+	data, err = EncrypAES(url, key)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(data)
+
+	decryptAES, err := DecryptAES(key, data)
+	if err != nil {
+		return
+	}
+	fmt.Println(string(decryptAES))
+}
+
+func EncrypAES(plaintext []byte, keys string) (string, error) {
+	key, err := base64.StdEncoding.DecodeString(keys)
+	if err != nil {
+		return "", fmt.Errorf("failed to decode AES key: %w", err)
+	}
+
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return "", fmt.Errorf("failed to create AES cipher block: %w", err)
+	}
+
+	iv := make([]byte, aes.BlockSize)
+	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+		return "", fmt.Errorf("failed to generate IV: %w", err)
+	}
+
+	ciphertext := make([]byte, len(plaintext)+aes.BlockSize)
+	copy(ciphertext, iv)
+
+	stream := cipher.NewCFBEncrypter(block, iv)
+	stream.XORKeyStream(ciphertext[aes.BlockSize:], plaintext)
+
+	// 将加密后的数据转为 Base64 字符串
+	return base64.URLEncoding.EncodeToString(ciphertext), nil
+
+}
+
+func DecryptAES(encodedKey string, text string) ([]byte, error) {
+	key, err := base64.StdEncoding.DecodeString(encodedKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode AES key: %w", err)
+	}
+
+	ciphertext, err := base64.URLEncoding.DecodeString(text)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode Text: %w", err)
+	}
+
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create AES cipher block: %w", err)
+	}
+
+	if len(ciphertext) < aes.BlockSize {
+		return nil, errors.New("ciphertext too short")
+	}
+
+	iv := ciphertext[:aes.BlockSize]
+	ciphertext = ciphertext[aes.BlockSize:]
+
+	stream := cipher.NewCFBDecrypter(block, iv)
+	plaintext := make([]byte, len(ciphertext))
+	stream.XORKeyStream(plaintext, ciphertext)
+
+	return plaintext, nil
 }

@@ -42,3 +42,7 @@ type ModifyUserToSellerReq struct {
 type SetAESKeyReq struct {
 	Key string `form:"key" binding:"required"`
 }
+
+type TestEncryptReq struct {
+	Text string `json:"text"`
+}

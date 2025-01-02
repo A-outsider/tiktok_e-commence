@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/jinzhu/copier"
 	"gomall/gateway/controller"
@@ -318,4 +319,18 @@ func (api *Api) SetAESKey(ctx context.Context, c *app.RequestContext) {
 	}
 
 	ctrl.NoDataJSON(result.GetStatusCode())
+}
+
+func (api *Api) TestEncrypt(ctx context.Context, c *app.RequestContext) {
+	ctrl := controller.NewCtrl[req.None](c)
+	data := c.GetString("param")
+
+	req := new(req.TestEncryptReq)
+	err := json.Unmarshal([]byte(data), req)
+	if err != nil {
+		ctrl.NoDataJSON(common.CodeInvalidParams)
+		return
+	}
+
+	ctrl.WithDataJSON(common.CodeSuccess, req)
 }

@@ -27,4 +27,7 @@ func RegisterAuth(r *route.RouterGroup) {
 	encr.Use(middleware.Auth())
 	encr.GET("/rsa-key", authApi.GetRSAKey)
 	encr.POST("/aes-key", authApi.SetAESKey)
+	test := r.Group("/test")
+	test.Use(middleware.Auth(), middleware.DecodeParam())
+	test.GET("/:param", authApi.TestEncrypt)
 }

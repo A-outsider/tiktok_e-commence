@@ -148,13 +148,13 @@ func (manager *KeyManager) GenerateAESKey(keyName string, size int) (string, err
 		return "", fmt.Errorf("failed to generate AES key: %w", err)
 	}
 	encodedKey := base64.StdEncoding.EncodeToString(key)
-	if err := manager.saveKeyToRedis("AES_"+keyName, encodedKey); err != nil {
-		return "", err
-	}
+	//if err := manager.saveKeyToRedis("AES_"+keyName, encodedKey); err != nil {
+	//	return "", err
+	//}
 	return encodedKey, nil
 }
 
-func (manager *KeyManager) DecryptAES(keyName string, ciphertext []byte) ([]byte, error) {
+func (manager *KeyManager) DecryptAES(keyName string, text string) ([]byte, error) {
 	encodedKey, err := manager.getKeyFromRedis("AES_" + keyName)
 	if err != nil {
 		return nil, err
@@ -163,6 +163,11 @@ func (manager *KeyManager) DecryptAES(keyName string, ciphertext []byte) ([]byte
 	key, err := base64.StdEncoding.DecodeString(encodedKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode AES key: %w", err)
+	}
+
+	ciphertext, err := base64.URLEncoding.DecodeString(text)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode Text: %w", err)
 	}
 
 	block, err := aes.NewCipher(key)
@@ -184,25 +189,25 @@ func (manager *KeyManager) DecryptAES(keyName string, ciphertext []byte) ([]byte
 	return plaintext, nil
 }
 
-func (manager *KeyManager) EncryptAES(keyName string, plaintext []byte) ([]byte, error) {
+func (manager *KeyManager) EncryptAES(keyName string, plaintext []byte) (string, error) {
 	encodedKey, err := manager.getKeyFromRedis("AES_" + keyName)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	key, err := base64.StdEncoding.DecodeString(encodedKey)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode AES key: %w", err)
+		return "", fmt.Errorf("failed to decode AES key: %w", err)
 	}
 
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create AES cipher block: %w", err)
+		return "", fmt.Errorf("failed to create AES cipher block: %w", err)
 	}
 
 	iv := make([]byte, aes.BlockSize)
 	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
-		return nil, fmt.Errorf("failed to generate IV: %w", err)
+		return "", fmt.Errorf("failed to generate IV: %w", err)
 	}
 
 	ciphertext := make([]byte, len(plaintext)+aes.BlockSize)
@@ -211,10 +216,25 @@ func (manager *KeyManager) EncryptAES(keyName string, plaintext []byte) ([]byte,
 	stream := cipher.NewCFBEncrypter(block, iv)
 	stream.XORKeyStream(ciphertext[aes.BlockSize:], plaintext)
 
-	return ciphertext, nil
+	// 将加密后的数据转为 Base64 字符串
+	return base64.StdEncoding.EncodeToString(ciphertext), nil
 }
 
-func (manager *KeyManager) QueryToJSONWithSignature(query string, userId string) (string, error) {
+// HMAC-based signature generation
+func (manager *KeyManager) GenerateSignature(data []byte, secretKey string) string {
+	mac := hmac.New(sha256.New, []byte(secretKey))
+	mac.Write(data)
+	return hex.EncodeToString(mac.Sum(nil))
+}
+
+// HMAC-based signature verification
+func (manager *KeyManager) verifySignature(data []byte, signature, secretKey string) bool {
+	expectedSignature := manager.GenerateSignature(data, secretKey)
+	return hmac.Equal([]byte(expectedSignature), []byte(signature))
+}
+
+// Query to JSON conversion with AES signature validation
+func (manager *KeyManager) QueryToJSONWithAES(query string, userId string) (string, error) {
 	parsedQuery, err := url.ParseQuery(query)
 	if err != nil {
 		return "", fmt.Errorf("error parsing query string: %w", err)
@@ -245,19 +265,11 @@ func (manager *KeyManager) QueryToJSONWithSignature(query string, userId string)
 		return "", err
 	}
 
-	if !verifySignature(jsonData, signature, secretKey) {
-
+	if !manager.verifySignature(jsonData, signature, secretKey) {
 		return "", errors.New("invalid signature")
 	}
 
 	return string(jsonData), nil
-}
-
-func verifySignature(data []byte, signature, secretKey string) bool {
-	mac := hmac.New(sha256.New, []byte(secretKey))
-	mac.Write(data)
-	expectedSignature := hex.EncodeToString(mac.Sum(nil))
-	return hmac.Equal([]byte(expectedSignature), []byte(signature))
 }
 
 // LoadPrivateKeyFromPEM 从 PEM 格式文件加载私钥

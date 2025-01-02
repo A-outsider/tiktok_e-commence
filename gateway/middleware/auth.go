@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/golang-jwt/jwt/v4"
 	"gomall/common/utils/encrypt"
@@ -101,18 +102,20 @@ func DecodeParam() app.HandlerFunc {
 		ctrl := controller.NewCtrl[req.None](c)
 
 		params := c.Param("param")
-
+		fmt.Println(params)
 		manager := encrypt.NewKeyManager(initialize.GetRedis(), ctx)
-		aes, err := manager.DecryptAES(c.GetString("userId"), []byte(params))
+		aes, err := manager.DecryptAES(c.GetString("userId"), params)
 		if err != nil {
 			ctrl.NoDataJSON(common.CodeInvalidParams)
 			c.Abort()
 		}
 
-		data, err := manager.QueryToJSONWithSignature(string(aes), c.GetString("userId"))
+		fmt.Println(string(aes))
+		data, err := manager.QueryToJSONWithAES(string(aes), c.GetString("userId"))
 		if err != nil {
+			fmt.Println(err)
 			ctrl.NoDataJSON(common.CodeInvalidParams)
-			return
+			c.Abort()
 		}
 
 		c.Set("param", data)

@@ -1,0 +1,31 @@
+service:
+  host : 127.0.0.1
+  #host : 47.115.160.54
+  port : 8080
+
+jaeger:
+  host: 47.115.160.54
+  port: 24317
+
+
+# 业务
+static:
+  avatarPath: ./data/static
+
+role:
+  model: ./data/casbin/model.conf
+  policy: ./data/casbin/policy.csv
+
+jwt:
+  accessExpireTime: 60m
+  refreshExpireTime: 168h
+  accessSecret: tiktok_mall_access
+  refreshSecret:  tiktok_mall_refresh
+  issuer: zty
+
+visitLimit:
+  rateLimitInterval: 0.5s # 令牌投放速率
+  rateLimitCap: 30  # 限流的最大容量
+
+
+

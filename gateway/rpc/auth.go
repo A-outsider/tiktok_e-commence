@@ -2,8 +2,10 @@ package rpc
 
 import (
 	"github.com/cloudwego/kitex/client"
+	kClient "github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/pkg/transmeta"
 	"github.com/cloudwego/kitex/transport"
+	prometheus "github.com/kitex-contrib/monitor-prometheus"
 	"github.com/kitex-contrib/obs-opentelemetry/tracing"
 	etcd "github.com/kitex-contrib/registry-etcd"
 	"gomall/common/config"
@@ -23,6 +25,7 @@ func initAuth() {
 		client.WithTransportProtocol(transport.TTHeader),
 		client.WithMetaHandler(transmeta.ClientTTHeaderHandler),
 		client.WithSuite(tracing.NewClientSuite()),
+		kClient.WithTracer(prometheus.NewClientTracer(":9091", "/kitexclient")), // 本地启动要做内网穿透
 	)
 	if err != nil {
 		panic(err)

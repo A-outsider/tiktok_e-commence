@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+
+  mysql:
+    image: mysql:8.3.0
+    ports:
+      - "23306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: lijialang666
+      MYSQL_DATABASE: mall
+      TZ: Asia/Shanghai
+    volumes:
+      - ./data/mysql/data:/var/lib/mysql
+    #      - ./data/mysql/my.cnf:/etc/mysql/my.cnf
+    #      - ./data/mysql/init:/docker-entrypoint-initdb.d
+    command:
+      [
+        "--character-set-server=utf8mb4",
+        "--collation-server=utf8mb4_unicode_ci"
+      ]
+    networks:
+      - mall
+
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    init: true
+    ports:
+      - "26379:6379"
+    volumes:
+      - ./data/redis/data:/data
+    environment:
+      REDIS_PASSWORD: lijialang666
+    command: ["redis-server", "--requirepass", "lijialang666"]
+    networks:
+      - mall
+
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.58
+    container_name: jaeger
+    environment:
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+    volumes:
+      - ./data/jaeger/logs:/var/log/jaeger       # 挂载日志目录
+      - ./data/jaeger/data:/var/lib/jaeger       # 挂载数据目录
+    networks:
+      - mall
+
+
+  etcd:
+    image: bitnami/etcd:latest
+    container_name: etcd
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd-server:2379
+    volumes:
+      - ./data/etcd/data:/bitnami/etcd
+    ports:
+      - "22379:2379"
+      - "22380:2380"
+    networks:
+      - mall
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    restart: always
+    volumes:
+      - ./data/prom/config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "29090:9090"
+    networks:
+      - mall
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      - prometheus
+    ports:
+      - "23000:3000"
+    networks:
+      - mall
+
+networks:
+  mall:
+    driver: bridge

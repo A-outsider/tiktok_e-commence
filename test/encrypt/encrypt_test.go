@@ -80,7 +80,6 @@ bwIDAQAB
 }
 
 func TestEncryptAES(t *testing.T) {
-
 	manager := encrypt.NewKeyManager(nil, context.Background())
 	key := base64.StdEncoding.EncodeToString([]byte("ugQiO/004Gt6/7rwf2mg8A=="))
 	//key, err := manager.GenerateAESKey("78138335716970496", 16)

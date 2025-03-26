@@ -185,3 +185,5 @@
 {"level":"ERROR","ts":"2024-11-25T19:28:44.590+0800","caller":"role/role.go:29","msg":"权限不足,用户ID：1, 角色：admin, 路径：/api/v1/payment/createPay, 请求方法：POST"}
 {"level":"ERROR","ts":"2024-11-25T19:58:40.837+0800","caller":"role/role.go:29","msg":"权限不足,用户ID：1, 角色：admin, 路径：/api/v1/payment/createPay, 请求方法：GET"}
 {"level":"ERROR","ts":"2024-11-25T19:59:26.614+0800","caller":"role/role.go:29","msg":"权限不足,用户ID：1, 角色：admin, 路径：/api/v1/payment/createPay, 请求方法：GET"}
+{"level":"ERROR","ts":"2025-02-23T16:10:55.035+0800","caller":"gateway/main.go:24","msg":"初始化casbin错误，errs：open : The system cannot find the file specified."}
+{"level":"ERROR","ts":"2025-03-16T19:18:19.110+0800","caller":"gateway/main.go:24","msg":"初始化casbin错误，errs：open : The system cannot find the file specified."}

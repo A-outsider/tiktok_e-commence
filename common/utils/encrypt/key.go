@@ -195,17 +195,17 @@ func (manager *KeyManager) EncryptAES(keyName string, plaintext []byte) (string,
 		return "", err
 	}
 
-	key, err := base64.StdEncoding.DecodeString(encodedKey)
+	key, err := base64.StdEncoding.DecodeString(encodedKey) // 从 Base64 解码出 AES 密钥
 	if err != nil {
 		return "", fmt.Errorf("failed to decode AES key: %w", err)
 	}
 
-	block, err := aes.NewCipher(key)
+	block, err := aes.NewCipher(key) // 根据 AES 密钥创建一个加密块
 	if err != nil {
 		return "", fmt.Errorf("failed to create AES cipher block: %w", err)
 	}
 
-	iv := make([]byte, aes.BlockSize)
+	iv := make([]byte, aes.BlockSize) // 生成随机初始化向量 , 并使用 rand 将随机字节读取到 iv 中
 	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
 		return "", fmt.Errorf("failed to generate IV: %w", err)
 	}

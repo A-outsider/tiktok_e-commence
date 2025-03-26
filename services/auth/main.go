@@ -4,15 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/cloudwego/kitex/pkg/rpcinfo"
-	"github.com/cloudwego/kitex/pkg/transmeta"
-	"github.com/cloudwego/kitex/server"
-	kServer "github.com/cloudwego/kitex/server"
-	prometheus "github.com/kitex-contrib/monitor-prometheus"
-	"github.com/kitex-contrib/obs-opentelemetry/provider"
-	"github.com/kitex-contrib/obs-opentelemetry/tracing"
-	etcd "github.com/kitex-contrib/registry-etcd"
-	"github.com/kitex-contrib/registry-etcd/retry"
 	cc "gomall/common/config"
 	"gomall/common/logs"
 	auth "gomall/kitex_gen/auth/authservice"
@@ -22,9 +13,21 @@ import (
 	"gomall/services/auth/handler"
 	"gomall/services/auth/initialize"
 	"gomall/services/auth/utils/password"
-	"gorm.io/gorm"
+
+	"github.com/cloudwego/kitex/pkg/rpcinfo"
+	"github.com/cloudwego/kitex/pkg/transmeta"
+	"github.com/cloudwego/kitex/server"
+	kServer "github.com/cloudwego/kitex/server"
+	prometheus "github.com/kitex-contrib/monitor-prometheus"
+	"github.com/kitex-contrib/obs-opentelemetry/provider"
+	"github.com/kitex-contrib/obs-opentelemetry/tracing"
+	etcd "github.com/kitex-contrib/registry-etcd"
+	"github.com/kitex-contrib/registry-etcd/retry"
+
 	"net"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 func main() {

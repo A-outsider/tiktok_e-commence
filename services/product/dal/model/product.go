@@ -3,9 +3,10 @@ package model
 import (
 	"database/sql/driver"
 	"errors"
-	"gorm.io/gorm"
 	"strings"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Strings []string
@@ -46,6 +47,7 @@ type Product struct {
 	Description string   `json:"description"`                             // 商品描述
 	Picture     string   `json:"picture"`                                 // 商品实物图片
 	Price       float32  `json:"price"`                                   // 商品价格
+	Stock       int64    `gorm:"not null"`                                // 秒杀库存
 	// Reviews     *Strings       `json:"reviews,omitempty"`             // 用户评价，存储评价id
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"-"`

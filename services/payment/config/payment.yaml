@@ -1,0 +1,22 @@
+service:
+  host : 127.0.0.1
+  #host : 47.115.160.54
+  port : 9006
+
+redis:
+  host: 47.115.160.54
+  port: 26379
+  password: "lijialang666"
+
+jaeger:
+  host: 47.115.160.54
+  port: 24317
+
+
+mysql:
+  host: 47.115.160.54
+  port: 23306
+  dbname: mall
+  username: root
+  password: lijialang666
+  charset: utf8mb4

@@ -1,0 +1,115 @@
+syntax = "proto3";
+
+package seckill;
+
+option go_package = "seckill;rpcSeckill";
+
+service SeckillService {
+  // 创建秒杀商品
+  rpc CreateSeckillProduct(CreateSeckillProductReq) returns (CreateSeckillProductResp) {}
+  // 获取秒杀商品详情
+  rpc GetSeckillProduct(GetSeckillProductReq) returns (GetSeckillProductResp) {}
+  // 获取活动中的秒杀商品列表
+  rpc ListActiveSeckillProducts(ListActiveSeckillProductsReq) returns (ListActiveSeckillProductsResp) {}
+  // 执行秒杀
+  rpc DoSeckill(DoSeckillReq) returns (DoSeckillResp) {}
+  // 确认秒杀订单
+  rpc ConfirmSeckillOrder(ConfirmSeckillOrderReq) returns (ConfirmSeckillOrderResp) {}
+  // 取消秒杀
+  rpc CancelSeckill(CancelSeckillReq) returns (CancelSeckillResp) {}
+}
+
+// 秒杀商品信息
+message SeckillProductInfo {
+  string spid = 1;           // 秒杀商品ID
+  string pid = 2;            // 原商品ID
+  double seckill_price = 3;  // 秒杀价
+  int64 stock = 4;           // 秒杀库存
+  int64 start_time = 5;      // 秒杀开始时间(Unix时间戳)
+  int64 end_time = 6;        // 秒杀结束时间(Unix时间戳)
+  int32 limit_per_user = 7;  // 每人限购数量
+  bool is_active = 8;        // 是否激活秒杀
+  string product_name = 9;   // 商品名称
+  string product_image = 10; // 商品图片
+}
+
+// 创建秒杀商品请求
+message CreateSeckillProductReq {
+  string pid = 1;            // 原商品ID
+  double seckill_price = 2;  // 秒杀价
+  int64 stock = 3;           // 秒杀库存
+  int64 start_time = 4;      // 秒杀开始时间(Unix时间戳)
+  int64 end_time = 5;        // 秒杀结束时间(Unix时间戳)
+  int32 limit_per_user = 6;  // 每人限购数量
+  bool is_active = 7;        // 是否激活秒杀
+}
+
+// 创建秒杀商品响应
+message CreateSeckillProductResp {
+  int64 status_code = 1;     // 状态码
+  string status_msg = 2;     // 状态信息
+  string spid = 3;           // 创建的秒杀商品ID
+}
+
+// 获取秒杀商品请求
+message GetSeckillProductReq {
+  string spid = 1;           // 秒杀商品ID
+}
+
+// 获取秒杀商品响应
+message GetSeckillProductResp {
+  int64 status_code = 1;              // 状态码
+  string status_msg = 2;              // 状态信息
+  SeckillProductInfo product = 3;     // 秒杀商品信息
+}
+
+// 获取活动中的秒杀商品列表请求
+message ListActiveSeckillProductsReq {
+  int32 page = 1;            // 页码
+  int32 page_size = 2;       // 每页大小
+}
+
+// 获取活动中的秒杀商品列表响应
+message ListActiveSeckillProductsResp {
+  int64 status_code = 1;                         // 状态码
+  string status_msg = 2;                         // 状态信息
+  repeated SeckillProductInfo products = 3;      // 秒杀商品列表
+  int32 total = 4;                               // 总数
+}
+
+// 执行秒杀请求
+message DoSeckillReq {
+  string spid = 1;           // 秒杀商品ID
+  string uid = 2;            // 用户ID
+  int64 quantity = 3;        // 购买数量
+}
+
+// 执行秒杀响应
+message DoSeckillResp {
+  int64 status_code = 1;     // 状态码
+  string status_msg = 2;     // 状态信息
+  string flow_id = 3;        // 流水ID
+}
+
+// 确认秒杀订单请求
+message ConfirmSeckillOrderReq {
+  string flow_id = 1;        // 流水ID
+  string order_id = 2;       // 订单ID
+}
+
+// 确认秒杀订单响应
+message ConfirmSeckillOrderResp {
+  int64 status_code = 1;     // 状态码
+  string status_msg = 2;     // 状态信息
+}
+
+// 取消秒杀请求
+message CancelSeckillReq {
+  string flow_id = 1;        // 流水ID
+}
+
+// 取消秒杀响应
+message CancelSeckillResp {
+  int64 status_code = 1;     // 状态码
+  string status_msg = 2;     // 状态信息
+} 

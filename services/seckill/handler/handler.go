@@ -2,269 +2,621 @@ package handler
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"sync"
 	"time"
 
-	"gomall/services/seckill/config"
+	"github.com/cloudwego/kitex/pkg/klog"
+	"github.com/google/uuid"
+
+	rpcSeckill "gomall/kitex_gen/seckill"
+	"gomall/services/seckill/constants"
 	"gomall/services/seckill/dal/cache"
 	"gomall/services/seckill/dal/db"
 	"gomall/services/seckill/dal/model"
-
-	"github.com/google/uuid"
-	"go.uber.org/zap"
-	"golang.org/x/time/rate"
 )
 
-// SeckillServiceImpl 秒杀服务实现
-type SeckillServiceImpl struct {
-	// 限流器
-	limiter *rate.Limiter
-	// 限购检查锁
-	buyLimitLock sync.Mutex
-}
+// SeckillServiceImpl implements the last service interface defined in the IDL.
+type SeckillServiceImpl struct{}
 
-// NewSeckillServiceImpl 创建秒杀服务实现
+// NewSeckillServiceImpl creates a new SeckillServiceImpl instance
 func NewSeckillServiceImpl() *SeckillServiceImpl {
-	// 从配置中获取限流参数
-	limiterConfig := config.GetConf().Limiter
-	// 创建限流器
-	limiter := rate.NewLimiter(rate.Limit(limiterConfig.RatePerSecond), limiterConfig.Burst)
-
-	return &SeckillServiceImpl{
-		limiter: limiter,
-	}
+	return &SeckillServiceImpl{}
 }
 
-// CreateSeckillProduct 创建秒杀商品
-func (s *SeckillServiceImpl) CreateSeckillProduct(ctx context.Context, product *model.SeckillProduct) error {
-	// 生成秒杀商品ID
-	product.SPID = fmt.Sprintf("sp_%d_%s", time.Now().Unix(), product.PID)
+// CreateSeckillProduct implements the SeckillServiceImpl interface.
+func (s *SeckillServiceImpl) CreateSeckillProduct(ctx context.Context, req *rpcSeckill.CreateSeckillProductReq) (resp *rpcSeckill.CreateSeckillProductResp, _ error) {
+	resp = new(rpcSeckill.CreateSeckillProductResp)
+	resp.StatusCode = constants.ServiceErr
+	resp.StatusMsg = "服务内部错误"
+
+	// 参数校验
+	if req.Pid == "" || req.SeckillPrice <= 0 || req.Stock <= 0 {
+		resp.StatusCode = constants.ParamErr
+		resp.StatusMsg = "参数错误"
+		return resp, nil
+	}
+
+	// 转换为数值ID
+	pidInt, err := db.StringToInt64(req.Pid)
+	if err != nil {
+		klog.Errorf("参数错误: %v", err)
+		resp.StatusCode = constants.ParamErr
+		resp.StatusMsg = "商品ID格式错误"
+		return resp, nil
+	}
+
+	// 创建秒杀商品
+	product := &model.SeckillProduct{
+		ProductID:    pidInt,
+		SeckillPrice: req.SeckillPrice,
+		Stock:        int32(req.Stock),
+		StartTime:    time.Unix(req.StartTime, 0),
+		EndTime:      time.Unix(req.EndTime, 0),
+		LimitPerUser: req.LimitPerUser,
+		IsActive:     req.IsActive,
+	}
 
 	// 保存到数据库
-	err := db.CreateSeckillProduct(ctx, product)
+	spid, err := db.CreateSeckillProduct(ctx, product)
 	if err != nil {
-		zap.L().Error("Failed to create seckill product in database", zap.Error(err))
-		return err
+		klog.Errorf("创建秒杀商品失败: %v", err)
+		return resp, nil
 	}
 
-	// 初始化Redis库存
-	err = cache.InitProductStock(ctx, product.SPID, product.Stock)
-	if err != nil {
-		zap.L().Error("Failed to initialize product stock in Redis", zap.Error(err))
-		return err
+	// 设置 Redis 缓存
+	if err := cache.SetProductStock(ctx, spid, int32(req.Stock)); err != nil {
+		klog.Warnf("设置库存缓存失败: %v", err)
+		// 非致命错误，继续执行
 	}
 
-	// 缓存商品信息
-	err = cache.CacheProductInfo(ctx, product)
-	if err != nil {
-		zap.L().Error("Failed to cache product info", zap.Error(err))
-		// 非致命错误，可以继续
-	}
-
-	// 添加到布隆过滤器
-	err = cache.AddProductToBloomFilter(ctx, product.SPID)
-	if err != nil {
-		zap.L().Error("Failed to add product to bloom filter", zap.Error(err))
-		// 非致命错误，可以继续
-	}
-
-	// 如果是已激活且在活动时间内，添加到活动列表
-	now := time.Now()
-	if product.IsActive && now.After(product.StartTime) && now.Before(product.EndTime) {
-		err = cache.AddToActiveList(ctx, product.SPID)
-		if err != nil {
-			zap.L().Error("Failed to add product to active list", zap.Error(err))
-			// 非致命错误，可以继续
+	// 如果商品已激活，添加到活动列表
+	if req.IsActive {
+		spidStr := fmt.Sprintf("%d", spid)
+		if err := cache.AddToActiveList(ctx, spidStr); err != nil {
+			klog.Warnf("添加到活动列表失败: %v", err)
+			// 非致命错误，继续执行
 		}
 	}
 
-	return nil
+	resp.StatusCode = constants.Success
+	resp.StatusMsg = "创建成功"
+	resp.Spid = fmt.Sprintf("%d", spid)
+
+	return resp, nil
 }
 
-// GetSeckillProduct 获取秒杀商品信息
-func (s *SeckillServiceImpl) GetSeckillProduct(ctx context.Context, spid string) (*model.SeckillProduct, error) {
-	// 先尝试从缓存获取
-	product, err := cache.GetCachedProductInfo(ctx, spid)
+// GetSeckillProduct implements the SeckillServiceImpl interface.
+func (s *SeckillServiceImpl) GetSeckillProduct(ctx context.Context, req *rpcSeckill.GetSeckillProductReq) (resp *rpcSeckill.GetSeckillProductResp, _ error) {
+	resp = new(rpcSeckill.GetSeckillProductResp)
+	resp.StatusCode = constants.ServiceErr
+	resp.StatusMsg = "服务内部错误"
+
+	// 参数校验
+	if req.Spid == "" {
+		resp.StatusCode = constants.ParamErr
+		resp.StatusMsg = "参数错误"
+		return resp, nil
+	}
+
+	// 转换为数值ID
+	spidInt, err := db.StringToInt64(req.Spid)
+	if err != nil {
+		klog.Errorf("参数错误: %v", err)
+		resp.StatusCode = constants.ParamErr
+		resp.StatusMsg = "商品ID格式错误"
+		return resp, nil
+	}
+
+	// 从数据库获取商品
+	product, err := db.GetSeckillProduct(ctx, spidInt)
+	if err != nil {
+		klog.Errorf("获取秒杀商品失败: %v", err)
+		return resp, nil
+	}
+
+	if product == nil {
+		resp.StatusCode = constants.NotFoundErr
+		resp.StatusMsg = "商品不存在"
+		return resp, nil
+	}
+
+	// 获取实时库存
+	stock := product.Stock
+	redisStock, err := cache.GetProductStock(ctx, spidInt)
 	if err == nil {
-		return product, nil
+		// 如果获取到Redis中的库存，使用Redis中的值
+		stock = redisStock
 	}
 
-	// 缓存不存在，从数据库获取
-	product, err = db.GetSeckillProductBySPID(ctx, spid)
-	if err != nil {
-		return nil, err
+	// 构建响应
+	resp.Product = &rpcSeckill.SeckillProductInfo{
+		Spid:         fmt.Sprintf("%d", product.ID),
+		Pid:          fmt.Sprintf("%d", product.ProductID),
+		SeckillPrice: product.SeckillPrice,
+		Stock:        int64(stock),
+		StartTime:    product.StartTime.Unix(),
+		EndTime:      product.EndTime.Unix(),
+		LimitPerUser: product.LimitPerUser,
+		IsActive:     product.IsActive,
 	}
 
-	// 更新缓存
-	_ = cache.CacheProductInfo(ctx, product)
+	resp.StatusCode = constants.Success
+	resp.StatusMsg = "获取成功"
 
-	return product, nil
+	return resp, nil
 }
 
-// ListActiveSeckillProducts 获取活动中的秒杀商品列表
-func (s *SeckillServiceImpl) ListActiveSeckillProducts(ctx context.Context) ([]*model.SeckillProduct, error) {
-	// 从Redis获取活动商品ID列表
-	spids, err := cache.GetActiveList(ctx)
-	if err != nil {
-		// Redis获取失败，回退到数据库
-		return db.ListActiveSeckillProducts(ctx)
+// ListActiveSeckillProducts implements the SeckillServiceImpl interface.
+func (s *SeckillServiceImpl) ListActiveSeckillProducts(ctx context.Context, req *rpcSeckill.ListActiveSeckillProductsReq) (resp *rpcSeckill.ListActiveSeckillProductsResp, _ error) {
+	resp = new(rpcSeckill.ListActiveSeckillProductsResp)
+	resp.StatusCode = constants.ServiceErr
+	resp.StatusMsg = "服务内部错误"
+
+	// 参数校验
+	if req.Page <= 0 {
+		req.Page = 1
+	}
+	if req.PageSize <= 0 {
+		req.PageSize = 10
 	}
 
-	products := make([]*model.SeckillProduct, 0, len(spids))
-	for _, spid := range spids {
-		product, err := s.GetSeckillProduct(ctx, spid)
-		if err != nil {
-			zap.L().Error("Failed to get product", zap.String("spid", spid), zap.Error(err))
-			continue
+	// 获取活动商品列表
+	products, total, err := db.GetActiveSeckillProducts(ctx, int(req.Page), int(req.PageSize))
+	if err != nil {
+		klog.Errorf("获取活动商品列表失败: %v", err)
+		return resp, nil
+	}
+
+	// 构建响应
+	resp.Products = make([]*rpcSeckill.SeckillProductInfo, 0, len(products))
+	for _, product := range products {
+		// 获取实时库存
+		stock := product.Stock
+		redisStock, err := cache.GetProductStock(ctx, product.ID)
+		if err == nil {
+			// 如果获取到Redis中的库存，使用Redis中的值
+			stock = redisStock
 		}
-		products = append(products, product)
+
+		resp.Products = append(resp.Products, &rpcSeckill.SeckillProductInfo{
+			Spid:         fmt.Sprintf("%d", product.ID),
+			Pid:          fmt.Sprintf("%d", product.ProductID),
+			SeckillPrice: product.SeckillPrice,
+			Stock:        int64(stock),
+			StartTime:    product.StartTime.Unix(),
+			EndTime:      product.EndTime.Unix(),
+			LimitPerUser: product.LimitPerUser,
+			IsActive:     product.IsActive,
+		})
 	}
 
-	return products, nil
+	resp.Total = int32(total)
+	resp.StatusCode = constants.Success
+	resp.StatusMsg = "获取成功"
+
+	return resp, nil
 }
 
-// DoSeckill 执行秒杀
-func (s *SeckillServiceImpl) DoSeckill(ctx context.Context, spid string, uid string, quantity int64) (string, error) {
-	// 限流检查
-	if !s.limiter.Allow() {
-		return "", errors.New("系统繁忙，请稍后再试")
+// DoSeckill implements the SeckillServiceImpl interface.
+func (s *SeckillServiceImpl) DoSeckill(ctx context.Context, req *rpcSeckill.DoSeckillReq) (resp *rpcSeckill.DoSeckillResp, _ error) {
+	resp = new(rpcSeckill.DoSeckillResp)
+	resp.StatusCode = constants.ServiceErr
+	resp.StatusMsg = "服务内部错误"
+
+	// 参数校验
+	if req.Spid == "" || req.Uid == "" || req.Quantity <= 0 {
+		resp.StatusCode = constants.ParamErr
+		resp.StatusMsg = "参数错误"
+		return resp, nil
 	}
 
-	// 使用布隆过滤器快速检查商品是否存在
-	exists, err := cache.ExistsInBloomFilter(ctx, spid)
-	if err != nil || !exists {
-		return "", errors.New("秒杀商品不存在")
-	}
-
-	// 获取商品信息
-	product, err := s.GetSeckillProduct(ctx, spid)
+	// 转换为数值ID
+	spidInt, err := db.StringToInt64(req.Spid)
 	if err != nil {
-		return "", err
+		klog.Errorf("商品ID格式错误: %v", err)
+		resp.StatusCode = constants.ParamErr
+		resp.StatusMsg = "商品ID格式错误"
+		return resp, nil
 	}
 
-	// 检查活动状态
+	uidInt, err := db.StringToInt64(req.Uid)
+	if err != nil {
+		klog.Errorf("用户ID格式错误: %v", err)
+		resp.StatusCode = constants.ParamErr
+		resp.StatusMsg = "用户ID格式错误"
+		return resp, nil
+	}
+
+	// 幂等性控制 - 生成幂等Token
+	idempToken := uuid.New().String()
+
+	// 检查是否已处理
+	idempInfo, err := cache.GetIdempotentInfo(ctx, idempToken)
+	if err == nil && idempInfo != nil {
+		// 如果已存在幂等信息，直接返回之前的结果
+		switch idempInfo.Status {
+		case constants.IdempStatusPending:
+			resp.StatusCode = constants.Success
+			resp.StatusMsg = "正在处理中"
+			resp.FlowId = idempInfo.FlowID
+			return resp, nil
+		case constants.IdempStatusSuccess:
+			resp.StatusCode = constants.Success
+			resp.StatusMsg = "下单成功"
+			resp.FlowId = idempInfo.FlowID
+			return resp, nil
+		case constants.IdempStatusFailed:
+			resp.StatusCode = constants.FailedErr
+			resp.StatusMsg = "下单失败"
+			return resp, nil
+		}
+	}
+
+	// 获取商品信息并检查
+	product, err := db.GetSeckillProduct(ctx, spidInt)
+	if err != nil {
+		klog.Errorf("获取秒杀商品失败: %v", err)
+		return resp, nil
+	}
+
+	if product == nil {
+		resp.StatusCode = constants.NotFoundErr
+		resp.StatusMsg = "商品不存在"
+		return resp, nil
+	}
+
+	// 检查活动时间
 	now := time.Now()
-	if !product.IsActive {
-		return "", errors.New("秒杀活动未激活")
-	}
 	if now.Before(product.StartTime) {
-		return "", errors.New("秒杀活动未开始")
+		resp.StatusCode = constants.SeckillNotStartErr
+		resp.StatusMsg = "秒杀活动未开始"
+		return resp, nil
 	}
+
 	if now.After(product.EndTime) {
-		return "", errors.New("秒杀活动已结束")
+		resp.StatusCode = constants.SeckillEndedErr
+		resp.StatusMsg = "秒杀活动已结束"
+		return resp, nil
 	}
 
-	// 检查购买限制
-	s.buyLimitLock.Lock()
-	canBuy, err := cache.CheckUserBuyLimit(ctx, spid, uid, product.LimitPerUser)
-	if err != nil {
-		s.buyLimitLock.Unlock()
-		return "", err
-	}
-	if !canBuy {
-		s.buyLimitLock.Unlock()
-		return "", errors.New("超过购买限制")
-	}
-
-	// 预扣减Redis库存
-	success, err := cache.DecrProductStock(ctx, spid, quantity)
-	if err != nil || !success {
-		s.buyLimitLock.Unlock()
+	// 检查每人限购
+	if product.LimitPerUser > 0 {
+		bought, err := cache.HasUserBought(ctx, spidInt, uidInt)
 		if err != nil {
-			return "", err
+			klog.Warnf("检查用户购买记录失败: %v", err)
+			// 非致命错误，继续执行
+		} else if bought {
+			resp.StatusCode = constants.LimitExceededErr
+			resp.StatusMsg = "您已参与过此秒杀活动"
+			return resp, nil
 		}
-		return "", errors.New("库存不足")
 	}
 
-	// 增加用户购买记录
-	err = cache.IncrUserBuyCount(ctx, spid, uid, product.EndTime.Sub(now)+time.Hour)
-	s.buyLimitLock.Unlock()
-	if err != nil {
-		// 购买记录增加失败，回滚库存
-		_ = cache.IncrProductStock(ctx, spid, quantity)
-		return "", err
+	// 预减库存
+	if success, err := cache.DecrProductStock(ctx, spidInt, int32(req.Quantity)); err != nil {
+		klog.Errorf("扣减库存失败: %v", err)
+		return resp, nil
+	} else if !success {
+		resp.StatusCode = constants.StockNotEnoughErr
+		resp.StatusMsg = "库存不足"
+		return resp, nil
 	}
 
 	// 生成流水ID
-	flowID := fmt.Sprintf("flow_%s_%d", spid, time.Now().UnixNano())
+	flowID := fmt.Sprintf("flow_%s_%d", time.Now().Format("20060102150405"), time.Now().UnixNano()%1000000)
 
-	// 创建并保存库存流水到Redis
+	// 创建幂等信息
+	idempInfo = &cache.IdempotentInfo{
+		SPID:      spidInt,
+		UID:       uidInt,
+		Quantity:  int32(req.Quantity),
+		FlowID:    flowID,
+		Status:    constants.IdempStatusPending,
+		CreatedAt: time.Now(),
+		ExpiredAt: time.Now().Add(time.Hour), // 1小时过期
+	}
+
+	// 保存幂等信息
+	if err := cache.SaveIdempotentInfo(ctx, idempToken, idempInfo); err != nil {
+		klog.Errorf("保存幂等信息失败: %v", err)
+		// 回滚库存
+		if err := cache.IncrProductStock(ctx, spidInt, int32(req.Quantity)); err != nil {
+			klog.Errorf("回滚库存失败: %v", err)
+		}
+		return resp, nil
+	}
+
+	// 创建库存流水
 	flow := &model.InventoryFlow{
 		FlowID:     flowID,
-		SPID:       spid,
-		UID:        uid,
-		OrderID:    "",
-		OpType:     1, // 预扣
-		Quantity:   quantity,
-		Status:     0, // 处理中
-		RetryCount: 0,
-		LockToken:  uuid.New().String(),
+		SPID:       spidInt,
+		UID:        uidInt,
+		Quantity:   int32(req.Quantity),
+		Status:     constants.FlowStatusPending,
+		IdempToken: idempToken,
 		CreatedAt:  time.Now(),
-		UpdatedAt:  time.Now(),
 	}
 
-	err = cache.SaveInventoryFlow(ctx, flow)
-	if err != nil {
-		// 保存流水失败，回滚库存
-		_ = cache.IncrProductStock(ctx, spid, quantity)
-		return "", err
+	// 保存流水记录
+	if err := db.CreateInventoryFlow(ctx, flow); err != nil {
+		klog.Errorf("创建库存流水失败: %v", err)
+		// 回滚库存
+		if err := cache.IncrProductStock(ctx, spidInt, int32(req.Quantity)); err != nil {
+			klog.Errorf("回滚库存失败: %v", err)
+		}
+		return resp, nil
 	}
 
-	// 异步更新数据库（这里可以使用RocketMQ发送消息）
-	// TODO: 发送RocketMQ消息
+	// 如果限购，标记用户已购买
+	if product.LimitPerUser > 0 {
+		if err := cache.MarkUserBought(ctx, spidInt, uidInt); err != nil {
+			klog.Warnf("标记用户购买记录失败: %v", err)
+			// 非致命错误，继续执行
+		}
+	}
 
-	return flowID, nil
+	// 发送MQ消息（这里使用异步处理，实际项目中应该使用RocketMQ等）
+	go s.processInventoryFlow(ctx, flow)
+
+	resp.StatusCode = constants.Success
+	resp.StatusMsg = "下单成功"
+	resp.FlowId = flowID
+
+	klog.Infof("秒杀请求成功: 用户=%s, 商品=%s, 数量=%d, 流水号=%s", req.Uid, req.Spid, req.Quantity, flowID)
+
+	return resp, nil
 }
 
-// ConfirmSeckillOrder 确认秒杀订单
-func (s *SeckillServiceImpl) ConfirmSeckillOrder(ctx context.Context, flowID string, orderId string) error {
-	// 获取流水信息
-	flow, err := cache.GetInventoryFlow(ctx, flowID)
-	if err != nil {
-		return err
-	}
-
-	// 确认库存扣减
-	err = db.ConfirmInventory(ctx, flowID, orderId)
-	if err != nil {
-		return err
-	}
-
-	// 更新Redis中的流水状态
-	flow.Status = 1 // 成功
-	flow.OrderID = orderId
-	flow.OpType = 2 // 确认
-	flow.UpdatedAt = time.Now()
-
-	return cache.SaveInventoryFlow(ctx, flow)
+// 自定义的查询秒杀结果请求
+type QuerySeckillResultReq struct {
+	IdempToken string `json:"idemp_token"`
 }
 
-// CancelSeckill 取消秒杀
-func (s *SeckillServiceImpl) CancelSeckill(ctx context.Context, flowID string) error {
+// 自定义的查询秒杀结果响应
+type QuerySeckillResultResp struct {
+	StatusCode int64  `json:"status_code"`
+	StatusMsg  string `json:"status_msg"`
+	FlowId     string `json:"flow_id"`
+	OrderId    string `json:"order_id"`
+	Status     int32  `json:"status"`
+}
+
+// QuerySeckillResult 查询秒杀结果
+func (s *SeckillServiceImpl) QuerySeckillResult(ctx context.Context, req *QuerySeckillResultReq) (resp *QuerySeckillResultResp, _ error) {
+	resp = new(QuerySeckillResultResp)
+	resp.StatusCode = constants.ServiceErr
+	resp.StatusMsg = "服务内部错误"
+
+	// 参数校验
+	if req.IdempToken == "" {
+		resp.StatusCode = constants.ParamErr
+		resp.StatusMsg = "参数错误"
+		return resp, nil
+	}
+
+	// 获取幂等信息
+	idempInfo, err := cache.GetIdempotentInfo(ctx, req.IdempToken)
+	if err != nil || idempInfo == nil {
+		if err != nil {
+			klog.Errorf("获取幂等信息失败: %v", err)
+		}
+		resp.StatusCode = constants.NotFoundErr
+		resp.StatusMsg = "订单不存在"
+		return resp, nil
+	}
+
+	// 设置状态
+	resp.Status = int32(idempInfo.Status)
+	resp.FlowId = idempInfo.FlowID
+	resp.OrderId = idempInfo.OrderID
+
+	// 设置状态信息
+	switch idempInfo.Status {
+	case constants.IdempStatusPending:
+		resp.StatusMsg = "处理中"
+	case constants.IdempStatusSuccess:
+		resp.StatusMsg = "下单成功"
+	case constants.IdempStatusFailed:
+		resp.StatusMsg = "下单失败"
+	default:
+		resp.StatusMsg = "未知状态"
+	}
+
+	resp.StatusCode = constants.Success
+
+	return resp, nil
+}
+
+// ConfirmSeckillOrder implements the SeckillServiceImpl interface.
+func (s *SeckillServiceImpl) ConfirmSeckillOrder(ctx context.Context, req *rpcSeckill.ConfirmSeckillOrderReq) (resp *rpcSeckill.ConfirmSeckillOrderResp, _ error) {
+	resp = new(rpcSeckill.ConfirmSeckillOrderResp)
+	resp.StatusCode = constants.ServiceErr
+	resp.StatusMsg = "服务内部错误"
+
+	// 参数校验
+	if req.FlowId == "" || req.OrderId == "" {
+		resp.StatusCode = constants.ParamErr
+		resp.StatusMsg = "参数错误"
+		return resp, nil
+	}
+
 	// 获取流水信息
-	flow, err := cache.GetInventoryFlow(ctx, flowID)
+	flow, err := db.GetInventoryFlow(ctx, req.FlowId)
 	if err != nil {
-		return err
+		klog.Errorf("获取流水信息失败: %v", err)
+		return resp, nil
+	}
+
+	if flow == nil {
+		resp.StatusCode = constants.NotFoundErr
+		resp.StatusMsg = "流水不存在"
+		return resp, nil
+	}
+
+	// 确认订单，更新流水状态
+	if err := db.UpdateInventoryFlowStatus(ctx, req.FlowId, constants.FlowStatusSuccess, req.OrderId); err != nil {
+		klog.Errorf("更新流水状态失败: %v", err)
+		return resp, nil
+	}
+
+	// 更新幂等信息
+	if err := cache.UpdateIdempotentStatus(ctx, flow.IdempToken, constants.IdempStatusSuccess, req.OrderId); err != nil {
+		klog.Errorf("更新幂等信息失败: %v", err)
+		// 非致命错误，继续执行
+	}
+
+	resp.StatusCode = constants.Success
+	resp.StatusMsg = "确认成功"
+
+	return resp, nil
+}
+
+// CancelSeckill implements the SeckillServiceImpl interface.
+func (s *SeckillServiceImpl) CancelSeckill(ctx context.Context, req *rpcSeckill.CancelSeckillReq) (resp *rpcSeckill.CancelSeckillResp, _ error) {
+	resp = new(rpcSeckill.CancelSeckillResp)
+	resp.StatusCode = constants.ServiceErr
+	resp.StatusMsg = "服务内部错误"
+
+	// 参数校验
+	if req.FlowId == "" {
+		resp.StatusCode = constants.ParamErr
+		resp.StatusMsg = "参数错误"
+		return resp, nil
+	}
+
+	// 获取流水信息
+	flow, err := db.GetInventoryFlow(ctx, req.FlowId)
+	if err != nil {
+		klog.Errorf("获取流水信息失败: %v", err)
+		return resp, nil
+	}
+
+	if flow == nil {
+		resp.StatusCode = constants.NotFoundErr
+		resp.StatusMsg = "流水不存在"
+		return resp, nil
+	}
+
+	// 只有处理中的流水才能取消
+	if flow.Status != constants.FlowStatusPending {
+		resp.StatusCode = constants.FailedErr
+		resp.StatusMsg = "流水状态不允许取消"
+		return resp, nil
 	}
 
 	// 回滚库存
-	err = db.RollbackInventory(ctx, flowID)
-	if err != nil {
-		return err
+	if err := cache.IncrProductStock(ctx, flow.SPID, flow.Quantity); err != nil {
+		klog.Errorf("回滚库存失败: %v", err)
+		// 非致命错误，继续执行
 	}
 
-	// 回滚Redis库存
-	err = cache.IncrProductStock(ctx, flow.SPID, flow.Quantity)
-	if err != nil {
-		return err
+	// 更新流水状态
+	if err := db.UpdateInventoryFlowStatus(ctx, req.FlowId, constants.FlowStatusFailed, ""); err != nil {
+		klog.Errorf("更新流水状态失败: %v", err)
+		return resp, nil
 	}
 
-	// 更新Redis中的流水状态
-	flow.Status = 2 // 失败
-	flow.OpType = 3 // 回滚
-	flow.UpdatedAt = time.Now()
+	// 更新幂等信息
+	if err := cache.UpdateIdempotentStatus(ctx, flow.IdempToken, constants.IdempStatusFailed, ""); err != nil {
+		klog.Errorf("更新幂等信息失败: %v", err)
+		// 非致命错误，继续执行
+	}
 
-	return cache.SaveInventoryFlow(ctx, flow)
+	resp.StatusCode = constants.Success
+	resp.StatusMsg = "取消成功"
+
+	return resp, nil
+}
+
+// 异步处理库存流水
+func (s *SeckillServiceImpl) processInventoryFlow(ctx context.Context, flow *model.InventoryFlow) {
+	// 模拟实际业务处理
+	time.Sleep(500 * time.Millisecond)
+
+	// 在实际项目中，这里应该调用订单系统创建订单
+	// 然后通过ConfirmSeckillOrder接口来确认订单
+
+	// 这里为了演示效果，我们假设处理成功，直接标记为成功状态
+	orderID := fmt.Sprintf("order_%s", uuid.New().String()[:8])
+
+	// 更新流水状态
+	if err := db.UpdateInventoryFlowStatus(ctx, flow.FlowID, constants.FlowStatusSuccess, orderID); err != nil {
+		klog.Errorf("更新流水状态失败: %v", err)
+		return
+	}
+
+	// 更新幂等信息
+	if err := cache.UpdateIdempotentStatus(ctx, flow.IdempToken, constants.IdempStatusSuccess, orderID); err != nil {
+		klog.Errorf("更新幂等信息失败: %v", err)
+	}
+
+	klog.Infof("秒杀流水处理完成: 流水=%s, 订单=%s", flow.FlowID, orderID)
+}
+
+// CheckExpiredFlows 定期检查过期订单
+func (s *SeckillServiceImpl) CheckExpiredFlows(ctx context.Context) {
+	timeout := time.Now().Add(-15 * time.Minute) // 15分钟未处理的流水视为超时
+
+	flows, err := db.GetPendingInventoryFlows(ctx, timeout)
+	if err != nil {
+		klog.Errorf("获取待处理流水失败: %v", err)
+		return
+	}
+
+	for _, flow := range flows {
+		// 回滚库存
+		if err := cache.IncrProductStock(ctx, flow.SPID, flow.Quantity); err != nil {
+			klog.Errorf("回滚库存失败: %v", err)
+			continue
+		}
+
+		// 更新流水状态
+		if err := db.UpdateInventoryFlowStatus(ctx, flow.FlowID, constants.FlowStatusTimeout, ""); err != nil {
+			klog.Errorf("更新流水状态失败: %v", err)
+			continue
+		}
+
+		// 更新幂等信息
+		if err := cache.UpdateIdempotentStatus(ctx, flow.IdempToken, constants.IdempStatusFailed, ""); err != nil {
+			klog.Errorf("更新幂等信息失败: %v", err)
+		}
+
+		klog.Infof("过期流水处理完成: 流水=%s", flow.FlowID)
+	}
+}
+
+// CheckInventoryConsistency 检查库存一致性
+func (s *SeckillServiceImpl) CheckInventoryConsistency(ctx context.Context) {
+	products, err := db.GetAllSeckillProducts(ctx)
+	if err != nil {
+		klog.Errorf("获取所有秒杀商品失败: %v", err)
+		return
+	}
+
+	var fixedCount int
+	for _, product := range products {
+		// 获取Redis库存
+		redisStock, err := cache.GetProductStock(ctx, product.ID)
+		if err != nil {
+			klog.Errorf("获取Redis库存失败: %v", err)
+			continue
+		}
+
+		// 比较库存
+		if redisStock != product.Stock {
+			klog.Infof("发现库存不一致: 商品=%d, MySQL=%d, Redis=%d", product.ID, product.Stock, redisStock)
+
+			// 更新Redis库存
+			if err := cache.SetProductStock(ctx, product.ID, product.Stock); err != nil {
+				klog.Errorf("更新Redis库存失败: %v", err)
+				continue
+			}
+
+			fixedCount++
+		}
+	}
+
+	if fixedCount > 0 {
+		klog.Infof("库存一致性检查完成: 修复 %d 条记录", fixedCount)
+	}
 }

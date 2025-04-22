@@ -1,8 +1,19 @@
 {
+  "service": {
+    "name": "seckill",
+    "host": "localhost",
+    "port": 8004,
+    "max_qps": 500
+  },
   "mysql": {
-    "dsn": "root:password@tcp(localhost:3306)/gomall?charset=utf8mb4&parseTime=True&loc=Local",
-    "max_idle_conns": 10,
-    "max_open_conns": 100
+    "host": "localhost",
+    "port": 3306,
+    "user": "root",
+    "password": "password",
+    "db": "gomall",
+    "charset": "utf8mb4",
+    "max_open_conns": 100,
+    "max_idle_conns": 10
   },
   "redis": {
     "host": "localhost",
@@ -14,12 +25,20 @@
   "rocketmq": {
     "name_server": "localhost:9876",
     "group_name": "seckill_group",
+    "access_key": "",
+    "secret_key": "",
     "topic": {
       "seckill": "seckill_topic"
     }
   },
-  "server": {
-    "port": 8088
+  "etcd": {
+    "address": "localhost:2379"
+  },
+  "business": {
+    "order_ttl": 1800,
+    "inventory_check": 600,
+    "bloom_filter_ttl": 86400,
+    "limit_one_buy": true
   },
   "limiter": {
     "rate_per_second": 1000,
@@ -33,5 +52,9 @@
   },
   "monitor": {
     "log_level": "info"
+  },
+  "jaeger": {
+    "host": "localhost",
+    "port": 14268
   }
 }

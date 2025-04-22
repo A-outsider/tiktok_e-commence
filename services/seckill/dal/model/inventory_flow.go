@@ -8,19 +8,20 @@ import (
 
 // InventoryFlow 库存流水表
 type InventoryFlow struct {
-	FlowID     string `gorm:"primaryKey"`     // 流水ID：flow_秒杀商品ID_操作时间戳
-	SPID       string `gorm:"index;not null"` // 关联秒杀商品
-	UID        string `gorm:"index;not null"` // 用户ID
-	OrderID    string `gorm:"index"`          // 关联订单（可为空）
-	OpType     int    `gorm:"not null"`       // 操作类型：1-预扣 2-确认 3-回滚
-	Quantity   int64  `gorm:"not null"`       // 操作数量
-	Status     int    `gorm:"default:0"`      // 0-处理中 1-成功 2-失败
-	RetryCount int    `gorm:"default:0"`      // 重试次数
-	LockToken  string `gorm:"uniqueIndex"`    // 分布式锁令牌
+	ID         int64  `gorm:"primaryKey;autoIncrement;comment:流水ID"`
+	FlowID     string `gorm:"uniqueIndex;comment:流水号;type:varchar(64)"`
+	SPID       int64  `gorm:"index;not null;comment:关联秒杀商品ID"`
+	UID        int64  `gorm:"index;not null;comment:用户ID"`
+	OrderID    string `gorm:"index;comment:关联订单ID;type:varchar(64)"`
+	OpType     int    `gorm:"not null;comment:操作类型：1-预扣 2-确认 3-回滚"`
+	Quantity   int32  `gorm:"not null;comment:操作数量"`
+	Status     int    `gorm:"default:0;comment:状态：0-处理中 1-成功 2-失败"`
+	RetryCount int    `gorm:"default:0;comment:重试次数"`
+	IdempToken string `gorm:"index;comment:幂等标识;type:varchar(64)"`
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
 // TableName 设置表名

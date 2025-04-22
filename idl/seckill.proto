@@ -13,6 +13,8 @@ service SeckillService {
   rpc ListActiveSeckillProducts(ListActiveSeckillProductsReq) returns (ListActiveSeckillProductsResp) {}
   // 执行秒杀
   rpc DoSeckill(DoSeckillReq) returns (DoSeckillResp) {}
+  // 查询秒杀结果
+  rpc QuerySeckillResult(QuerySeckillResultReq) returns (QuerySeckillResultResp) {}
   // 确认秒杀订单
   rpc ConfirmSeckillOrder(ConfirmSeckillOrderReq) returns (ConfirmSeckillOrderResp) {}
   // 取消秒杀
@@ -82,6 +84,7 @@ message DoSeckillReq {
   string spid = 1;           // 秒杀商品ID
   string uid = 2;            // 用户ID
   int64 quantity = 3;        // 购买数量
+  string idemp_token = 4;    // 幂等性token
 }
 
 // 执行秒杀响应
@@ -89,6 +92,21 @@ message DoSeckillResp {
   int64 status_code = 1;     // 状态码
   string status_msg = 2;     // 状态信息
   string flow_id = 3;        // 流水ID
+  string idemp_token = 4;    // 幂等性token
+}
+
+// 查询秒杀结果请求
+message QuerySeckillResultReq {
+  string idemp_token = 1;    // 幂等性token
+}
+
+// 查询秒杀结果响应
+message QuerySeckillResultResp {
+  int64 status_code = 1;     // 状态码
+  string status_msg = 2;     // 状态信息
+  int32 status = 3;          // 秒杀状态：0-处理中 1-成功 2-失败
+  string flow_id = 4;        // 流水ID
+  string order_id = 5;       // 订单ID
 }
 
 // 确认秒杀订单请求

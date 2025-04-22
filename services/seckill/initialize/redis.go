@@ -7,6 +7,7 @@ import (
 
 	"gomall/services/seckill/config"
 
+	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -31,8 +32,10 @@ func InitRedis() {
 
 	_, err := _rdb.Ping(ctx).Result()
 	if err != nil {
-		panic("failed to connect redis: " + err.Error())
+		klog.Fatalf("failed to connect redis: %v", err)
 	}
+
+	klog.Infof("Redis connected: %s:%d", redisConf.Host, redisConf.Port)
 }
 
 // GetRedis 获取Redis客户端

@@ -1,2 +1,6 @@
 .idea
 go.*
+.vscode
+*/*.yml
+*/*.yaml
+*/*.json

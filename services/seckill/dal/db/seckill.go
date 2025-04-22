@@ -3,55 +3,111 @@ package db
 import (
 	"context"
 	"errors"
-	"fmt"
+	"strconv"
 	"time"
 
 	"gomall/services/seckill/dal/model"
 	"gomall/services/seckill/initialize"
 
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
+// StringToInt64 将字符串转为int64
+func StringToInt64(str string) (int64, error) {
+	return strconv.ParseInt(str, 10, 64)
+}
+
 // CreateSeckillProduct 创建秒杀商品
-func CreateSeckillProduct(ctx context.Context, product *model.SeckillProduct) error {
-	return initialize.GetMysql().WithContext(ctx).Create(product).Error
+func CreateSeckillProduct(ctx context.Context, product *model.SeckillProduct) (int64, error) {
+	result := initialize.GetMysql().WithContext(ctx).Create(product)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	return product.ID, nil
 }
 
 // GetSeckillProductBySPID 根据秒杀商品ID获取商品
 func GetSeckillProductBySPID(ctx context.Context, spid string) (*model.SeckillProduct, error) {
 	var product model.SeckillProduct
-	err := initialize.GetMysql().WithContext(ctx).Where("spid = ?", spid).First(&product).Error
+	spidInt, err := StringToInt64(spid)
+	if err != nil {
+		return nil, err
+	}
+	err = initialize.GetMysql().WithContext(ctx).Where("id = ?", spidInt).First(&product).Error
 	if err != nil {
 		return nil, err
 	}
 	return &product, nil
 }
 
+// GetSeckillProduct 根据ID获取秒杀商品
+func GetSeckillProduct(ctx context.Context, spid int64) (*model.SeckillProduct, error) {
+	var product model.SeckillProduct
+	result := initialize.GetMysql().WithContext(ctx).Where("id = ?", spid).First(&product)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, result.Error
+	}
+	return &product, nil
+}
+
+// GetActiveSeckillProducts 获取活动中的秒杀商品并带分页
+func GetActiveSeckillProducts(ctx context.Context, page int, pageSize int) ([]*model.SeckillProduct, int64, error) {
+	var products []*model.SeckillProduct
+	var total int64
+	now := time.Now()
+
+	db := initialize.GetMysql().WithContext(ctx).
+		Where("start_time <= ? AND end_time >= ?", now, now)
+
+	// 计算总数
+	if err := db.Model(&model.SeckillProduct{}).Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// 查询带分页的记录
+	offset := (page - 1) * pageSize
+	result := db.Offset(offset).Limit(pageSize).Find(&products)
+	if result.Error != nil {
+		return nil, 0, result.Error
+	}
+
+	return products, total, nil
+}
+
 // ListActiveSeckillProducts 获取当前处于活动时间内的秒杀商品列表
 func ListActiveSeckillProducts(ctx context.Context) ([]*model.SeckillProduct, error) {
 	var products []*model.SeckillProduct
 	now := time.Now()
-	err := initialize.GetMysql().WithContext(ctx).Where("is_active = ? AND start_time <= ? AND end_time >= ?", true, now, now).Find(&products).Error
+	err := initialize.GetMysql().WithContext(ctx).Where("start_time <= ? AND end_time >= ?", now, now).Find(&products).Error
 	return products, err
 }
 
-// UpdateSeckillProductStock 更新秒杀商品库存（使用乐观锁）
-func UpdateSeckillProductStock(ctx context.Context, spid string, quantity int64, version int64) error {
+// GetAllSeckillProducts 获取所有秒杀商品
+func GetAllSeckillProducts(ctx context.Context) ([]*model.SeckillProduct, error) {
+	var products []*model.SeckillProduct
+	result := initialize.GetMysql().WithContext(ctx).Find(&products)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return products, nil
+}
+
+// UpdateSeckillProductStock 更新秒杀商品库存
+func UpdateSeckillProductStock(ctx context.Context, spid int64, quantity int32) error {
 	result := initialize.GetMysql().WithContext(ctx).
 		Model(&model.SeckillProduct{}).
-		Where("spid = ? AND version = ? AND stock >= ?", spid, version, quantity).
-		Updates(map[string]interface{}{
-			"stock":   gorm.Expr("stock - ?", quantity),
-			"version": gorm.Expr("version + 1"),
-		})
+		Where("id = ? AND stock >= ?", spid, quantity).
+		Update("stock", gorm.Expr("stock - ?", quantity))
 
 	if result.Error != nil {
 		return result.Error
 	}
 
 	if result.RowsAffected == 0 {
-		return errors.New("库存不足或商品已被修改")
+		return errors.New("库存不足或商品不存在")
 	}
 
 	return nil
@@ -62,133 +118,75 @@ func CreateInventoryFlow(ctx context.Context, flow *model.InventoryFlow) error {
 	return initialize.GetMysql().WithContext(ctx).Create(flow).Error
 }
 
+// GetInventoryFlow 获取库存流水
+func GetInventoryFlow(ctx context.Context, flowID string) (*model.InventoryFlow, error) {
+	var flow model.InventoryFlow
+	result := initialize.GetMysql().WithContext(ctx).Where("flow_id = ?", flowID).First(&flow)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, result.Error
+	}
+	return &flow, nil
+}
+
 // UpdateInventoryFlowStatus 更新库存流水状态
-func UpdateInventoryFlowStatus(ctx context.Context, flowID string, status int) error {
-	return initialize.GetMysql().WithContext(ctx).
+func UpdateInventoryFlowStatus(ctx context.Context, flowID string, status int, orderID string) error {
+	updates := map[string]interface{}{
+		"status": status,
+	}
+	if orderID != "" {
+		updates["order_id"] = orderID
+	}
+
+	result := initialize.GetMysql().WithContext(ctx).
 		Model(&model.InventoryFlow{}).
 		Where("flow_id = ?", flowID).
-		Update("status", status).Error
+		Updates(updates)
+
+	return result.Error
 }
 
-// LockInventoryInTx 在事务中锁定库存并创建流水
-func LockInventoryInTx(ctx context.Context, spid string, uid string, quantity int64, orderId string) (string, error) {
-	// 生成流水ID
-	flowID := fmt.Sprintf("flow_%s_%d", spid, time.Now().UnixNano())
+// GetPendingInventoryFlows 获取待处理的库存流水
+func GetPendingInventoryFlows(ctx context.Context, timeout time.Time) ([]*model.InventoryFlow, error) {
+	var flows []*model.InventoryFlow
 
-	// 开始事务
-	tx := initialize.GetMysql().WithContext(ctx).Begin()
-	if tx.Error != nil {
-		return "", tx.Error
+	result := initialize.GetMysql().WithContext(ctx).
+		Where("status = ? AND created_at < ? AND retry_count < ?", 0, timeout, 3).
+		Find(&flows)
+
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
-
-	// 获取商品并加悲观锁
-	var product model.SeckillProduct
-	if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
-		Where("spid = ? AND is_active = ?", spid, true).
-		First(&product).Error; err != nil {
-		tx.Rollback()
-		return "", err
-	}
-
-	// 检查库存
-	if product.Stock < quantity {
-		tx.Rollback()
-		return "", errors.New("库存不足")
-	}
-
-	// 更新库存
-	if err := tx.Model(&product).
-		Update("stock", gorm.Expr("stock - ?", quantity)).
-		Update("version", gorm.Expr("version + 1")).Error; err != nil {
-		tx.Rollback()
-		return "", err
-	}
-
-	// 创建库存流水
-	flow := &model.InventoryFlow{
-		FlowID:     flowID,
-		SPID:       spid,
-		UID:        uid,
-		OrderID:    orderId,
-		OpType:     1, // 预扣
-		Quantity:   quantity,
-		Status:     0, // 处理中
-		RetryCount: 0,
-		CreatedAt:  time.Now(),
-		UpdatedAt:  time.Now(),
-	}
-
-	if err := tx.Create(flow).Error; err != nil {
-		tx.Rollback()
-		return "", err
-	}
-
-	// 提交事务
-	if err := tx.Commit().Error; err != nil {
-		return "", err
-	}
-
-	return flowID, nil
-}
-
-// ConfirmInventory 确认库存扣减
-func ConfirmInventory(ctx context.Context, flowID string, orderId string) error {
-	return initialize.GetMysql().WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		var flow model.InventoryFlow
-		if err := tx.Where("flow_id = ? AND status = ?", flowID, 0).First(&flow).Error; err != nil {
-			return err
-		}
-
-		flow.Status = 1 // 成功
-		flow.OrderID = orderId
-		flow.OpType = 2 // 确认
-		flow.UpdatedAt = time.Now()
-
-		return tx.Save(&flow).Error
-	})
+	return flows, nil
 }
 
 // RollbackInventory 回滚库存
 func RollbackInventory(ctx context.Context, flowID string) error {
 	return initialize.GetMysql().WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		// 1. 查询流水
 		var flow model.InventoryFlow
 		if err := tx.Where("flow_id = ? AND status = ?", flowID, 0).First(&flow).Error; err != nil {
 			return err
 		}
 
-		// 更新流水状态
-		flow.Status = 2 // 失败
-		flow.OpType = 3 // 回滚
-		flow.UpdatedAt = time.Now()
-
-		if err := tx.Save(&flow).Error; err != nil {
+		// 2. 更新流水状态
+		if err := tx.Model(&flow).Updates(map[string]interface{}{
+			"status":  2, // 失败
+			"op_type": 3, // 回滚
+		}).Error; err != nil {
 			return err
 		}
 
-		// 恢复库存
+		// 3. 恢复库存
 		if err := tx.Model(&model.SeckillProduct{}).
-			Where("spid = ?", flow.SPID).
+			Where("id = ?", flow.SPID).
 			Update("stock", gorm.Expr("stock + ?", flow.Quantity)).Error; err != nil {
 			return err
 		}
 
 		return nil
 	})
-}
-
-// ListPendingFlows 获取待处理的流水记录
-func ListPendingFlows(ctx context.Context, limit int) ([]*model.InventoryFlow, error) {
-	var flows []*model.InventoryFlow
-	err := initialize.GetMysql().WithContext(ctx).
-		Where("status = ? AND retry_count < ?", 0, 3).
-		Order("created_at ASC").
-		Limit(limit).
-		Find(&flows).Error
-	return flows, err
 }
